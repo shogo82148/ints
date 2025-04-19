@@ -29,7 +29,22 @@ func (a Int256) Sub(b Int256) Int256 {
 
 // Mul returns the product a*b.
 func (a Int256) Mul(b Int256) Int256 {
-	return Int256{0, 0} // TODO: Implement multiplication for Int256
+	neg := false
+	if a.Sign() < 0 {
+		a = a.Neg()
+		neg = true
+	}
+	if b.Sign() < 0 {
+		b = b.Neg()
+		neg = !neg
+	}
+
+	c := Int256(Uint256(a).Mul(Uint256(b)))
+
+	if neg {
+		return c.Neg()
+	}
+	return c
 }
 
 // Sign returns the sign of a.

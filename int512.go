@@ -37,7 +37,22 @@ func (a Int512) Sub(b Int512) Int512 {
 
 // Mul returns the product a*b.
 func (a Int512) Mul(b Int512) Int512 {
-	return Int512{0, 0} // TODO: Implement multiplication for Int512
+	neg := false
+	if a.Sign() < 0 {
+		a = a.Neg()
+		neg = true
+	}
+	if b.Sign() < 0 {
+		b = b.Neg()
+		neg = !neg
+	}
+
+	c := Int512(Uint512(a).Mul(Uint512(b)))
+
+	if neg {
+		return c.Neg()
+	}
+	return c
 }
 
 // Sign returns the sign of a.

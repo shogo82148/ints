@@ -25,7 +25,22 @@ func (a Int128) Sub(b Int128) Int128 {
 
 // Mul returns the product a*b.
 func (a Int128) Mul(b Int128) Int128 {
-	return Int128{0, 0} // TODO: Implement multiplication for Int128
+	neg := false
+	if a.Sign() < 0 {
+		neg = !neg
+		a = a.Neg()
+	}
+	if b.Sign() < 0 {
+		neg = !neg
+		b = b.Neg()
+	}
+
+	c := Int128(Uint128(a).Mul(Uint128(b)))
+
+	if neg {
+		c = c.Neg()
+	}
+	return c
 }
 
 // Sign returns the sign of a.

@@ -91,6 +91,44 @@ func FuzzInt128_Sub(f *testing.F) {
 	})
 }
 
+func FuzzInt128_Mul(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(0),
+		uint64(0), uint64(0),
+	)
+	f.Add(
+		uint64(1<<63-1), uint64(math.MaxUint64), // MaxInt128
+		uint64(math.MaxUint64), uint64(math.MaxUint64), // -1
+	)
+	f.Add(
+		uint64(1<<63), uint64(0), // MinInt256
+		uint64(0), uint64(1), // 1
+	)
+	f.Add(
+		uint64(1<<63-1), uint64(math.MaxUint64), // MaxInt128
+		uint64(1<<63-1), uint64(math.MaxUint64), // MaxInt128
+	)
+
+	base := new(big.Int).Lsh(big.NewInt(1), 128-1)
+	mod := new(big.Int).Lsh(big.NewInt(1), 128)
+	f.Fuzz(func(t *testing.T, u0, u1, v0, v1 uint64) {
+		a := Int128{u0, u1}
+		b := Int128{v0, v1}
+		got := int128ToBigInt(a.Mul(b))
+
+		ba := int128ToBigInt(a)
+		bb := int128ToBigInt(b)
+		want := new(big.Int).Mul(ba, bb)
+		want = want.Add(want, base)
+		want = want.Mod(want, mod)
+		want = want.Sub(want, base)
+
+		if got.Cmp(want) != 0 {
+			t.Errorf("Int128(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestInt128_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int128
