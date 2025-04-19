@@ -38,6 +38,26 @@ func FuzzInt64_Sub(f *testing.F) {
 	})
 }
 
+func TestInt64_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Int64
+		want int
+	}{
+		{0, 0},
+		{1, 1},
+		{-1, -1},
+		{math.MaxInt64, 1},
+		{math.MinInt64, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Int64(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestInt64_Neg(t *testing.T) {
 	testCases := []struct {
 		x    Int64

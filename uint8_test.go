@@ -37,6 +37,24 @@ func FuzzUint8_Sub(f *testing.F) {
 	})
 }
 
+func TestUint8_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Uint8
+		want int
+	}{
+		{0, 0},
+		{1, 1},
+		{math.MaxUint8, 1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Uint8(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint8_Neg(t *testing.T) {
 	testCases := []struct {
 		x    Uint8

@@ -18,6 +18,19 @@ func (a Int8) Sub(b Int8) Int8 {
 	return a - b
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
+func (a Int8) Sign() int {
+	switch {
+	case a > 0:
+		return 1
+	case a < 0:
+		return -1
+	default:
+		return 0
+	}
+}
+
 // Neg returns the negation of a.
 //
 // This function's execution time does not depend on the inputs.

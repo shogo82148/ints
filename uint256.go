@@ -27,6 +27,17 @@ func (a Uint256) Sub(b Uint256) Uint256 {
 	return Uint256{u0, u1, u2, u3}
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, and 0 if a == 0.
+// It does not return -1 because Uint128 is unsigned.
+func (a Uint256) Sign() int {
+	var zero Uint256
+	if a == zero {
+		return 0
+	}
+	return 1
+}
+
 // Neg returns the negation of a.
 //
 // This function's execution time does not depend on the inputs.
