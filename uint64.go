@@ -4,6 +4,13 @@ package ints
 // It is an alias for the built-in uint64 type.
 type Uint64 uint64
 
+// Add returns the sum a+b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint64) Add(b Uint64) Uint64 {
+	return a + b
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,
