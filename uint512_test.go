@@ -1,7 +1,9 @@
 package ints
 
 import (
+	"math"
 	"math/big"
+	"runtime"
 	"testing"
 )
 
@@ -154,4 +156,32 @@ func FuzzUint512_String(f *testing.F) {
 			t.Errorf("Uint512(%s).String() = %q, want %q", b.String(), got, want)
 		}
 	})
+}
+
+func BenchmarkUint512_Text2(b *testing.B) {
+	a := Uint512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(2))
+	}
+}
+
+func BenchmarkUint512_Text10(b *testing.B) {
+	a := Uint512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(10))
+	}
+}
+
+func BenchmarkUint512_Text62(b *testing.B) {
+	a := Uint512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(62))
+	}
+}
+
+func BenchmarkUint512_String(b *testing.B) {
+	a := Uint512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
+	for b.Loop() {
+		runtime.KeepAlive(a.String())
+	}
 }

@@ -3,6 +3,7 @@ package ints
 import (
 	"math"
 	"math/big"
+	"runtime"
 	"testing"
 )
 
@@ -127,4 +128,32 @@ func FuzzUint256_String(f *testing.F) {
 			t.Errorf("Uint256(%s).String() = %q, want %q", b.String(), got, want)
 		}
 	})
+}
+
+func BenchmarkUint256_Text2(b *testing.B) {
+	a := Uint256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(2))
+	}
+}
+
+func BenchmarkUint256_Text10(b *testing.B) {
+	a := Uint256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(10))
+	}
+}
+
+func BenchmarkUint256_Text62(b *testing.B) {
+	a := Uint256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(62))
+	}
+}
+
+func BenchmarkUint256_String(b *testing.B) {
+	a := Uint256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
+	for b.Loop() {
+		runtime.KeepAlive(a.String())
+	}
 }

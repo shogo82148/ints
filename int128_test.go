@@ -109,28 +109,28 @@ func FuzzInt128_String(f *testing.F) {
 }
 
 func BenchmarkInt128_Text2(b *testing.B) {
-	a := Int128{math.MaxUint64, math.MaxUint64}
+	a := Int128{1 << 63, 0}
 	for b.Loop() {
 		runtime.KeepAlive(a.Text(2))
 	}
 }
 
 func BenchmarkInt128_Text10(b *testing.B) {
-	a := Int128{math.MaxUint64, math.MaxUint64}
+	a := Int128{1 << 63, 0}
 	for b.Loop() {
 		runtime.KeepAlive(a.Text(10))
 	}
 }
 
 func BenchmarkInt128_Text62(b *testing.B) {
-	a := Int128{math.MaxUint64, math.MaxUint64}
+	a := Int128{1 << 63, 0}
 	for b.Loop() {
 		runtime.KeepAlive(a.Text(2))
 	}
 }
 
 func BenchmarkInt128_String(b *testing.B) {
-	a := Int128{math.MaxUint64, math.MaxUint64}
+	a := Int128{1 << 63, 0}
 	for b.Loop() {
 		runtime.KeepAlive(a.String())
 	}

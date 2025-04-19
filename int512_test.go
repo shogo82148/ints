@@ -3,6 +3,7 @@ package ints
 import (
 	"math"
 	"math/big"
+	"runtime"
 	"testing"
 )
 
@@ -158,4 +159,32 @@ func FuzzInt512_String(f *testing.F) {
 			t.Errorf("Int512(%s).String() = %q, want %q", b.String(), got, want)
 		}
 	})
+}
+
+func BenchmarkInt512_Text2(b *testing.B) {
+	a := Int512{1 << 63, 0, 0, 0, 0, 0, 0, 0}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(2))
+	}
+}
+
+func BenchmarkInt512_Text10(b *testing.B) {
+	a := Int512{1 << 63, 0, 0, 0, 0, 0, 0, 0}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(10))
+	}
+}
+
+func BenchmarkInt512_Text62(b *testing.B) {
+	a := Int512{1 << 63, 0, 0, 0, 0, 0, 0, 0}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(2))
+	}
+}
+
+func BenchmarkInt512_String(b *testing.B) {
+	a := Int512{1 << 63, 0, 0, 0, 0, 0, 0, 0}
+	for b.Loop() {
+		runtime.KeepAlive(a.String())
+	}
 }

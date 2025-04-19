@@ -3,6 +3,7 @@ package ints
 import (
 	"math"
 	"math/big"
+	"runtime"
 	"testing"
 )
 
@@ -400,4 +401,32 @@ func FuzzInt1024_String(f *testing.F) {
 			t.Errorf("Int1024(%s).String() = %q, want %q", b.String(), got, want)
 		}
 	})
+}
+
+func BenchmarkInt1024_Text2(b *testing.B) {
+	a := Int1024{1 << 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(2))
+	}
+}
+
+func BenchmarkInt1024_Text10(b *testing.B) {
+	a := Int1024{1 << 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(10))
+	}
+}
+
+func BenchmarkInt1024_Text62(b *testing.B) {
+	a := Int1024{1 << 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(2))
+	}
+}
+
+func BenchmarkInt1024_String(b *testing.B) {
+	a := Int1024{1 << 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	for b.Loop() {
+		runtime.KeepAlive(a.String())
+	}
 }
