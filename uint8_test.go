@@ -16,7 +16,7 @@ func TestUint8_Text(t *testing.T) {
 			got := a.Text(base)
 			want := b.Text(base)
 			if got != want {
-				t.Errorf("Int8(%d).Text(%d) = %q, want %q", i, base, got, want)
+				t.Errorf("Uint8(%d).Text(%d) = %q, want %q", i, base, got, want)
 			}
 		}
 	}
@@ -61,7 +61,7 @@ func TestUint8_String(t *testing.T) {
 		got := a.String()
 		want := strconv.FormatInt(int64(i), 10)
 		if got != want {
-			t.Errorf("Int8(%d).String() = %q, want %q", i, got, want)
+			t.Errorf("Uint8(%d).String() = %q, want %q", i, got, want)
 		}
 	}
 }
