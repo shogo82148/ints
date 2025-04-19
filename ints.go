@@ -210,3 +210,127 @@ func formatBits256(dst []byte, u0, u1, u2, u3 uint64, base int, neg, append_ boo
 	s = string(a[i:])
 	return
 }
+
+func formatBits512(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7 uint64, base int, neg, append_ bool) (d []byte, s string) {
+	if base < 2 || base > len(digits) {
+		panic("strconv: illegal AppendInt/FormatInt base")
+	}
+	// 2 <= base && base <= len(digits)
+
+	var a [512 + 1]byte // +1 for sign to 512bit value in base 2
+	i := len(a)
+
+	if neg {
+		// u = -u = ^u + 1
+		var carry uint64
+		u7, carry = bits.Add64(^u7, 1, 0)
+		u6, _ = bits.Add64(^u6, 0, carry)
+		u5, _ = bits.Add64(^u5, 0, carry)
+		u4, _ = bits.Add64(^u4, 0, carry)
+		u3, _ = bits.Add64(^u3, 0, carry)
+		u2, _ = bits.Add64(^u2, 0, carry)
+		u1, _ = bits.Add64(^u1, 0, carry)
+		u0, _ = bits.Add64(^u0, 0, carry)
+	}
+
+	// general case
+	b := uint64(base)
+	for u0 != 0 {
+		i--
+		q := u0 / b
+		var r uint64
+		u1, r = bits.Div64(u0-q*b, u1, b)
+		u2, r = bits.Div64(r, u2, b)
+		u3, r = bits.Div64(r, u3, b)
+		u4, r = bits.Div64(r, u4, b)
+		u5, r = bits.Div64(r, u5, b)
+		u6, r = bits.Div64(r, u6, b)
+		u7, r = bits.Div64(r, u7, b)
+		u0 = q
+		a[i] = digits[uint(r)]
+	}
+	for u1 != 0 {
+		i--
+		q := u1 / b
+		var r uint64
+		u2, r = bits.Div64(u1-q*b, u2, b)
+		u3, r = bits.Div64(r, u3, b)
+		u4, r = bits.Div64(r, u4, b)
+		u5, r = bits.Div64(r, u5, b)
+		u6, r = bits.Div64(r, u6, b)
+		u7, r = bits.Div64(r, u7, b)
+		u1 = q
+		a[i] = digits[uint(r)]
+	}
+	for u2 != 0 {
+		i--
+		q := u2 / b
+		var r uint64
+		u3, r = bits.Div64(u2-q*b, u3, b)
+		u4, r = bits.Div64(r, u4, b)
+		u5, r = bits.Div64(r, u5, b)
+		u6, r = bits.Div64(r, u6, b)
+		u7, r = bits.Div64(r, u7, b)
+		u2 = q
+		a[i] = digits[uint(r)]
+	}
+	for u3 != 0 {
+		i--
+		q := u3 / b
+		var r uint64
+		u4, r = bits.Div64(u3-q*b, u4, b)
+		u5, r = bits.Div64(r, u5, b)
+		u6, r = bits.Div64(r, u6, b)
+		u7, r = bits.Div64(r, u7, b)
+		u3 = q
+		a[i] = digits[uint(r)]
+	}
+	for u4 != 0 {
+		i--
+		q := u4 / b
+		var r uint64
+		u5, r = bits.Div64(u4-q*b, u5, b)
+		u6, r = bits.Div64(r, u6, b)
+		u7, r = bits.Div64(r, u7, b)
+		u4 = q
+		a[i] = digits[uint(r)]
+	}
+	for u5 != 0 {
+		i--
+		q := u5 / b
+		var r uint64
+		u6, r = bits.Div64(u5-q*b, u6, b)
+		u7, r = bits.Div64(r, u7, b)
+		u5 = q
+		a[i] = digits[uint(r)]
+	}
+	for u6 != 0 {
+		i--
+		q := u6 / b
+		var r uint64
+		u7, r = bits.Div64(u6-q*b, u7, b)
+		u6 = q
+		a[i] = digits[uint(r)]
+	}
+	for u7 >= b {
+		i--
+		q := u7 / b
+		a[i] = digits[uint(u7-q*b)]
+		u7 = q
+	}
+	// u7 < base
+	i--
+	a[i] = digits[uint(u7)]
+
+	// add sign, if any
+	if neg {
+		i--
+		a[i] = '-'
+	}
+	if append_ {
+		d = append(dst, a[i:]...)
+		return
+	}
+	s = string(a[i:])
+	return
+}
