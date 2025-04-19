@@ -79,6 +79,29 @@ func FuzzUint512_Sub(f *testing.F) {
 	})
 }
 
+func TestUint512_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Uint512
+		want Uint512
+	}{
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 0},
+			Uint512{0, 0, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 1},
+			Uint512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Uint512(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func FuzzUint512_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), 10)
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1), uint64(0), 10)

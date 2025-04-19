@@ -36,6 +36,24 @@ func FuzzUint32_Sub(f *testing.F) {
 	})
 }
 
+func TestUint32_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Uint32
+		want Uint32
+	}{
+		{0, 0},
+		{1, math.MaxUint32},
+		{math.MaxUint32, 1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Uint32(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func FuzzUint32_Text(f *testing.F) {
 	f.Add(uint32(0), 10)
 	f.Add(uint32(0), 62)

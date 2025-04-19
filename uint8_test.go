@@ -37,6 +37,26 @@ func FuzzUint8_Sub(f *testing.F) {
 	})
 }
 
+func TestUint8_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Uint8
+		want Uint8
+	}{
+		{0, 0},
+		{1, 0xff},
+		{0xff, 1},
+		{127, 129},
+		{128, 128},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Uint8(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint8_Text(t *testing.T) {
 	var b big.Int
 	for i := range math.MaxUint8 + 1 {
