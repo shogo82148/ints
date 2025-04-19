@@ -35,6 +35,17 @@ func (a Uint512) Sub(b Uint512) Uint512 {
 	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, and 0 if a == 0.
+// It does not return -1 because Uint512 is unsigned.
+func (a Uint512) Sign() int {
+	var zero Uint512
+	if a == zero {
+		return 0
+	}
+	return 1
+}
+
 // Neg returns the negation of a.
 //
 // This function's execution time does not depend on the inputs.

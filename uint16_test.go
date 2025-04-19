@@ -37,6 +37,24 @@ func FuzzUint16_Sub(f *testing.F) {
 	})
 }
 
+func TestUint16_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Uint16
+		want int
+	}{
+		{0, 0},
+		{1, 1},
+		{math.MaxUint16, 1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Uint16(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint16_Neg(t *testing.T) {
 	testCases := []struct {
 		x    Uint16

@@ -23,6 +23,20 @@ func (a Int128) Sub(b Int128) Int128 {
 	return Int128{u0, u1}
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
+func (a Int128) Sign() int {
+	var zero Int128
+	switch {
+	case a == zero:
+		return 0
+	case int64(a[0]) < 0:
+		return -1
+	default:
+		return 1
+	}
+}
+
 // Neg returns the negation of a.
 //
 // This function's execution time does not depend on the inputs.

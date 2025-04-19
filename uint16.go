@@ -18,6 +18,16 @@ func (a Uint16) Sub(b Uint16) Uint16 {
 	return a - b
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, and 0 if a == 0.
+// It does not return -1 because Uint16 is unsigned.
+func (a Uint16) Sign() int {
+	if a == 0 {
+		return 0
+	}
+	return 1
+}
+
 // Neg returns the negation of a.
 //
 // This function's execution time does not depend on the inputs.

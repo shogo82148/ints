@@ -79,6 +79,33 @@ func FuzzUint512_Sub(f *testing.F) {
 	})
 }
 
+func TestUint512_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Uint512
+		want int
+	}{
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 0},
+			0,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 1},
+			1,
+		},
+		{
+			Uint512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Uint512(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint512_Neg(t *testing.T) {
 	testCases := []struct {
 		x    Uint512

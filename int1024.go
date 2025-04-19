@@ -51,6 +51,20 @@ func (a Int1024) Sub(b Int1024) Int1024 {
 	return Int1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
+func (a Int1024) Sign() int {
+	var zero Int1024
+	switch {
+	case a == zero:
+		return 0
+	case int64(a[0]) < 0:
+		return -1
+	default:
+		return 1
+	}
+}
+
 // Neg returns the negation of a.
 //
 // This function's execution time does not depend on the inputs.

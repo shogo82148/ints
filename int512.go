@@ -35,6 +35,20 @@ func (a Int512) Sub(b Int512) Int512 {
 	return Int512{u0, u1, u2, u3, u4, u5, u6, u7}
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
+func (a Int512) Sign() int {
+	var zero Int512
+	switch {
+	case a == zero:
+		return 0
+	case int64(a[0]) < 0:
+		return -1
+	default:
+		return 1
+	}
+}
+
 // Neg returns the negation of a.
 //
 // This function's execution time does not depend on the inputs.

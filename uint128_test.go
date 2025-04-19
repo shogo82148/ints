@@ -77,6 +77,24 @@ func FuzzUint128_Sub(f *testing.F) {
 	})
 }
 
+func TestUint128_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Uint128
+		want int
+	}{
+		{Uint128{0, 0}, 0},
+		{Uint128{0, 1}, 1},
+		{Uint128{math.MaxUint64, math.MaxUint64}, 1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Uint128(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint128_Neg(t *testing.T) {
 	testCases := []struct {
 		x    Uint128
