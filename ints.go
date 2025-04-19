@@ -140,3 +140,73 @@ func formatBits128(dst []byte, u0, u1 uint64, base int, neg, append_ bool) (d []
 	s = string(a[i:])
 	return
 }
+
+func formatBits256(dst []byte, u0, u1, u2, u3 uint64, base int, neg, append_ bool) (d []byte, s string) {
+	if base < 2 || base > len(digits) {
+		panic("strconv: illegal AppendInt/FormatInt base")
+	}
+	// 2 <= base && base <= len(digits)
+
+	var a [256 + 1]byte // +1 for sign to 64bit value in base 2
+	i := len(a)
+
+	if neg {
+		// u = -u = ^u + 1
+		var carry uint64
+		u3, carry = bits.Add64(^u3, 1, 0)
+		u2, _ = bits.Add64(^u2, 0, carry)
+		u1, _ = bits.Add64(^u1, 0, carry)
+		u0, _ = bits.Add64(^u0, 0, carry)
+	}
+
+	// general case
+	b := uint64(base)
+	for u0 != 0 {
+		i--
+		q := u0 / b
+		var r uint64
+		u1, r = bits.Div64(u0-q*b, u1, b)
+		u0 = q
+		u2, r = bits.Div64(r, u2, b)
+		u3, r = bits.Div64(r, u3, b)
+		a[i] = digits[uint(r)]
+	}
+	for u1 != 0 {
+		i--
+		q := u1 / b
+		var r uint64
+		u2, r = bits.Div64(u1-q*b, u2, b)
+		u1 = q
+		u3, r = bits.Div64(r, u3, b)
+		a[i] = digits[uint(r)]
+	}
+	for u2 != 0 {
+		i--
+		q := u2 / b
+		var r uint64
+		u3, r = bits.Div64(u2-q*b, u3, b)
+		u2 = q
+		a[i] = digits[uint(r)]
+	}
+	for u3 >= b {
+		i--
+		q := u3 / b
+		a[i] = digits[uint(u3-q*b)]
+		u3 = q
+	}
+	// u3 < base
+	i--
+	a[i] = digits[uint(u3)]
+
+	// add sign, if any
+	if neg {
+		i--
+		a[i] = '-'
+	}
+	if append_ {
+		d = append(dst, a[i:]...)
+		return
+	}
+	s = string(a[i:])
+	return
+}
