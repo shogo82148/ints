@@ -153,7 +153,7 @@ func BenchmarkInt256_Text10(b *testing.B) {
 func BenchmarkInt256_Text62(b *testing.B) {
 	a := Int256{1 << 63, 0, 0, 0}
 	for b.Loop() {
-		runtime.KeepAlive(a.Text(2))
+		runtime.KeepAlive(a.Text(62))
 	}
 }
 
