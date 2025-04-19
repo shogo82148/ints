@@ -1,7 +1,18 @@
 package ints
 
+import "math/bits"
+
 // Uint128 is a type that represents an 128-bit unsigned integer.
 type Uint128 [2]uint64
+
+// Add returns the sum a+b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint128) Add(b Uint128) Uint128 {
+	u1, carry := bits.Add64(a[1], b[1], 0)
+	u0, _ := bits.Add64(a[0], b[0], carry)
+	return Uint128{u0, u1}
+}
 
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.

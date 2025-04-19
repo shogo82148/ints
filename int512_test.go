@@ -17,6 +17,52 @@ func int512ToBigInt(a Int512) *big.Int {
 	return b
 }
 
+func FuzzInt512_Add(f *testing.F) {
+	f.Add(
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+	)
+	f.Add(
+		// -1
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64),
+		// 1
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
+	)
+	f.Add(
+		// MaxInt512
+		uint64(1<<63-1), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64),
+		// 1
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
+	)
+	f.Add(
+		// MinInt512
+		uint64(1<<63), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		// -1
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64),
+	)
+
+	base := new(big.Int).Lsh(big.NewInt(1), 512-1)
+	mod := new(big.Int).Lsh(big.NewInt(1), 512)
+	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, u4, u5, u6, u7, v0, v1, v2, v3, v4, v5, v6, v7 uint64) {
+		a := Int512{u0, u1, u2, u3, u4, u5, u6, u7}
+		b := Int512{v0, v1, v2, v3, v4, v5, v6, v7}
+		got := int512ToBigInt(a.Add(b))
+
+		ba := int512ToBigInt(a)
+		bb := int512ToBigInt(b)
+		want := new(big.Int).Add(ba, bb)
+		want = want.Add(want, base)
+		want = want.Mod(want, mod)
+		want = want.Sub(want, base)
+
+		if got.Cmp(want) != 0 {
+			t.Errorf("Int512(%s).Add(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func FuzzInt512_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), 10)
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1), uint64(0), 10)

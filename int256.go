@@ -1,7 +1,20 @@
 package ints
 
+import "math/bits"
+
 // Int256 is a type that represents an 256-bit signed integer.
 type Int256 [4]uint64
+
+// Add returns the sum a+b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int256) Add(b Int256) Int256 {
+	u3, carry := bits.Add64(a[3], b[3], 0)
+	u2, carry := bits.Add64(a[2], b[2], carry)
+	u1, carry := bits.Add64(a[1], b[1], carry)
+	u0, _ := bits.Add64(a[0], b[0], carry)
+	return Int256{u0, u1, u2, u3}
+}
 
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.

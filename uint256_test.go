@@ -19,6 +19,33 @@ func uint256ToBigInt(a Uint256) *big.Int {
 	return &b
 }
 
+func FuzzUint256_Add(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(0), uint64(0), uint64(0), // 0
+		uint64(0), uint64(0), uint64(0), uint64(0), // 0
+	)
+	f.Add(
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), // MaxUint256
+		uint64(0), uint64(0), uint64(0), uint64(1), // 1
+	)
+
+	mod := new(big.Int).Lsh(big.NewInt(1), 256)
+	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, v0, v1, v2, v3 uint64) {
+		a := Uint256{u0, u1, u2, u3}
+		b := Uint256{v0, v1, v2, v3}
+		got := uint256ToBigInt(a.Add(b))
+
+		ba := uint256ToBigInt(a)
+		bb := uint256ToBigInt(b)
+		want := new(big.Int).Add(ba, bb)
+		want = want.Mod(want, mod)
+
+		if got.Cmp(want) != 0 {
+			t.Errorf("Uint256(%s).Add(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func FuzzUint256_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), 10)
 	f.Add(uint64(0), uint64(0), uint64(1), uint64(0), 10)

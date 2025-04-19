@@ -4,6 +4,13 @@ package ints
 // It is an alias for the built-in int8 type.
 type Int8 int8
 
+// Add returns the sum a+b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int8) Add(b Int8) Int8 {
+	return a + b
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,
