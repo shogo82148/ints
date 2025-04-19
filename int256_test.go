@@ -95,6 +95,42 @@ func FuzzInt256_Sub(f *testing.F) {
 	})
 }
 
+func TestInt256_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Int256
+		want int
+	}{
+		{Int256{0, 0, 0, 0}, 0},
+		{Int256{1, 0, 0, 0}, 1},
+		{Int256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Int256(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
+func TestInt256_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Int256
+		want Int256
+	}{
+		{Int256{0, 0, 0, 0}, Int256{0, 0, 0, 0}},
+		{Int256{0, 0, 0, 1}, Int256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}},
+		{Int256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}, Int256{0, 0, 0, 1}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Int256(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func FuzzInt256_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), 10)
 	f.Add(uint64(0), uint64(0), uint64(1), uint64(0), 10)

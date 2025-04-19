@@ -32,6 +32,31 @@ func (a Int256) Mul(b Int256) Int256 {
 	return Int256{0, 0} // TODO: Implement multiplication for Int256
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
+func (a Int256) Sign() int {
+	var zero Int256
+	switch {
+	case a == zero:
+		return 0
+	case int64(a[0]) < 0:
+		return -1
+	default:
+		return 1
+	}
+}
+
+// Neg returns the negation of a.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int256) Neg() Int256 {
+	u3, borrow := bits.Sub64(0, a[3], 0)
+	u2, borrow := bits.Sub64(0, a[2], borrow)
+	u1, borrow := bits.Sub64(0, a[1], borrow)
+	u0, _ := bits.Sub64(0, a[0], borrow)
+	return Int256{u0, u1, u2, u3}
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

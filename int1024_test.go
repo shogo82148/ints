@@ -97,9 +97,60 @@ func FuzzInt1024_Sub(f *testing.F) {
 		if got.Cmp(want) != 0 {
 			t.Errorf("Int1024(%s).Sub(%s) = %d, want %d", a, b, got, want)
 		}
-		runtime.GC()
-		runtime.GC()
 	})
+}
+
+func TestInt1024_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Int1024
+		want int
+	}{
+		{
+			Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			0,
+		},
+		{
+			Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+			1,
+		},
+		{
+			Int1024{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+			-1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Int1024(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
+func TestInt1024_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Int1024
+		want Int1024
+	}{
+		{
+			Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			// 1
+			Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+
+			// -1
+			Int1024{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Int1024(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
 }
 
 func FuzzInt1024_Text(f *testing.F) {

@@ -51,6 +51,42 @@ func FuzzUint64_Mul(f *testing.F) {
 	})
 }
 
+func TestUint64_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Uint64
+		want int
+	}{
+		{0, 0},
+		{1, 1},
+		{math.MaxUint64, 1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Uint64(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
+func TestUint64_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Uint64
+		want Uint64
+	}{
+		{0, 0},
+		{1, math.MaxUint64},
+		{math.MaxUint64, 1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Uint64(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func FuzzUint64_Text(f *testing.F) {
 	f.Add(uint64(0), 10)
 	f.Add(uint64(0), 62)

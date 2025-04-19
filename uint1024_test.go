@@ -122,6 +122,61 @@ func FuzzUint1024_Mul(f *testing.F) {
 	})
 }
 
+func TestUint1024_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Uint1024
+		want int
+	}{
+		{
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			0,
+		},
+		{
+			// 1
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+			1,
+		},
+		{
+			// MaxUint1024
+			Uint1024{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Uint512(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Uint1024
+		want Uint1024
+	}{
+		{
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			// 1
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+
+			// MaxUint1024
+			Uint1024{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Uint1024(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func FuzzUint1024_Text(f *testing.F) {
 	f.Add(
 		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),

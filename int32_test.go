@@ -54,6 +54,46 @@ func FuzzInt32_Mul(f *testing.F) {
 	})
 }
 
+func TestInt32_Sign(t *testing.T) {
+	testCases := []struct {
+		x    Int32
+		want int
+	}{
+		{0, 0},
+		{1, 1},
+		{-1, -1},
+		{math.MaxInt32, 1},
+		{math.MinInt32, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Sign()
+		if got != tc.want {
+			t.Errorf("Int32(%d).Sign() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
+func TestInt32_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Int32
+		want Int32
+	}{
+		{0, 0},
+		{1, -1},
+		{-1, 1},
+		{math.MaxInt32, -math.MaxInt32},
+		{math.MinInt32, math.MinInt32},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Int32(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func FuzzInt32_Text(f *testing.F) {
 	f.Add(int32(0), 10)
 	f.Add(int32(0), 62)

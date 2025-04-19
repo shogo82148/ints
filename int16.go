@@ -25,6 +25,26 @@ func (a Int16) Mul(b Int16) Int16 {
 	return a * b
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
+func (a Int16) Sign() int {
+	switch {
+	case a > 0:
+		return 1
+	case a < 0:
+		return -1
+	default:
+		return 0
+	}
+}
+
+// Neg returns the negation of a.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int16) Neg() Int16 {
+	return -a
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

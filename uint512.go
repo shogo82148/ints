@@ -257,6 +257,32 @@ func (a Uint512) Mul(b Uint512) Uint512 {
 	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, and 0 if a == 0.
+// It does not return -1 because Uint512 is unsigned.
+func (a Uint512) Sign() int {
+	var zero Uint512
+	if a == zero {
+		return 0
+	}
+	return 1
+}
+
+// Neg returns the negation of a.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint512) Neg() Uint512 {
+	u7, borrow := bits.Sub64(0, a[7], 0)
+	u6, borrow := bits.Sub64(0, a[6], borrow)
+	u5, borrow := bits.Sub64(0, a[5], borrow)
+	u4, borrow := bits.Sub64(0, a[4], borrow)
+	u3, borrow := bits.Sub64(0, a[3], borrow)
+	u2, borrow := bits.Sub64(0, a[2], borrow)
+	u1, borrow := bits.Sub64(0, a[1], borrow)
+	u0, _ := bits.Sub64(0, a[0], borrow)
+	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

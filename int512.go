@@ -40,6 +40,35 @@ func (a Int512) Mul(b Int512) Int512 {
 	return Int512{0, 0} // TODO: Implement multiplication for Int512
 }
 
+// Sign returns the sign of a.
+// It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
+func (a Int512) Sign() int {
+	var zero Int512
+	switch {
+	case a == zero:
+		return 0
+	case int64(a[0]) < 0:
+		return -1
+	default:
+		return 1
+	}
+}
+
+// Neg returns the negation of a.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int512) Neg() Int512 {
+	u7, borrow := bits.Sub64(0, a[7], 0)
+	u6, borrow := bits.Sub64(0, a[6], borrow)
+	u5, borrow := bits.Sub64(0, a[5], borrow)
+	u4, borrow := bits.Sub64(0, a[4], borrow)
+	u3, borrow := bits.Sub64(0, a[3], borrow)
+	u2, borrow := bits.Sub64(0, a[2], borrow)
+	u1, borrow := bits.Sub64(0, a[1], borrow)
+	u0, _ := bits.Sub64(0, a[0], borrow)
+	return Int512{u0, u1, u2, u3, u4, u5, u6, u7}
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,
