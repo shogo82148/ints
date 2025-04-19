@@ -35,6 +35,26 @@ func (a Int512) Sub(b Int512) Int512 {
 	return Int512{u0, u1, u2, u3, u4, u5, u6, u7}
 }
 
+// Mul returns the product a*b.
+func (a Int512) Mul(b Int512) Int512 {
+	neg := false
+	if a.Sign() < 0 {
+		a = a.Neg()
+		neg = true
+	}
+	if b.Sign() < 0 {
+		b = b.Neg()
+		neg = !neg
+	}
+
+	c := Int512(Uint512(a).Mul(Uint512(b)))
+
+	if neg {
+		return c.Neg()
+	}
+	return c
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
 func (a Int512) Sign() int {

@@ -39,6 +39,22 @@ func FuzzInt8_Sub(f *testing.F) {
 	})
 }
 
+func FuzzInt8_Mul(f *testing.F) {
+	f.Add(int8(0), int8(0))
+	f.Add(int8(1), int8(0))
+	f.Add(int8(math.MaxInt8), int8(math.MaxInt8))
+	f.Add(int8(math.MinInt8), int8(math.MinInt8))
+	f.Fuzz(func(t *testing.T, x, y int8) {
+		a := Int8(x)
+		b := Int8(y)
+		got := a.Mul(b)
+		want := Int8(int8(x * y))
+		if got != want {
+			t.Errorf("Int8(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestInt8_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int8

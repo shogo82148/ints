@@ -18,6 +18,11 @@ func (a Uint64) Sub(b Uint64) Uint64 {
 	return a - b
 }
 
+// Mul returns the product a*b.
+func (a Uint64) Mul(b Uint64) Uint64 {
+	return a * b
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint64 is unsigned.

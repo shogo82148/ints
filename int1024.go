@@ -51,6 +51,26 @@ func (a Int1024) Sub(b Int1024) Int1024 {
 	return Int1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
 }
 
+// Mul returns the product a*b.
+func (a Int1024) Mul(b Int1024) Int1024 {
+	neg := false
+	if a.Sign() < 0 {
+		a = a.Neg()
+		neg = true
+	}
+	if b.Sign() < 0 {
+		b = b.Neg()
+		neg = !neg
+	}
+
+	c := Int1024(Uint1024(a).Mul(Uint1024(b)))
+
+	if neg {
+		return c.Neg()
+	}
+	return c
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
 func (a Int1024) Sign() int {

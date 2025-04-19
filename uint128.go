@@ -23,6 +23,16 @@ func (a Uint128) Sub(b Uint128) Uint128 {
 	return Uint128{u0, u1}
 }
 
+// Mul returns the product a*b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint128) Mul(b Uint128) Uint128 {
+	h, l := bits.Mul64(a[1], b[1])
+	_, h1 := bits.Mul64(a[0], b[1])
+	_, h2 := bits.Mul64(a[1], b[0])
+	return Uint128{h + h1 + h2, l}
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint128 is unsigned.

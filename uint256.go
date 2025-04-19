@@ -27,6 +27,74 @@ func (a Uint256) Sub(b Uint256) Uint256 {
 	return Uint256{u0, u1, u2, u3}
 }
 
+// Mul returns the product a*b.
+func (a Uint256) Mul(b Uint256) Uint256 {
+	//                  a0  a1  a2  a3
+	//                x b0  b1  b2  b3
+	//                ----------------
+	//                         h33 l33 - 1.
+	//                     h23 l23
+	//                 h13 l13
+	//             h03 l03
+	//                     h32 l32     - 2.
+	//                 h22 l22
+	//             h12 l12
+	//         h02 l02
+	//                 h31 l31         - 3.
+	//             h21 l21
+	//         h11 l11
+	//     h01 l01
+	//             h30 l30             - 4.
+	//         h20 l20
+	//     h10 l10
+	// h00 l00
+	// -------------------------------
+	//                  u0  u1  u2  u3
+
+	h33, l33 := bits.Mul64(a[3], b[3])
+	h23, l23 := bits.Mul64(a[2], b[3])
+	h13, l13 := bits.Mul64(a[1], b[3])
+	_, l03 := bits.Mul64(a[0], b[3])
+
+	h32, l32 := bits.Mul64(a[3], b[2])
+	h22, l22 := bits.Mul64(a[2], b[2])
+	_, l12 := bits.Mul64(a[1], b[2])
+	// h02, l02 := bits.Mul64(a[0], b[2])
+
+	h31, l31 := bits.Mul64(a[3], b[1])
+	_, l21 := bits.Mul64(a[2], b[1])
+	// h11, l11 := bits.Mul64(a[1], b[1])
+	// h01, l01 := bits.Mul64(a[0], b[1])
+
+	_, l30 := bits.Mul64(a[3], b[0])
+	// h20, l20 := bits.Mul64(a[2], b[0])
+	// h10, l10 := bits.Mul64(a[1], b[0])
+	// h00, l00 := bits.Mul64(a[0], b[0])
+
+	var u0, u1, u2, u3, carry uint64
+	// 1.
+	u3 = l33
+	u2 = l23
+	u1 = l13
+	u0 = l03
+	u2, carry = bits.Add64(u2, h33, 0)
+	u1, carry = bits.Add64(u1, h23, carry)
+	u0, _ = bits.Add64(u0, h13, carry)
+	// 2.
+	u2, carry = bits.Add64(u2, l32, 0)
+	u1, carry = bits.Add64(u1, l22, carry)
+	u0, _ = bits.Add64(u0, l12, carry)
+	u1, carry = bits.Add64(u1, h32, 0)
+	u0, _ = bits.Add64(u0, h22, carry)
+	// 3.
+	u1, carry = bits.Add64(u1, l31, 0)
+	u0, _ = bits.Add64(u0, l21, carry)
+	u0, _ = bits.Add64(u0, h31, 0)
+	// 4.
+	u0, _ = bits.Add64(u0, l30, 0)
+	return Uint256{u0, u1, u2, u3}
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint128 is unsigned.

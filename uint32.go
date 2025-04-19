@@ -18,6 +18,11 @@ func (a Uint32) Sub(b Uint32) Uint32 {
 	return a - b
 }
 
+// Mul returns the product a*b.
+func (a Uint32) Mul(b Uint32) Uint32 {
+	return a * b
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint32 is unsigned.

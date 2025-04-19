@@ -37,6 +37,21 @@ func FuzzUint16_Sub(f *testing.F) {
 	})
 }
 
+func FuzzUint16_Mul(f *testing.F) {
+	f.Add(uint16(0), uint16(0))
+	f.Add(uint16(1), uint16(0))
+	f.Add(uint16(math.MaxUint16), uint16(math.MaxUint16))
+	f.Fuzz(func(t *testing.T, x, y uint16) {
+		a := Uint16(x)
+		b := Uint16(y)
+		got := a.Mul(b)
+		want := Uint16(uint16(x * y))
+		if got != want {
+			t.Errorf("Uint16(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestUint16_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint16

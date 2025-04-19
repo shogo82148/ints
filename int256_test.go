@@ -95,6 +95,40 @@ func FuzzInt256_Sub(f *testing.F) {
 	})
 }
 
+func FuzzInt256_Mul(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(0), uint64(0), uint64(0), // 0
+		uint64(0), uint64(0), uint64(0), uint64(0), // 0
+	)
+	f.Add(
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), // -1
+		uint64(1<<63-1), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), // MaxInt256
+	)
+	f.Add(
+		uint64(1<<63), uint64(0), uint64(0), uint64(0), // MinInt256
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), // -1
+	)
+
+	base := new(big.Int).Lsh(big.NewInt(1), 256-1)
+	mod := new(big.Int).Lsh(big.NewInt(1), 256)
+	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, v0, v1, v2, v3 uint64) {
+		a := Int256{u0, u1, u2, u3}
+		b := Int256{v0, v1, v2, v3}
+		got := int256ToBigInt(a.Mul(b))
+
+		ba := int256ToBigInt(a)
+		bb := int256ToBigInt(b)
+		want := new(big.Int).Mul(ba, bb)
+		want = want.Add(want, base)
+		want = want.Mod(want, mod)
+		want = want.Sub(want, base)
+
+		if got.Cmp(want) != 0 {
+			t.Errorf("Int256(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestInt256_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int256

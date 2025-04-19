@@ -18,6 +18,11 @@ func (a Uint8) Sub(b Uint8) Uint8 {
 	return a - b
 }
 
+// Mul returns the product a*b.
+func (a Uint8) Mul(b Uint8) Uint8 {
+	return a * b
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint8 is unsigned.

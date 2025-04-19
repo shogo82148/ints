@@ -38,6 +38,22 @@ func FuzzInt32_Sub(f *testing.F) {
 	})
 }
 
+func FuzzInt32_Mul(f *testing.F) {
+	f.Add(int32(0), int32(0))
+	f.Add(int32(1), int32(0))
+	f.Add(int32(math.MaxInt32), int32(math.MaxInt32))
+	f.Add(int32(math.MinInt32), int32(math.MinInt32))
+	f.Fuzz(func(t *testing.T, x, y int32) {
+		a := Int32(x)
+		b := Int32(y)
+		got := a.Mul(b)
+		want := Int32(int32(x * y))
+		if got != want {
+			t.Errorf("Int32(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestInt32_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int32

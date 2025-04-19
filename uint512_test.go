@@ -79,6 +79,43 @@ func FuzzUint512_Sub(f *testing.F) {
 	})
 }
 
+func FuzzUint512_Mul(f *testing.F) {
+	f.Add(
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+	)
+	f.Add(
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		// 1
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
+	)
+	f.Add(
+		// MaxUint512
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64),
+		// MaxUint512
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64),
+	)
+
+	mod := new(big.Int).Lsh(big.NewInt(1), 512)
+	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, u4, u5, u6, u7, v0, v1, v2, v3, v4, v5, v6, v7 uint64) {
+		a := Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
+		b := Uint512{v0, v1, v2, v3, v4, v5, v6, v7}
+		got := uint512ToBigInt(a.Mul(b))
+
+		ba := uint512ToBigInt(a)
+		bb := uint512ToBigInt(b)
+		want := new(big.Int).Mul(ba, bb)
+		want = want.Mod(want, mod)
+
+		if got.Cmp(want) != 0 {
+			t.Errorf("Uint512(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestUint512_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint512
