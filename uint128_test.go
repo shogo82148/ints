@@ -77,6 +77,24 @@ func FuzzUint128_Sub(f *testing.F) {
 	})
 }
 
+func TestUint128_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Uint128
+		want Uint128
+	}{
+		{Uint128{0, 0}, Uint128{0, 0}},
+		{Uint128{0, 1}, Uint128{math.MaxUint64, math.MaxUint64}},
+		{Uint128{math.MaxUint64, math.MaxUint64}, Uint128{0, 1}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Int8(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func FuzzUint128_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), 10)
 	f.Add(uint64(1), uint64(0), 10)

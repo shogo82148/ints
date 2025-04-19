@@ -18,6 +18,13 @@ func (a Int64) Sub(b Int64) Int64 {
 	return a - b
 }
 
+// Neg returns the negation of a.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int64) Neg() Int64 {
+	return -a
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

@@ -18,6 +18,13 @@ func (a Uint32) Sub(b Uint32) Uint32 {
 	return a - b
 }
 
+// Neg returns the negation of a.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint32) Neg() Uint32 {
+	return -a
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

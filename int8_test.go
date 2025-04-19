@@ -39,6 +39,26 @@ func FuzzInt8_Sub(f *testing.F) {
 	})
 }
 
+func TestInt8_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Int8
+		want Int8
+	}{
+		{0, 0},
+		{1, -1},
+		{-1, 1},
+		{127, -127},
+		{-128, -128},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Int8(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestInt8_Text(t *testing.T) {
 	var b big.Int
 	for i := math.MinInt8; i <= math.MaxInt8; i++ {

@@ -23,6 +23,15 @@ func (a Int128) Sub(b Int128) Int128 {
 	return Int128{u0, u1}
 }
 
+// Neg returns the negation of a.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int128) Neg() Int128 {
+	u1, borrow := bits.Sub64(0, a[1], 0)
+	u0, _ := bits.Sub64(0, a[0], borrow)
+	return Int128{u0, u1}
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,
