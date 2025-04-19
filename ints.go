@@ -22,6 +22,26 @@ func appendInt(dst []byte, i int64, base int) []byte {
 	return d
 }
 
+func formatUint(i uint64, base int) string {
+	if base < 36 {
+		return strconv.FormatUint(i, base)
+	}
+
+	// For bases >= 36, implement custom formatting
+	_, s := formatBits(nil, i, base, false, false)
+	return s
+}
+
+func appendUint(dst []byte, i uint64, base int) []byte {
+	if base < 36 {
+		return strconv.AppendUint(dst, i, base)
+	}
+
+	// For bases >= 36, implement custom formatting
+	d, _ := formatBits(dst, i, base, false, true)
+	return d
+}
+
 const digits = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 // formatBits computes the string representation of u in the given base.
