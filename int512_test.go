@@ -1,6 +1,7 @@
 package ints
 
 import (
+	"math"
 	"math/big"
 	"testing"
 )
@@ -142,6 +143,9 @@ func FuzzInt512_String(f *testing.F) {
 	f.Add(uint64(0), uint64(0), uint64(1), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0))
 	f.Add(uint64(0), uint64(1), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0))
 	f.Add(uint64(1), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0))
+	f.Add(uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64))
+	f.Add(uint64(1<<63), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0))
+	f.Add(uint64(1<<63), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1), uint64(0))
 
 	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, u4, u5, u6, u7 uint64) {
 		a := Int512{u0, u1, u2, u3, u4, u5, u6, u7}

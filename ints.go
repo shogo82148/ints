@@ -224,12 +224,12 @@ func formatBits512(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7 uint64, base int, 
 		// u = -u = ^u + 1
 		var carry uint64
 		u7, carry = bits.Add64(^u7, 1, 0)
-		u6, _ = bits.Add64(^u6, 0, carry)
-		u5, _ = bits.Add64(^u5, 0, carry)
-		u4, _ = bits.Add64(^u4, 0, carry)
-		u3, _ = bits.Add64(^u3, 0, carry)
-		u2, _ = bits.Add64(^u2, 0, carry)
-		u1, _ = bits.Add64(^u1, 0, carry)
+		u6, carry = bits.Add64(^u6, 0, carry)
+		u5, carry = bits.Add64(^u5, 0, carry)
+		u4, carry = bits.Add64(^u4, 0, carry)
+		u3, carry = bits.Add64(^u3, 0, carry)
+		u2, carry = bits.Add64(^u2, 0, carry)
+		u1, carry = bits.Add64(^u1, 0, carry)
 		u0, _ = bits.Add64(^u0, 0, carry)
 	}
 
