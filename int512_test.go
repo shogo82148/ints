@@ -178,7 +178,7 @@ func BenchmarkInt512_Text10(b *testing.B) {
 func BenchmarkInt512_Text62(b *testing.B) {
 	a := Int512{1 << 63, 0, 0, 0, 0, 0, 0, 0}
 	for b.Loop() {
-		runtime.KeepAlive(a.Text(2))
+		runtime.KeepAlive(a.Text(62))
 	}
 }
 
