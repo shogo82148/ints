@@ -108,25 +108,46 @@ func formatBits128(dst []byte, u0, u1 uint64, base int, neg, append_ bool) (d []
 		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
-	// general case
-	b := uint64(base)
-	for u0 != 0 {
+	if isPowerOfTwo(base) {
+		// Use shifts and masks instead of / and %.
+		shift := uint(bits.TrailingZeros(uint(base)))
+		b := uint64(base)
+		m := uint(base) - 1 // == 1<<shift - 1
+		for u0 != 0 {
+			i--
+			a[i] = digits[uint(u1)&m]
+			u1 = u0<<(64-shift) | u1>>shift
+			u0 >>= shift
+		}
+		for u1 >= b {
+			i--
+			a[i] = digits[uint(u1)&m]
+			u1 >>= shift
+		}
+		// u1 < base
 		i--
-		q := u0 / b
-		var r uint64
-		u1, r = bits.Div64(u0-q*b, u1, b)
-		u0 = q
-		a[i] = digits[uint(r)]
-	}
-	for u1 >= b {
+		a[i] = digits[uint(u1)]
+	} else {
+		// general case
+		b := uint64(base)
+		for u0 != 0 {
+			i--
+			q := u0 / b
+			var r uint64
+			u1, r = bits.Div64(u0-q*b, u1, b)
+			u0 = q
+			a[i] = digits[uint(r)]
+		}
+		for u1 >= b {
+			i--
+			q := u1 / b
+			a[i] = digits[uint(u1-q*b)]
+			u1 = q
+		}
+		// u1 < base
 		i--
-		q := u1 / b
-		a[i] = digits[uint(u1-q*b)]
-		u1 = q
+		a[i] = digits[uint(u1)]
 	}
-	// u1 < base
-	i--
-	a[i] = digits[uint(u1)]
 
 	// add sign, if any
 	if neg {
@@ -159,44 +180,80 @@ func formatBits256(dst []byte, u0, u1, u2, u3 uint64, base int, neg, append_ boo
 		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
-	// general case
-	b := uint64(base)
-	for u0 != 0 {
+	if isPowerOfTwo(base) {
+		// Use shifts and masks instead of / and %.
+		shift := uint(bits.TrailingZeros(uint(base)))
+		b := uint64(base)
+		m := uint(base) - 1 // == 1<<shift - 1
+		for u0 != 0 {
+			i--
+			a[i] = digits[uint(u3)&m]
+			u3 = u2<<(64-shift) | u3>>shift
+			u2 = u1<<(64-shift) | u2>>shift
+			u1 = u0<<(64-shift) | u1>>shift
+			u0 >>= shift
+		}
+		for u1 != 0 {
+			i--
+			a[i] = digits[uint(u3)&m]
+			u3 = u2<<(64-shift) | u3>>shift
+			u2 = u1<<(64-shift) | u2>>shift
+			u1 >>= shift
+		}
+		for u2 != 0 {
+			i--
+			a[i] = digits[uint(u3)&m]
+			u3 = u2<<(64-shift) | u3>>shift
+			u2 >>= shift
+		}
+		for u3 >= b {
+			i--
+			a[i] = digits[uint(u3)&m]
+			u3 >>= shift
+		}
+		// u3 < base
 		i--
-		q := u0 / b
-		var r uint64
-		u1, r = bits.Div64(u0-q*b, u1, b)
-		u0 = q
-		u2, r = bits.Div64(r, u2, b)
-		u3, r = bits.Div64(r, u3, b)
-		a[i] = digits[uint(r)]
-	}
-	for u1 != 0 {
+		a[i] = digits[uint(u3)]
+	} else {
+		// general case
+		b := uint64(base)
+		for u0 != 0 {
+			i--
+			q := u0 / b
+			var r uint64
+			u1, r = bits.Div64(u0-q*b, u1, b)
+			u0 = q
+			u2, r = bits.Div64(r, u2, b)
+			u3, r = bits.Div64(r, u3, b)
+			a[i] = digits[uint(r)]
+		}
+		for u1 != 0 {
+			i--
+			q := u1 / b
+			var r uint64
+			u2, r = bits.Div64(u1-q*b, u2, b)
+			u1 = q
+			u3, r = bits.Div64(r, u3, b)
+			a[i] = digits[uint(r)]
+		}
+		for u2 != 0 {
+			i--
+			q := u2 / b
+			var r uint64
+			u3, r = bits.Div64(u2-q*b, u3, b)
+			u2 = q
+			a[i] = digits[uint(r)]
+		}
+		for u3 >= b {
+			i--
+			q := u3 / b
+			a[i] = digits[uint(u3-q*b)]
+			u3 = q
+		}
+		// u3 < base
 		i--
-		q := u1 / b
-		var r uint64
-		u2, r = bits.Div64(u1-q*b, u2, b)
-		u1 = q
-		u3, r = bits.Div64(r, u3, b)
-		a[i] = digits[uint(r)]
+		a[i] = digits[uint(u3)]
 	}
-	for u2 != 0 {
-		i--
-		q := u2 / b
-		var r uint64
-		u3, r = bits.Div64(u2-q*b, u3, b)
-		u2 = q
-		a[i] = digits[uint(r)]
-	}
-	for u3 >= b {
-		i--
-		q := u3 / b
-		a[i] = digits[uint(u3-q*b)]
-		u3 = q
-	}
-	// u3 < base
-	i--
-	a[i] = digits[uint(u3)]
 
 	// add sign, if any
 	if neg {
@@ -233,94 +290,172 @@ func formatBits512(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7 uint64, base int, 
 		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
-	// general case
-	b := uint64(base)
-	for u0 != 0 {
+	if isPowerOfTwo(base) {
+		// Use shifts and masks instead of / and %.
+		shift := uint(bits.TrailingZeros(uint(base)))
+		b := uint64(base)
+		m := uint(base) - 1 // == 1<<shift - 1
+		for u0 != 0 {
+			i--
+			a[i] = digits[uint(u7)&m]
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 = u3<<(64-shift) | u4>>shift
+			u3 = u2<<(64-shift) | u3>>shift
+			u2 = u1<<(64-shift) | u2>>shift
+			u1 = u0<<(64-shift) | u1>>shift
+			u0 >>= shift
+		}
+		for u1 != 0 {
+			i--
+			a[i] = digits[uint(u7)&m]
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 = u3<<(64-shift) | u4>>shift
+			u3 = u2<<(64-shift) | u3>>shift
+			u2 = u1<<(64-shift) | u2>>shift
+			u1 >>= shift
+		}
+		for u2 != 0 {
+			i--
+			a[i] = digits[uint(u7)&m]
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 = u3<<(64-shift) | u4>>shift
+			u3 = u2<<(64-shift) | u3>>shift
+			u2 >>= shift
+		}
+		for u3 != 0 {
+			i--
+			a[i] = digits[uint(u7)&m]
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 = u3<<(64-shift) | u4>>shift
+			u3 >>= shift
+		}
+		for u4 != 0 {
+			i--
+			a[i] = digits[uint(u7)&m]
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 >>= shift
+		}
+		for u5 != 0 {
+			i--
+			a[i] = digits[uint(u7)&m]
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 >>= shift
+		}
+		for u6 != 0 {
+			i--
+			a[i] = digits[uint(u7)&m]
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 >>= shift
+		}
+		for u7 >= b {
+			i--
+			a[i] = digits[uint(u7)&m]
+			u7 >>= shift
+		}
+		// u7 < base
 		i--
-		q := u0 / b
-		var r uint64
-		u1, r = bits.Div64(u0-q*b, u1, b)
-		u2, r = bits.Div64(r, u2, b)
-		u3, r = bits.Div64(r, u3, b)
-		u4, r = bits.Div64(r, u4, b)
-		u5, r = bits.Div64(r, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u0 = q
-		a[i] = digits[uint(r)]
-	}
-	for u1 != 0 {
+		a[i] = digits[uint(u7)]
+	} else {
+		// general case
+		b := uint64(base)
+		for u0 != 0 {
+			i--
+			q := u0 / b
+			var r uint64
+			u1, r = bits.Div64(u0-q*b, u1, b)
+			u2, r = bits.Div64(r, u2, b)
+			u3, r = bits.Div64(r, u3, b)
+			u4, r = bits.Div64(r, u4, b)
+			u5, r = bits.Div64(r, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u0 = q
+			a[i] = digits[uint(r)]
+		}
+		for u1 != 0 {
+			i--
+			q := u1 / b
+			var r uint64
+			u2, r = bits.Div64(u1-q*b, u2, b)
+			u3, r = bits.Div64(r, u3, b)
+			u4, r = bits.Div64(r, u4, b)
+			u5, r = bits.Div64(r, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u1 = q
+			a[i] = digits[uint(r)]
+		}
+		for u2 != 0 {
+			i--
+			q := u2 / b
+			var r uint64
+			u3, r = bits.Div64(u2-q*b, u3, b)
+			u4, r = bits.Div64(r, u4, b)
+			u5, r = bits.Div64(r, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u2 = q
+			a[i] = digits[uint(r)]
+		}
+		for u3 != 0 {
+			i--
+			q := u3 / b
+			var r uint64
+			u4, r = bits.Div64(u3-q*b, u4, b)
+			u5, r = bits.Div64(r, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u3 = q
+			a[i] = digits[uint(r)]
+		}
+		for u4 != 0 {
+			i--
+			q := u4 / b
+			var r uint64
+			u5, r = bits.Div64(u4-q*b, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u4 = q
+			a[i] = digits[uint(r)]
+		}
+		for u5 != 0 {
+			i--
+			q := u5 / b
+			var r uint64
+			u6, r = bits.Div64(u5-q*b, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u5 = q
+			a[i] = digits[uint(r)]
+		}
+		for u6 != 0 {
+			i--
+			q := u6 / b
+			var r uint64
+			u7, r = bits.Div64(u6-q*b, u7, b)
+			u6 = q
+			a[i] = digits[uint(r)]
+		}
+		for u7 >= b {
+			i--
+			q := u7 / b
+			a[i] = digits[uint(u7-q*b)]
+			u7 = q
+		}
+		// u7 < base
 		i--
-		q := u1 / b
-		var r uint64
-		u2, r = bits.Div64(u1-q*b, u2, b)
-		u3, r = bits.Div64(r, u3, b)
-		u4, r = bits.Div64(r, u4, b)
-		u5, r = bits.Div64(r, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u1 = q
-		a[i] = digits[uint(r)]
+		a[i] = digits[uint(u7)]
 	}
-	for u2 != 0 {
-		i--
-		q := u2 / b
-		var r uint64
-		u3, r = bits.Div64(u2-q*b, u3, b)
-		u4, r = bits.Div64(r, u4, b)
-		u5, r = bits.Div64(r, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u2 = q
-		a[i] = digits[uint(r)]
-	}
-	for u3 != 0 {
-		i--
-		q := u3 / b
-		var r uint64
-		u4, r = bits.Div64(u3-q*b, u4, b)
-		u5, r = bits.Div64(r, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u3 = q
-		a[i] = digits[uint(r)]
-	}
-	for u4 != 0 {
-		i--
-		q := u4 / b
-		var r uint64
-		u5, r = bits.Div64(u4-q*b, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u4 = q
-		a[i] = digits[uint(r)]
-	}
-	for u5 != 0 {
-		i--
-		q := u5 / b
-		var r uint64
-		u6, r = bits.Div64(u5-q*b, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u5 = q
-		a[i] = digits[uint(r)]
-	}
-	for u6 != 0 {
-		i--
-		q := u6 / b
-		var r uint64
-		u7, r = bits.Div64(u6-q*b, u7, b)
-		u6 = q
-		a[i] = digits[uint(r)]
-	}
-	for u7 >= b {
-		i--
-		q := u7 / b
-		a[i] = digits[uint(u7-q*b)]
-		u7 = q
-	}
-	// u7 < base
-	i--
-	a[i] = digits[uint(u7)]
 
 	// add sign, if any
 	if neg {
@@ -365,242 +500,452 @@ func formatBits1024(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11
 		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
-	// general case
-	b := uint64(base)
-	for u0 != 0 {
+	if isPowerOfTwo(base) {
+		// Use shifts and masks instead of / and %.
+		shift := uint(bits.TrailingZeros(uint(base)))
+		b := uint64(base)
+		m := uint(base) - 1 // == 1<<shift - 1
+		for u0 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 = u8<<(64-shift) | u9>>shift
+			u8 = u7<<(64-shift) | u8>>shift
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 = u3<<(64-shift) | u4>>shift
+			u3 = u2<<(64-shift) | u3>>shift
+			u2 = u1<<(64-shift) | u2>>shift
+			u1 = u0<<(64-shift) | u1>>shift
+			u0 >>= shift
+		}
+		for u1 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 = u8<<(64-shift) | u9>>shift
+			u8 = u7<<(64-shift) | u8>>shift
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 = u3<<(64-shift) | u4>>shift
+			u3 = u2<<(64-shift) | u3>>shift
+			u2 = u1<<(64-shift) | u2>>shift
+			u1 >>= shift
+		}
+		for u2 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 = u8<<(64-shift) | u9>>shift
+			u8 = u7<<(64-shift) | u8>>shift
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 = u3<<(64-shift) | u4>>shift
+			u3 = u2<<(64-shift) | u3>>shift
+			u2 >>= shift
+		}
+		for u3 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 = u8<<(64-shift) | u9>>shift
+			u8 = u7<<(64-shift) | u8>>shift
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 = u3<<(64-shift) | u4>>shift
+			u3 >>= shift
+		}
+		for u4 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 = u8<<(64-shift) | u9>>shift
+			u8 = u7<<(64-shift) | u8>>shift
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 = u4<<(64-shift) | u5>>shift
+			u4 >>= shift
+		}
+		for u5 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 = u8<<(64-shift) | u9>>shift
+			u8 = u7<<(64-shift) | u8>>shift
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 = u5<<(64-shift) | u6>>shift
+			u5 >>= shift
+		}
+		for u6 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 = u8<<(64-shift) | u9>>shift
+			u8 = u7<<(64-shift) | u8>>shift
+			u7 = u6<<(64-shift) | u7>>shift
+			u6 >>= shift
+		}
+		for u7 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 = u8<<(64-shift) | u9>>shift
+			u8 = u7<<(64-shift) | u8>>shift
+			u7 >>= shift
+		}
+		for u8 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 = u8<<(64-shift) | u9>>shift
+			u8 >>= shift
+		}
+		for u9 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 = u9<<(64-shift) | u10>>shift
+			u9 >>= shift
+		}
+		for u10 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 = u10<<(64-shift) | u11>>shift
+			u10 >>= shift
+		}
+		for u11 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 = u11<<(64-shift) | u12>>shift
+			u11 >>= shift
+		}
+		for u12 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 = u12<<(64-shift) | u13>>shift
+			u12 >>= shift
+		}
+		for u13 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 = u13<<(64-shift) | u14>>shift
+			u13 >>= shift
+		}
+		for u14 != 0 {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 = u14<<(64-shift) | u15>>shift
+			u14 >>= shift
+		}
+		for u15 >= b {
+			i--
+			a[i] = digits[uint(u15)&m]
+			u15 >>= shift
+		}
+		// u15 < base
 		i--
-		q := u0 / b
-		var r uint64
-		u1, r = bits.Div64(u0-q*b, u1, b)
-		u2, r = bits.Div64(r, u2, b)
-		u3, r = bits.Div64(r, u3, b)
-		u4, r = bits.Div64(r, u4, b)
-		u5, r = bits.Div64(r, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u8, r = bits.Div64(r, u8, b)
-		u9, r = bits.Div64(r, u9, b)
-		u10, r = bits.Div64(r, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u0 = q
-		a[i] = digits[uint(r)]
-	}
-	for u1 != 0 {
+		a[i] = digits[uint(u15)]
+	} else {
+		// general case
+		b := uint64(base)
+		for u0 != 0 {
+			i--
+			q := u0 / b
+			var r uint64
+			u1, r = bits.Div64(u0-q*b, u1, b)
+			u2, r = bits.Div64(r, u2, b)
+			u3, r = bits.Div64(r, u3, b)
+			u4, r = bits.Div64(r, u4, b)
+			u5, r = bits.Div64(r, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u8, r = bits.Div64(r, u8, b)
+			u9, r = bits.Div64(r, u9, b)
+			u10, r = bits.Div64(r, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u0 = q
+			a[i] = digits[uint(r)]
+		}
+		for u1 != 0 {
+			i--
+			q := u1 / b
+			var r uint64
+			u2, r = bits.Div64(u1-q*b, u2, b)
+			u3, r = bits.Div64(r, u3, b)
+			u4, r = bits.Div64(r, u4, b)
+			u5, r = bits.Div64(r, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u8, r = bits.Div64(r, u8, b)
+			u9, r = bits.Div64(r, u9, b)
+			u10, r = bits.Div64(r, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u1 = q
+			a[i] = digits[uint(r)]
+		}
+		for u2 != 0 {
+			i--
+			q := u2 / b
+			var r uint64
+			u3, r = bits.Div64(u2-q*b, u3, b)
+			u4, r = bits.Div64(r, u4, b)
+			u5, r = bits.Div64(r, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u8, r = bits.Div64(r, u8, b)
+			u9, r = bits.Div64(r, u9, b)
+			u10, r = bits.Div64(r, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u2 = q
+			a[i] = digits[uint(r)]
+		}
+		for u3 != 0 {
+			i--
+			q := u3 / b
+			var r uint64
+			u4, r = bits.Div64(u3-q*b, u4, b)
+			u5, r = bits.Div64(r, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u8, r = bits.Div64(r, u8, b)
+			u9, r = bits.Div64(r, u9, b)
+			u10, r = bits.Div64(r, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u3 = q
+			a[i] = digits[uint(r)]
+		}
+		for u4 != 0 {
+			i--
+			q := u4 / b
+			var r uint64
+			u5, r = bits.Div64(u4-q*b, u5, b)
+			u6, r = bits.Div64(r, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u8, r = bits.Div64(r, u8, b)
+			u9, r = bits.Div64(r, u9, b)
+			u10, r = bits.Div64(r, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u4 = q
+			a[i] = digits[uint(r)]
+		}
+		for u5 != 0 {
+			i--
+			q := u5 / b
+			var r uint64
+			u6, r = bits.Div64(u5-q*b, u6, b)
+			u7, r = bits.Div64(r, u7, b)
+			u8, r = bits.Div64(r, u8, b)
+			u9, r = bits.Div64(r, u9, b)
+			u10, r = bits.Div64(r, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u5 = q
+			a[i] = digits[uint(r)]
+		}
+		for u6 != 0 {
+			i--
+			q := u6 / b
+			var r uint64
+			u7, r = bits.Div64(u6-q*b, u7, b)
+			u8, r = bits.Div64(r, u8, b)
+			u9, r = bits.Div64(r, u9, b)
+			u10, r = bits.Div64(r, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u6 = q
+			a[i] = digits[uint(r)]
+		}
+		for u7 != 0 {
+			i--
+			q := u7 / b
+			var r uint64
+			u8, r = bits.Div64(u7-q*b, u8, b)
+			u9, r = bits.Div64(r, u9, b)
+			u10, r = bits.Div64(r, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u7 = q
+			a[i] = digits[uint(r)]
+		}
+		for u8 != 0 {
+			i--
+			q := u8 / b
+			var r uint64
+			u9, r = bits.Div64(u8-q*b, u9, b)
+			u10, r = bits.Div64(r, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u8 = q
+			a[i] = digits[uint(r)]
+		}
+		for u9 != 0 {
+			i--
+			q := u9 / b
+			var r uint64
+			u10, r = bits.Div64(u9-q*b, u10, b)
+			u11, r = bits.Div64(r, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u9 = q
+			a[i] = digits[uint(r)]
+		}
+		for u10 != 0 {
+			i--
+			q := u10 / b
+			var r uint64
+			u11, r = bits.Div64(u10-q*b, u11, b)
+			u12, r = bits.Div64(r, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u10 = q
+			a[i] = digits[uint(r)]
+		}
+		for u11 != 0 {
+			i--
+			q := u11 / b
+			var r uint64
+			u12, r = bits.Div64(u11-q*b, u12, b)
+			u13, r = bits.Div64(r, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u11 = q
+			a[i] = digits[uint(r)]
+		}
+		for u12 != 0 {
+			i--
+			q := u12 / b
+			var r uint64
+			u13, r = bits.Div64(u12-q*b, u13, b)
+			u14, r = bits.Div64(r, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u12 = q
+			a[i] = digits[uint(r)]
+		}
+		for u13 != 0 {
+			i--
+			q := u13 / b
+			var r uint64
+			u14, r = bits.Div64(u13-q*b, u14, b)
+			u15, r = bits.Div64(r, u15, b)
+			u13 = q
+			a[i] = digits[uint(r)]
+		}
+		for u14 != 0 {
+			i--
+			q := u14 / b
+			var r uint64
+			u15, r = bits.Div64(u14-q*b, u15, b)
+			u14 = q
+			a[i] = digits[uint(r)]
+		}
+		for u15 >= b {
+			i--
+			q := u15 / b
+			a[i] = digits[uint(u15-q*b)]
+			u15 = q
+		}
+		// u15 < base
 		i--
-		q := u1 / b
-		var r uint64
-		u2, r = bits.Div64(u1-q*b, u2, b)
-		u3, r = bits.Div64(r, u3, b)
-		u4, r = bits.Div64(r, u4, b)
-		u5, r = bits.Div64(r, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u8, r = bits.Div64(r, u8, b)
-		u9, r = bits.Div64(r, u9, b)
-		u10, r = bits.Div64(r, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u1 = q
-		a[i] = digits[uint(r)]
+		a[i] = digits[uint(u15)]
 	}
-	for u2 != 0 {
-		i--
-		q := u2 / b
-		var r uint64
-		u3, r = bits.Div64(u2-q*b, u3, b)
-		u4, r = bits.Div64(r, u4, b)
-		u5, r = bits.Div64(r, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u8, r = bits.Div64(r, u8, b)
-		u9, r = bits.Div64(r, u9, b)
-		u10, r = bits.Div64(r, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u2 = q
-		a[i] = digits[uint(r)]
-	}
-	for u3 != 0 {
-		i--
-		q := u3 / b
-		var r uint64
-		u4, r = bits.Div64(u3-q*b, u4, b)
-		u5, r = bits.Div64(r, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u8, r = bits.Div64(r, u8, b)
-		u9, r = bits.Div64(r, u9, b)
-		u10, r = bits.Div64(r, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u3 = q
-		a[i] = digits[uint(r)]
-	}
-	for u4 != 0 {
-		i--
-		q := u4 / b
-		var r uint64
-		u5, r = bits.Div64(u4-q*b, u5, b)
-		u6, r = bits.Div64(r, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u8, r = bits.Div64(r, u8, b)
-		u9, r = bits.Div64(r, u9, b)
-		u10, r = bits.Div64(r, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u4 = q
-		a[i] = digits[uint(r)]
-	}
-	for u5 != 0 {
-		i--
-		q := u5 / b
-		var r uint64
-		u6, r = bits.Div64(u5-q*b, u6, b)
-		u7, r = bits.Div64(r, u7, b)
-		u8, r = bits.Div64(r, u8, b)
-		u9, r = bits.Div64(r, u9, b)
-		u10, r = bits.Div64(r, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u5 = q
-		a[i] = digits[uint(r)]
-	}
-	for u6 != 0 {
-		i--
-		q := u6 / b
-		var r uint64
-		u7, r = bits.Div64(u6-q*b, u7, b)
-		u8, r = bits.Div64(r, u8, b)
-		u9, r = bits.Div64(r, u9, b)
-		u10, r = bits.Div64(r, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u6 = q
-		a[i] = digits[uint(r)]
-	}
-	for u7 != 0 {
-		i--
-		q := u7 / b
-		var r uint64
-		u8, r = bits.Div64(u7-q*b, u8, b)
-		u9, r = bits.Div64(r, u9, b)
-		u10, r = bits.Div64(r, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u7 = q
-		a[i] = digits[uint(r)]
-	}
-	for u8 != 0 {
-		i--
-		q := u8 / b
-		var r uint64
-		u9, r = bits.Div64(u8-q*b, u9, b)
-		u10, r = bits.Div64(r, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u8 = q
-		a[i] = digits[uint(r)]
-	}
-	for u9 != 0 {
-		i--
-		q := u9 / b
-		var r uint64
-		u10, r = bits.Div64(u9-q*b, u10, b)
-		u11, r = bits.Div64(r, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u9 = q
-		a[i] = digits[uint(r)]
-	}
-	for u10 != 0 {
-		i--
-		q := u10 / b
-		var r uint64
-		u11, r = bits.Div64(u10-q*b, u11, b)
-		u12, r = bits.Div64(r, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u10 = q
-		a[i] = digits[uint(r)]
-	}
-	for u11 != 0 {
-		i--
-		q := u11 / b
-		var r uint64
-		u12, r = bits.Div64(u11-q*b, u12, b)
-		u13, r = bits.Div64(r, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u11 = q
-		a[i] = digits[uint(r)]
-	}
-	for u12 != 0 {
-		i--
-		q := u12 / b
-		var r uint64
-		u13, r = bits.Div64(u12-q*b, u13, b)
-		u14, r = bits.Div64(r, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u12 = q
-		a[i] = digits[uint(r)]
-	}
-	for u13 != 0 {
-		i--
-		q := u13 / b
-		var r uint64
-		u14, r = bits.Div64(u13-q*b, u14, b)
-		u15, r = bits.Div64(r, u15, b)
-		u13 = q
-		a[i] = digits[uint(r)]
-	}
-	for u14 != 0 {
-		i--
-		q := u14 / b
-		var r uint64
-		u15, r = bits.Div64(u14-q*b, u15, b)
-		u14 = q
-		a[i] = digits[uint(r)]
-	}
-	for u15 >= b {
-		i--
-		q := u15 / b
-		a[i] = digits[uint(u15-q*b)]
-		u15 = q
-	}
-	// u15 < base
-	i--
-	a[i] = digits[uint(u15)]
 
 	// add sign, if any
 	if neg {
@@ -613,4 +958,8 @@ func formatBits1024(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11
 	}
 	s = string(a[i:])
 	return
+}
+
+func isPowerOfTwo(x int) bool {
+	return x&(x-1) == 0
 }
