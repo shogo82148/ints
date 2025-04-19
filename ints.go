@@ -105,7 +105,7 @@ func formatBits128(dst []byte, u0, u1 uint64, base int, neg, append_ bool) (d []
 		// u = -u = 0 - u
 		var borrow uint64
 		u1, borrow = bits.Sub64(0, u1, 0)
-		u0, _ = bits.Add64(0, u0, borrow)
+		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
 	// general case
