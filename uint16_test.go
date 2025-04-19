@@ -22,6 +22,21 @@ func FuzzUint16_Add(f *testing.F) {
 	})
 }
 
+func FuzzUint16_Sub(f *testing.F) {
+	f.Add(uint16(0), uint16(0))
+	f.Add(uint16(0), uint16(1))
+	f.Add(uint16(math.MaxUint16), uint16(1))
+	f.Fuzz(func(t *testing.T, x, y uint16) {
+		a := Uint16(x)
+		b := Uint16(y)
+		got := a.Sub(b)
+		want := Uint16(uint16(x - y))
+		if got != want {
+			t.Errorf("Uint16(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestUint16_Text(t *testing.T) {
 	var b big.Int
 	for i := range math.MaxUint16 + 1 {

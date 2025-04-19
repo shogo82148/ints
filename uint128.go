@@ -14,6 +14,15 @@ func (a Uint128) Add(b Uint128) Uint128 {
 	return Uint128{u0, u1}
 }
 
+// Sub returns the difference a-b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint128) Sub(b Uint128) Uint128 {
+	u1, borrow := bits.Sub64(a[1], b[1], 0)
+	u0, _ := bits.Sub64(a[0], b[0], borrow)
+	return Uint128{u0, u1}
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

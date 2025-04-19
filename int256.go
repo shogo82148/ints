@@ -16,6 +16,17 @@ func (a Int256) Add(b Int256) Int256 {
 	return Int256{u0, u1, u2, u3}
 }
 
+// Sub returns the difference a-b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int256) Sub(b Int256) Int256 {
+	u3, borrow := bits.Sub64(a[3], b[3], 0)
+	u2, borrow := bits.Sub64(a[2], b[2], borrow)
+	u1, borrow := bits.Sub64(a[1], b[1], borrow)
+	u0, _ := bits.Sub64(a[0], b[0], borrow)
+	return Int256{u0, u1, u2, u3}
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

@@ -48,6 +48,37 @@ func FuzzUint512_Add(f *testing.F) {
 	})
 }
 
+func FuzzUint512_Sub(f *testing.F) {
+	f.Add(
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+	)
+	f.Add(
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		// 1
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
+	)
+
+	mod := new(big.Int).Lsh(big.NewInt(1), 512)
+	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, u4, u5, u6, u7, v0, v1, v2, v3, v4, v5, v6, v7 uint64) {
+		a := Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
+		b := Uint512{v0, v1, v2, v3, v4, v5, v6, v7}
+		got := uint512ToBigInt(a.Sub(b))
+
+		ba := uint512ToBigInt(a)
+		bb := uint512ToBigInt(b)
+		want := new(big.Int).Sub(ba, bb)
+		want = want.Mod(want, mod)
+
+		if got.Cmp(want) != 0 {
+			t.Errorf("Uint512(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func FuzzUint512_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), 10)
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1), uint64(0), 10)

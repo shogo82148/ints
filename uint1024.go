@@ -28,6 +28,29 @@ func (a Uint1024) Add(b Uint1024) Uint1024 {
 	return Uint1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
 }
 
+// Sub returns the difference a-b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint1024) Sub(b Uint1024) Uint1024 {
+	u15, borrow := bits.Sub64(a[15], b[15], 0)
+	u14, borrow := bits.Sub64(a[14], b[14], borrow)
+	u13, borrow := bits.Sub64(a[13], b[13], borrow)
+	u12, borrow := bits.Sub64(a[12], b[12], borrow)
+	u11, borrow := bits.Sub64(a[11], b[11], borrow)
+	u10, borrow := bits.Sub64(a[10], b[10], borrow)
+	u9, borrow := bits.Sub64(a[9], b[9], borrow)
+	u8, borrow := bits.Sub64(a[8], b[8], borrow)
+	u7, borrow := bits.Sub64(a[7], b[7], borrow)
+	u6, borrow := bits.Sub64(a[6], b[6], borrow)
+	u5, borrow := bits.Sub64(a[5], b[5], borrow)
+	u4, borrow := bits.Sub64(a[4], b[4], borrow)
+	u3, borrow := bits.Sub64(a[3], b[3], borrow)
+	u2, borrow := bits.Sub64(a[2], b[2], borrow)
+	u1, borrow := bits.Sub64(a[1], b[1], borrow)
+	u0, _ := bits.Sub64(a[0], b[0], borrow)
+	return Uint1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

@@ -20,6 +20,21 @@ func (a Uint512) Add(b Uint512) Uint512 {
 	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
 }
 
+// Sub returns the difference a-b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint512) Sub(b Uint512) Uint512 {
+	u7, borrow := bits.Sub64(a[7], b[7], 0)
+	u6, borrow := bits.Sub64(a[6], b[6], borrow)
+	u5, borrow := bits.Sub64(a[5], b[5], borrow)
+	u4, borrow := bits.Sub64(a[4], b[4], borrow)
+	u3, borrow := bits.Sub64(a[3], b[3], borrow)
+	u2, borrow := bits.Sub64(a[2], b[2], borrow)
+	u1, borrow := bits.Sub64(a[1], b[1], borrow)
+	u0, _ := bits.Sub64(a[0], b[0], borrow)
+	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

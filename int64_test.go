@@ -22,6 +22,22 @@ func FuzzInt64_Add(f *testing.F) {
 	})
 }
 
+func FuzzInt64_Sub(f *testing.F) {
+	f.Add(int64(0), int64(0))
+	f.Add(int64(1), int64(0))
+	f.Add(int64(math.MaxInt64), int64(-1))
+	f.Add(int64(math.MinInt64), int64(1))
+	f.Fuzz(func(t *testing.T, x, y int64) {
+		a := Int64(x)
+		b := Int64(y)
+		got := a.Sub(b)
+		want := Int64(int64(x - y))
+		if got != want {
+			t.Errorf("Int64(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func FuzzInt64_Text(f *testing.F) {
 	f.Add(int64(0), 10)
 	f.Add(int64(0), 62)
