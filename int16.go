@@ -1,5 +1,7 @@
 package ints
 
+import "cmp"
+
 // Int16 is a type that represents an 16-bit signed integer.
 // It is an alias for the built-in int16 type.
 type Int16 int16
@@ -43,6 +45,12 @@ func (a Int16) Sign() int {
 // This function's execution time does not depend on the inputs.
 func (a Int16) Neg() Int16 {
 	return -a
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Int16) Cmp(b Int16) int {
+	return cmp.Compare(a, b)
 }
 
 // Text returns the string representation of a in the given base.

@@ -1,5 +1,7 @@
 package ints
 
+import "cmp"
+
 // Int64 is a type that represents an 64-bit signed integer.
 // It is an alias for the built-in int64 type.
 type Int64 int64
@@ -43,6 +45,12 @@ func (a Int64) Sign() int {
 // This function's execution time does not depend on the inputs.
 func (a Int64) Neg() Int64 {
 	return -a
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Int64) Cmp(b Int64) int {
+	return cmp.Compare(a, b)
 }
 
 // Text returns the string representation of a in the given base.

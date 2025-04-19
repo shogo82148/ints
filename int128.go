@@ -1,6 +1,9 @@
 package ints
 
-import "math/bits"
+import (
+	"cmp"
+	"math/bits"
+)
 
 // Int128 is a type that represents an 128-bit signed integer.
 type Int128 [2]uint64
@@ -64,6 +67,19 @@ func (a Int128) Neg() Int128 {
 	u1, borrow := bits.Sub64(0, a[1], 0)
 	u0, _ := bits.Sub64(0, a[0], borrow)
 	return Int128{u0, u1}
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Int128) Cmp(b Int128) int {
+	if ret := cmp.Compare(int64(a[0]), int64(b[0])); ret != 0 {
+		return ret
+	}
+	sign := 1
+	if int64(a[0]) < 0 {
+		sign = -1
+	}
+	return cmp.Compare(a[1], b[1]) * sign
 }
 
 // Text returns the string representation of a in the given base.

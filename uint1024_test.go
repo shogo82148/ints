@@ -177,6 +177,42 @@ func TestUint1024_Neg(t *testing.T) {
 	}
 }
 
+func TestUint1024_Cmp(t *testing.T) {
+	testCases := []struct {
+		a, b Uint1024
+		want int
+	}{
+		{
+			// 0
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			// 0
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			0,
+		},
+		{
+			// 0
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			// 1
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+			-1,
+		},
+		{
+			// 1
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+			// 0
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Cmp(tc.b)
+		if got != tc.want {
+			t.Errorf("Uint1024(%d).Cmp(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func FuzzUint1024_Text(f *testing.F) {
 	f.Add(
 		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),

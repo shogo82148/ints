@@ -1,6 +1,9 @@
 package ints
 
-import "math/bits"
+import (
+	"cmp"
+	"math/bits"
+)
 
 // Uint256 is a type that represents an 256-bit unsigned integer.
 type Uint256 [4]uint64
@@ -115,6 +118,21 @@ func (a Uint256) Neg() Uint256 {
 	u1, borrow := bits.Sub64(0, a[1], borrow)
 	u0, _ := bits.Sub64(0, a[0], borrow)
 	return Uint256{u0, u1, u2, u3}
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Uint256) Cmp(b Uint256) int {
+	if ret := cmp.Compare(a[0], b[0]); ret != 0 {
+		return ret
+	}
+	if ret := cmp.Compare(a[1], b[1]); ret != 0 {
+		return ret
+	}
+	if ret := cmp.Compare(a[2], b[2]); ret != 0 {
+		return ret
+	}
+	return cmp.Compare(a[3], b[3])
 }
 
 // Text returns the string representation of a in the given base.

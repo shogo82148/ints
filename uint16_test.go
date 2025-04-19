@@ -88,6 +88,25 @@ func TestUint16_Neg(t *testing.T) {
 	}
 }
 
+func TestUint16_Cmp(t *testing.T) {
+	testCases := []struct {
+		a, b Uint16
+		want int
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{0, 1, -1},
+		{math.MaxUint16, math.MaxUint16, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Cmp(tc.b)
+		if got != tc.want {
+			t.Errorf("Uint16(%d).Cmp(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func TestUint16_Text(t *testing.T) {
 	var b big.Int
 	for i := range math.MaxUint16 + 1 {

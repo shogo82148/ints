@@ -1,5 +1,7 @@
 package ints
 
+import "cmp"
+
 // Int8 is a type that represents an 8-bit signed integer.
 // It is an alias for the built-in int8 type.
 type Int8 int8
@@ -43,6 +45,12 @@ func (a Int8) Sign() int {
 // This function's execution time does not depend on the inputs.
 func (a Int8) Neg() Int8 {
 	return -a
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Int8) Cmp(b Int8) int {
+	return cmp.Compare(a, b)
 }
 
 // Text returns the string representation of a in the given base.

@@ -143,6 +143,59 @@ func FuzzInt512_Mul(f *testing.F) {
 	})
 }
 
+func TestInt512_Neg(t *testing.T) {
+	testCases := []struct {
+		x    Int512
+		want Int512
+	}{
+		{
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			Int512{0, 0, 0, 0, 0, 0, 0, 1},
+			Int512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Neg()
+		if got != tc.want {
+			t.Errorf("Int512(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_Cmp(t *testing.T) {
+	testCases := []struct {
+		a, b Int512
+		want int
+	}{
+		{
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+			0,
+		},
+		{
+			Int512{0, 0, 0, 0, 0, 0, 0, 1},
+			Int512{0, 0, 0, 0, 0, 0, 0, 2},
+			-1,
+		},
+		{
+			Int512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+			Int512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64 - 1},
+			-1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Cmp(tc.b)
+		if got != tc.want {
+			t.Errorf("Int512(%s).Cmp(%s) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func FuzzInt512_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), 10)
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1), uint64(0), 10)
@@ -257,29 +310,6 @@ func TestInt512_Sign(t *testing.T) {
 		got := tc.x.Sign()
 		if got != tc.want {
 			t.Errorf("Int512(%d).Sign() = %d, want %d", tc.x, got, tc.want)
-		}
-	}
-}
-
-func TestInt512_Neg(t *testing.T) {
-	testCases := []struct {
-		x    Int512
-		want Int512
-	}{
-		{
-			Int512{0, 0, 0, 0, 0, 0, 0, 0},
-			Int512{0, 0, 0, 0, 0, 0, 0, 0},
-		},
-		{
-			Int512{0, 0, 0, 0, 0, 0, 0, 1},
-			Int512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
-		},
-	}
-
-	for _, tc := range testCases {
-		got := tc.x.Neg()
-		if got != tc.want {
-			t.Errorf("Int512(%d).Neg() = %d, want %d", tc.x, got, tc.want)
 		}
 	}
 }
