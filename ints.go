@@ -102,10 +102,10 @@ func formatBits128(dst []byte, u0, u1 uint64, base int, neg, append_ bool) (d []
 	i := len(a)
 
 	if neg {
-		// u = -u = ^u + 1
-		var carry uint64
-		u1, carry = bits.Add64(^u1, 1, 0)
-		u0, _ = bits.Add64(^u0, 0, carry)
+		// u = -u = 0 - u
+		var borrow uint64
+		u1, borrow = bits.Sub64(0, u1, 0)
+		u0, _ = bits.Add64(0, u0, borrow)
 	}
 
 	// general case
@@ -151,12 +151,12 @@ func formatBits256(dst []byte, u0, u1, u2, u3 uint64, base int, neg, append_ boo
 	i := len(a)
 
 	if neg {
-		// u = -u = ^u + 1
-		var carry uint64
-		u3, carry = bits.Add64(^u3, 1, 0)
-		u2, _ = bits.Add64(^u2, 0, carry)
-		u1, _ = bits.Add64(^u1, 0, carry)
-		u0, _ = bits.Add64(^u0, 0, carry)
+		// u = -u = 0 - u
+		var borrow uint64
+		u3, borrow = bits.Sub64(0, u3, 0)
+		u2, borrow = bits.Sub64(0, u2, borrow)
+		u1, borrow = bits.Sub64(0, u1, borrow)
+		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
 	// general case
@@ -221,16 +221,16 @@ func formatBits512(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7 uint64, base int, 
 	i := len(a)
 
 	if neg {
-		// u = -u = ^u + 1
-		var carry uint64
-		u7, carry = bits.Add64(^u7, 1, 0)
-		u6, carry = bits.Add64(^u6, 0, carry)
-		u5, carry = bits.Add64(^u5, 0, carry)
-		u4, carry = bits.Add64(^u4, 0, carry)
-		u3, carry = bits.Add64(^u3, 0, carry)
-		u2, carry = bits.Add64(^u2, 0, carry)
-		u1, carry = bits.Add64(^u1, 0, carry)
-		u0, _ = bits.Add64(^u0, 0, carry)
+		// u = -u = 0 - u
+		var borrow uint64
+		u7, borrow = bits.Sub64(0, u7, 0)
+		u6, borrow = bits.Sub64(0, u6, borrow)
+		u5, borrow = bits.Sub64(0, u5, borrow)
+		u4, borrow = bits.Sub64(0, u4, borrow)
+		u3, borrow = bits.Sub64(0, u3, borrow)
+		u2, borrow = bits.Sub64(0, u2, borrow)
+		u1, borrow = bits.Sub64(0, u1, borrow)
+		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
 	// general case
@@ -345,24 +345,24 @@ func formatBits1024(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11
 	i := len(a)
 
 	if neg {
-		// u = -u = ^u + 1
-		var carry uint64
-		u15, carry = bits.Add64(^u15, 1, 0)
-		u14, carry = bits.Add64(^u14, 0, carry)
-		u13, carry = bits.Add64(^u13, 0, carry)
-		u12, carry = bits.Add64(^u12, 0, carry)
-		u11, carry = bits.Add64(^u11, 0, carry)
-		u10, carry = bits.Add64(^u10, 0, carry)
-		u9, carry = bits.Add64(^u9, 0, carry)
-		u8, carry = bits.Add64(^u8, 0, carry)
-		u7, carry = bits.Add64(^u7, 0, carry)
-		u6, carry = bits.Add64(^u6, 0, carry)
-		u5, carry = bits.Add64(^u5, 0, carry)
-		u4, carry = bits.Add64(^u4, 0, carry)
-		u3, carry = bits.Add64(^u3, 0, carry)
-		u2, carry = bits.Add64(^u2, 0, carry)
-		u1, carry = bits.Add64(^u1, 0, carry)
-		u0, _ = bits.Add64(^u0, 0, carry)
+		// u = -u = 0 - u
+		var borrow uint64
+		u15, borrow = bits.Sub64(0, u15, 0)
+		u14, borrow = bits.Sub64(0, u14, borrow)
+		u13, borrow = bits.Sub64(0, u13, borrow)
+		u12, borrow = bits.Sub64(0, u12, borrow)
+		u11, borrow = bits.Sub64(0, u11, borrow)
+		u10, borrow = bits.Sub64(0, u10, borrow)
+		u9, borrow = bits.Sub64(0, u9, borrow)
+		u8, borrow = bits.Sub64(0, u8, borrow)
+		u7, borrow = bits.Sub64(0, u7, borrow)
+		u6, borrow = bits.Sub64(0, u6, borrow)
+		u5, borrow = bits.Sub64(0, u5, borrow)
+		u4, borrow = bits.Sub64(0, u4, borrow)
+		u3, borrow = bits.Sub64(0, u3, borrow)
+		u2, borrow = bits.Sub64(0, u2, borrow)
+		u1, borrow = bits.Sub64(0, u1, borrow)
+		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
 	// general case
