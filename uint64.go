@@ -1,5 +1,7 @@
 package ints
 
+import "cmp"
+
 // Uint64 is a type that represents an 64-bit unsigned integer.
 // It is an alias for the built-in uint64 type.
 type Uint64 uint64
@@ -38,6 +40,12 @@ func (a Uint64) Sign() int {
 // This function's execution time does not depend on the inputs.
 func (a Uint64) Neg() Uint64 {
 	return -a
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Uint64) Cmp(b Uint64) int {
+	return cmp.Compare(a, b)
 }
 
 // Text returns the string representation of a in the given base.

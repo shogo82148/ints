@@ -1,6 +1,9 @@
 package ints
 
-import "math/bits"
+import (
+	"cmp"
+	"math/bits"
+)
 
 // Uint512 is a type that represents an 512-bit unsigned integer.
 type Uint512 [8]uint64
@@ -281,6 +284,33 @@ func (a Uint512) Neg() Uint512 {
 	u1, borrow := bits.Sub64(0, a[1], borrow)
 	u0, _ := bits.Sub64(0, a[0], borrow)
 	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Uint512) Cmp(b Uint512) int {
+	if ret := cmp.Compare(a[0], b[0]); ret != 0 {
+		return ret
+	}
+	if ret := cmp.Compare(a[1], b[1]); ret != 0 {
+		return ret
+	}
+	if ret := cmp.Compare(a[2], b[2]); ret != 0 {
+		return ret
+	}
+	if ret := cmp.Compare(a[3], b[3]); ret != 0 {
+		return ret
+	}
+	if ret := cmp.Compare(a[4], b[4]); ret != 0 {
+		return ret
+	}
+	if ret := cmp.Compare(a[5], b[5]); ret != 0 {
+		return ret
+	}
+	if ret := cmp.Compare(a[6], b[6]); ret != 0 {
+		return ret
+	}
+	return cmp.Compare(a[7], b[7])
 }
 
 // Text returns the string representation of a in the given base.

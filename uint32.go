@@ -1,5 +1,7 @@
 package ints
 
+import "cmp"
+
 // Uint32 is a type that represents an 32-bit unsigned integer.
 // It is an alias for the built-in uint32 type.
 type Uint32 uint32
@@ -38,6 +40,12 @@ func (a Uint32) Sign() int {
 // This function's execution time does not depend on the inputs.
 func (a Uint32) Neg() Uint32 {
 	return -a
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Uint32) Cmp(b Uint32) int {
+	return cmp.Compare(a, b)
 }
 
 // Text returns the string representation of a in the given base.

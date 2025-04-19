@@ -1,5 +1,7 @@
 package ints
 
+import "cmp"
+
 // Int32 is a type that represents an 32-bit signed integer.
 // It is an alias for the built-in int32 type.
 type Int32 int32
@@ -43,6 +45,12 @@ func (a Int32) Sign() int {
 // This function's execution time does not depend on the inputs.
 func (a Int32) Neg() Int32 {
 	return -a
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Int32) Cmp(b Int32) int {
+	return cmp.Compare(a, b)
 }
 
 // Text returns the string representation of a in the given base.

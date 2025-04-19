@@ -1,6 +1,9 @@
 package ints
 
-import "math/bits"
+import (
+	"cmp"
+	"math/bits"
+)
 
 // Int256 is a type that represents an 256-bit signed integer.
 type Int256 [4]uint64
@@ -70,6 +73,23 @@ func (a Int256) Neg() Int256 {
 	u1, borrow := bits.Sub64(0, a[1], borrow)
 	u0, _ := bits.Sub64(0, a[0], borrow)
 	return Int256{u0, u1, u2, u3}
+}
+
+func (a Int256) Cmp(b Int256) int {
+	if ret := cmp.Compare(int64(a[0]), int64(b[0])); ret != 0 {
+		return ret
+	}
+	sign := 1
+	if int64(a[0]) < 0 {
+		sign = -1
+	}
+	if ret := cmp.Compare(a[1], b[1]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[2], b[2]); ret != 0 {
+		return ret * sign
+	}
+	return cmp.Compare(a[3], b[3]) * sign
 }
 
 // Text returns the string representation of a in the given base.

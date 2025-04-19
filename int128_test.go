@@ -165,6 +165,26 @@ func TestInt128_Neg(t *testing.T) {
 	}
 }
 
+func TestInt128_Cmp(t *testing.T) {
+	testCases := []struct {
+		a, b Int128
+		want int
+	}{
+		{Int128{0, 0}, Int128{0, 0}, 0},
+		{Int128{1, 0}, Int128{0, 1}, 1},
+		{Int128{0, 1}, Int128{1, 0}, -1},
+		{Int128{math.MaxUint64, math.MaxUint64}, Int128{math.MaxUint64, math.MaxUint64}, 0},
+		{Int128{math.MaxUint64, math.MaxUint64}, Int128{math.MaxUint64, math.MaxUint64 - 1}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Cmp(tc.b)
+		if got != tc.want {
+			t.Errorf("Int128(%s).Cmp(%s) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func FuzzInt128_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), 10)
 	f.Add(uint64(1), uint64(0), 10)

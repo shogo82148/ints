@@ -165,6 +165,41 @@ func TestInt256_Neg(t *testing.T) {
 	}
 }
 
+func TestInt256_Cmp(t *testing.T) {
+	testCases := []struct {
+		a, b Int256
+		want int
+	}{
+		{
+			Int256{0, 0, 0, 0},
+			Int256{0, 0, 0, 0},
+			0,
+		},
+		{
+			Int256{0, 0, 0, 1},
+			Int256{0, 0, 0, 2},
+			-1,
+		},
+		{
+			Int256{0, 0, 0, 1},
+			Int256{0, 0, 0, 0},
+			1,
+		},
+		{
+			Int256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+			Int256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64 - 1},
+			-1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Cmp(tc.b)
+		if got != tc.want {
+			t.Errorf("Int256(%d).Cmp(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func FuzzInt256_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), 10)
 	f.Add(uint64(0), uint64(0), uint64(1), uint64(0), 10)

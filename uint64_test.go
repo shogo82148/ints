@@ -87,6 +87,25 @@ func TestUint64_Neg(t *testing.T) {
 	}
 }
 
+func TestUint64_Cmp(t *testing.T) {
+	testCases := []struct {
+		a, b Uint64
+		want int
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{0, 1, -1},
+		{math.MaxUint64, math.MaxUint64, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Cmp(tc.b)
+		if got != tc.want {
+			t.Errorf("Uint64(%d).Cmp(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func FuzzUint64_Text(f *testing.F) {
 	f.Add(uint64(0), 10)
 	f.Add(uint64(0), 62)

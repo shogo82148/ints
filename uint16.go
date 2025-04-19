@@ -1,5 +1,7 @@
 package ints
 
+import "cmp"
+
 // Uint16 is a type that represents an 16-bit unsigned integer.
 // It is an alias for the built-in uint16 type.
 type Uint16 uint16
@@ -38,6 +40,12 @@ func (a Uint16) Sign() int {
 // This function's execution time does not depend on the inputs.
 func (a Uint16) Neg() Uint16 {
 	return -a
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Uint16) Cmp(b Uint16) int {
+	return cmp.Compare(a, b)
 }
 
 // Text returns the string representation of a in the given base.

@@ -1,6 +1,9 @@
 package ints
 
-import "math/bits"
+import (
+	"cmp"
+	"math/bits"
+)
 
 // Int1024 is a type that represents an 1024-bit signed integer.
 type Int1024 [16]uint64
@@ -106,6 +109,61 @@ func (a Int1024) Neg() Int1024 {
 	u1, borrow := bits.Sub64(0, a[1], borrow)
 	u0, _ := bits.Sub64(0, a[0], borrow)
 	return Int1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
+}
+
+// Cmp returns the comparison result of a and b.
+// It returns -1 if a < b, 0 if a == b, and 1 if a > b.
+func (a Int1024) Cmp(b Int1024) int {
+	if ret := cmp.Compare(int64(a[0]), int64(b[0])); ret != 0 {
+		return ret
+	}
+	sign := 1
+	if int64(a[0]) < 0 {
+		sign = -1
+	}
+	if ret := cmp.Compare(a[1], b[1]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[2], b[2]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[3], b[3]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[4], b[4]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[5], b[5]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[6], b[6]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[7], b[7]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[8], b[8]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[9], b[9]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[10], b[10]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[11], b[11]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[12], b[12]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[13], b[13]); ret != 0 {
+		return ret * sign
+	}
+	if ret := cmp.Compare(a[14], b[14]); ret != 0 {
+		return ret * sign
+	}
+	return cmp.Compare(a[15], b[15]) * sign
 }
 
 // Text returns the string representation of a in the given base.

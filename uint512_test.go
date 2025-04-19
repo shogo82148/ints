@@ -166,6 +166,36 @@ func TestUint512_Neg(t *testing.T) {
 	}
 }
 
+func TestUint512_Cmp(t *testing.T) {
+	testCases := []struct {
+		a, b Uint512
+		want int
+	}{
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 0},
+			Uint512{0, 0, 0, 0, 0, 0, 0, 0},
+			0,
+		},
+		{
+			Uint512{1, 0, 0, 0, 0, 0, 0, 0},
+			Uint512{1, 1, 1, 1, 1, 1, 1, 1},
+			-1,
+		},
+		{
+			Uint512{1, 1, 1, 1, 1, 1, 1, 1},
+			Uint512{1, 0, 0, 0, 0, 0, 0, 0},
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Cmp(tc.b)
+		if got != tc.want {
+			t.Errorf("Uint512(%d).Cmp(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func FuzzUint512_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), 10)
 	f.Add(uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1), uint64(0), 10)

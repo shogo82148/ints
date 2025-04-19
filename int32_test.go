@@ -94,6 +94,26 @@ func TestInt32_Neg(t *testing.T) {
 	}
 }
 
+func TestInt32_Cmp(t *testing.T) {
+	testCases := []struct {
+		a, b Int32
+		want int
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{0, 1, -1},
+		{math.MaxInt32, math.MaxInt32, 0},
+		{math.MinInt32, math.MinInt32, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Cmp(tc.b)
+		if got != tc.want {
+			t.Errorf("Int32(%d).Cmp(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func FuzzInt32_Text(f *testing.F) {
 	f.Add(int32(0), 10)
 	f.Add(int32(0), 62)

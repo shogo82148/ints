@@ -90,6 +90,25 @@ func TestUint8_Neg(t *testing.T) {
 	}
 }
 
+func TestUint8_Cmp(t *testing.T) {
+	testCases := []struct {
+		a, b Uint8
+		want int
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{0, 1, -1},
+		{math.MaxUint8, math.MaxUint8, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Cmp(tc.b)
+		if got != tc.want {
+			t.Errorf("Uint8(%d).Cmp(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func TestUint8_Text(t *testing.T) {
 	var b big.Int
 	for i := range math.MaxUint8 + 1 {
