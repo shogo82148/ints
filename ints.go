@@ -92,7 +92,7 @@ func formatBits(dst []byte, u uint64, base int, neg, append_ bool) (d []byte, s 
 	return
 }
 
-func formatUint128(dst []byte, u0, u1 uint64, base int, neg, append_ bool) (d []byte, s string) {
+func formatBits128(dst []byte, u0, u1 uint64, base int, neg, append_ bool) (d []byte, s string) {
 	if base < 2 || base > len(digits) {
 		panic("strconv: illegal AppendInt/FormatInt base")
 	}
