@@ -86,7 +86,7 @@ func TestUint256_Neg(t *testing.T) {
 	for _, tc := range testCases {
 		got := tc.x.Neg()
 		if got != tc.want {
-			t.Errorf("Int8(%d).Neg() = %d, want %d", tc.x, got, tc.want)
+			t.Errorf("Uint256(%d).Neg() = %d, want %d", tc.x, got, tc.want)
 		}
 	}
 }
