@@ -22,6 +22,21 @@ func FuzzUint8_Add(f *testing.F) {
 	})
 }
 
+func FuzzUint8_Sub(f *testing.F) {
+	f.Add(uint8(0), uint8(0))
+	f.Add(uint8(0), uint8(1))
+	f.Add(uint8(math.MaxUint8), uint8(1))
+	f.Fuzz(func(t *testing.T, x, y uint8) {
+		a := Uint8(x)
+		b := Uint8(y)
+		got := a.Sub(b)
+		want := Uint8(uint8(x - y))
+		if got != want {
+			t.Errorf("Uint8(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestUint8_Text(t *testing.T) {
 	var b big.Int
 	for i := range math.MaxUint8 + 1 {

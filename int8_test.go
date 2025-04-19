@@ -23,6 +23,22 @@ func FuzzInt8_Add(f *testing.F) {
 	})
 }
 
+func FuzzInt8_Sub(f *testing.F) {
+	f.Add(int8(0), int8(0))
+	f.Add(int8(1), int8(0))
+	f.Add(int8(math.MaxInt8), int8(math.MaxInt8))
+	f.Add(int8(math.MinInt8), int8(math.MinInt8))
+	f.Fuzz(func(t *testing.T, x, y int8) {
+		a := Int8(x)
+		b := Int8(y)
+		got := a.Sub(b)
+		want := Int8(int8(x - y))
+		if got != want {
+			t.Errorf("Int8(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestInt8_Text(t *testing.T) {
 	var b big.Int
 	for i := math.MinInt8; i <= math.MaxInt8; i++ {
