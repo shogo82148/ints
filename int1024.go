@@ -51,6 +51,11 @@ func (a Int1024) Sub(b Int1024) Int1024 {
 	return Int1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
 }
 
+// Mul returns the product a*b.
+func (a Int1024) Mul(b Int1024) Int1024 {
+	return Int1024{0, 0} // TODO: Implement multiplication for Int1024
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

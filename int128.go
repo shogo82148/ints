@@ -23,6 +23,11 @@ func (a Int128) Sub(b Int128) Int128 {
 	return Int128{u0, u1}
 }
 
+// Mul returns the product a*b.
+func (a Int128) Mul(b Int128) Int128 {
+	return Int128{0, 0} // TODO: Implement multiplication for Int128
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

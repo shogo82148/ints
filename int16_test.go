@@ -39,6 +39,22 @@ func FuzzInt16_Sub(f *testing.F) {
 	})
 }
 
+func FuzzInt16_Mul(f *testing.F) {
+	f.Add(int16(0), int16(0))
+	f.Add(int16(1), int16(0))
+	f.Add(int16(math.MaxInt16), int16(math.MaxInt16))
+	f.Add(int16(math.MinInt16), int16(math.MinInt16))
+	f.Fuzz(func(t *testing.T, x, y int16) {
+		a := Int16(x)
+		b := Int16(y)
+		got := a.Mul(b)
+		want := Int16(int16(x * y))
+		if got != want {
+			t.Errorf("Int16(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func TestInt16_Text(t *testing.T) {
 	var b big.Int
 	for i := math.MinInt16; i <= math.MaxInt16; i++ {

@@ -23,6 +23,16 @@ func (a Uint128) Sub(b Uint128) Uint128 {
 	return Uint128{u0, u1}
 }
 
+// Mul returns the product a*b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint128) Mul(b Uint128) Uint128 {
+	h, l := bits.Mul64(a[1], b[1])
+	_, h1 := bits.Mul64(a[0], b[1])
+	_, h2 := bits.Mul64(a[1], b[0])
+	return Uint128{h + h1 + h2, l}
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

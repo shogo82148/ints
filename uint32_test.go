@@ -36,6 +36,21 @@ func FuzzUint32_Sub(f *testing.F) {
 	})
 }
 
+func FuzzUint32_Mul(f *testing.F) {
+	f.Add(uint32(0), uint32(0))
+	f.Add(uint32(1), uint32(0))
+	f.Add(uint32(math.MaxUint32), uint32(math.MaxUint32))
+	f.Fuzz(func(t *testing.T, x, y uint32) {
+		a := Uint32(x)
+		b := Uint32(y)
+		got := a.Mul(b)
+		want := Uint32(uint32(x * y))
+		if got != want {
+			t.Errorf("Uint32(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func FuzzUint32_Text(f *testing.F) {
 	f.Add(uint32(0), 10)
 	f.Add(uint32(0), 62)

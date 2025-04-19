@@ -27,6 +27,11 @@ func (a Int256) Sub(b Int256) Int256 {
 	return Int256{u0, u1, u2, u3}
 }
 
+// Mul returns the product a*b.
+func (a Int256) Mul(b Int256) Int256 {
+	return Int256{0, 0} // TODO: Implement multiplication for Int256
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

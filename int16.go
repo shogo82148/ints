@@ -18,6 +18,13 @@ func (a Int16) Sub(b Int16) Int16 {
 	return a - b
 }
 
+// Mul returns the product a*b.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int16) Mul(b Int16) Int16 {
+	return a * b
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

@@ -18,6 +18,11 @@ func (a Uint8) Sub(b Uint8) Uint8 {
 	return a - b
 }
 
+// Mul returns the product a*b.
+func (a Uint8) Mul(b Uint8) Uint8 {
+	return a * b
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,

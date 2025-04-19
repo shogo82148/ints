@@ -36,6 +36,21 @@ func FuzzUint64_Sub(f *testing.F) {
 	})
 }
 
+func FuzzUint64_Mul(f *testing.F) {
+	f.Add(uint64(0), uint64(0))
+	f.Add(uint64(1), uint64(0))
+	f.Add(uint64(math.MaxUint64), uint64(math.MaxUint64))
+	f.Fuzz(func(t *testing.T, x, y uint64) {
+		a := Uint64(x)
+		b := Uint64(y)
+		got := a.Mul(b)
+		want := Uint64(uint64(x * y))
+		if got != want {
+			t.Errorf("Uint64(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func FuzzUint64_Text(f *testing.F) {
 	f.Add(uint64(0), 10)
 	f.Add(uint64(0), 62)

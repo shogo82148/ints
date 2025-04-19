@@ -77,6 +77,37 @@ func FuzzUint128_Sub(f *testing.F) {
 	})
 }
 
+func FuzzUint128_Mul(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(0),
+		uint64(0), uint64(0),
+	)
+	f.Add(
+		uint64(1), uint64(0),
+		uint64(1), uint64(0),
+	)
+	f.Add(
+		uint64(math.MaxUint64), uint64(math.MaxUint64),
+		uint64(math.MaxUint64), uint64(math.MaxUint64),
+	)
+
+	mod := new(big.Int).Lsh(big.NewInt(1), 128)
+	f.Fuzz(func(t *testing.T, u0, u1, v0, v1 uint64) {
+		a := Uint128{u0, u1}
+		b := Uint128{v0, v1}
+		got := uint128ToBigInt(a.Mul(b))
+
+		ba := uint128ToBigInt(a)
+		bb := uint128ToBigInt(b)
+		want := new(big.Int).Mul(ba, bb)
+		want = want.Mod(want, mod)
+
+		if got.Cmp(want) != 0 {
+			t.Errorf("Uint128(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
 func FuzzUint128_Text(f *testing.F) {
 	f.Add(uint64(0), uint64(0), 10)
 	f.Add(uint64(1), uint64(0), 10)

@@ -18,6 +18,11 @@ func (a Uint32) Sub(b Uint32) Uint32 {
 	return a - b
 }
 
+// Mul returns the product a*b.
+func (a Uint32) Mul(b Uint32) Uint32 {
+	return a * b
+}
+
 // Text returns the string representation of a in the given base.
 // Base must be between 2 and 62, inclusive.
 // The result uses the lower-case letters 'a' to 'z' for digit values 10 to 35,
