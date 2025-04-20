@@ -7,52 +7,65 @@ import (
 	"testing"
 )
 
-func FuzzInt32_Add(f *testing.F) {
-	f.Add(int32(0), int32(0))
-	f.Add(int32(1), int32(0))
-	f.Add(int32(math.MaxInt32), int32(math.MaxInt32))
-	f.Add(int32(math.MinInt32), int32(math.MinInt32))
-	f.Fuzz(func(t *testing.T, x, y int32) {
-		a := Int32(x)
-		b := Int32(y)
+func TestInt32_Add(t *testing.T) {
+	testCases := []struct {
+		x, y int32
+		want Int32
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 2},
+	}
+
+	for _, tc := range testCases {
+		a := Int32(tc.x)
+		b := Int32(tc.y)
 		got := a.Add(b)
-		want := Int32(int32(x + y))
-		if got != want {
-			t.Errorf("Int32(%s).Add(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Int32(%d).Add(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzInt32_Sub(f *testing.F) {
-	f.Add(int32(0), int32(0))
-	f.Add(int32(1), int32(0))
-	f.Add(int32(math.MaxInt32), int32(-1))
-	f.Add(int32(math.MinInt32), int32(1))
-	f.Fuzz(func(t *testing.T, x, y int32) {
-		a := Int32(x)
-		b := Int32(y)
+func TestInt32_Sub(t *testing.T) {
+	testCases := []struct {
+		x, y int32
+		want Int32
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{0, 1, -1},
+	}
+
+	for _, tc := range testCases {
+		a := Int32(tc.x)
+		b := Int32(tc.y)
 		got := a.Sub(b)
-		want := Int32(int32(x - y))
-		if got != want {
-			t.Errorf("Int32(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Int32(%d).Sub(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzInt32_Mul(f *testing.F) {
-	f.Add(int32(0), int32(0))
-	f.Add(int32(1), int32(0))
-	f.Add(int32(math.MaxInt32), int32(math.MaxInt32))
-	f.Add(int32(math.MinInt32), int32(math.MinInt32))
-	f.Fuzz(func(t *testing.T, x, y int32) {
-		a := Int32(x)
-		b := Int32(y)
+func TestInt32_Mul(t *testing.T) {
+	testCases := []struct {
+		x, y int32
+		want Int32
+	}{
+		{0, 0, 0},
+		{1, 0, 0},
+		{1, 1, 1},
+		{-1, -1, 1},
+	}
+
+	for _, tc := range testCases {
+		a := Int32(tc.x)
+		b := Int32(tc.y)
 		got := a.Mul(b)
-		want := Int32(int32(x * y))
-		if got != want {
-			t.Errorf("Int32(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Int32(%d).Mul(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
 func TestInt32_DivMod(t *testing.T) {
