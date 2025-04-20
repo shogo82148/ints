@@ -9,6 +9,11 @@ import (
 // It is an alias for the built-in uint8 type.
 type Uint8 uint8
 
+// IsZero returns true if a is zero.
+func (a Uint8) IsZero() bool {
+	return a == 0
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.

@@ -9,6 +9,11 @@ import (
 // It is an alias for the built-in int16 type.
 type Int16 int16
 
+// IsZero returns true if a is zero.
+func (a Int16) IsZero() bool {
+	return a == 0
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.

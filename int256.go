@@ -9,6 +9,12 @@ import (
 // Int256 is a type that represents an 256-bit signed integer.
 type Int256 [4]uint64
 
+// IsZero returns true if a is zero.
+func (a Int256) IsZero() bool {
+	var zero Int256
+	return a == zero
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.
