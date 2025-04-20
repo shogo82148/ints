@@ -1,6 +1,7 @@
 package ints
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 	"runtime"
@@ -458,5 +459,32 @@ func BenchmarkInt512_String(b *testing.B) {
 	a := Int512{1 << 63, 0, 0, 0, 0, 0, 0, 0}
 	for b.Loop() {
 		runtime.KeepAlive(a.String())
+	}
+}
+
+func TestInt512_Format(t *testing.T) {
+	tests := []struct {
+		format string
+		value  Int512
+		want   string
+	}{
+		// decimal
+		{
+			"%d",
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+			"0",
+		},
+		{
+			"%d",
+			Int512{0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0},
+			"-6703903964971298549787012499102923063739682910296196688861780721860882015036773488400937149083451713845015929093243025426876941405973284973216824503042048",
+		},
+	}
+
+	for _, tt := range tests {
+		got := fmt.Sprintf(tt.format, tt.value)
+		if got != tt.want {
+			t.Errorf("%#v: want %q, got %q", tt, tt.want, got)
+		}
 	}
 }

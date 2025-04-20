@@ -1,6 +1,9 @@
 package ints
 
-import "cmp"
+import (
+	"cmp"
+	"fmt"
+)
 
 // Uint8 is a type that represents an 8-bit unsigned integer.
 // It is an alias for the built-in uint8 type.
@@ -83,4 +86,9 @@ func (a Uint8) AppendText(dst []byte) ([]byte, error) {
 // String returns the string representation of a in base 10.
 func (a Uint8) String() string {
 	return formatUint(uint64(a), 10)
+}
+
+// Format implements [fmt.Formatter].
+func (a Uint8) Format(s fmt.State, verb rune) {
+	format(s, verb, a.Sign(), a)
 }

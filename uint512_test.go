@@ -1,6 +1,7 @@
 package ints
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 	"runtime"
@@ -499,5 +500,27 @@ func BenchmarkUint512_String(b *testing.B) {
 	a := Uint512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
 	for b.Loop() {
 		runtime.KeepAlive(a.String())
+	}
+}
+
+func TestUint512_Format(t *testing.T) {
+	tests := []struct {
+		format string
+		value  Uint512
+		want   string
+	}{
+		// decimal
+		{
+			"%d",
+			Uint512{0, 0},
+			"0",
+		},
+	}
+
+	for _, tt := range tests {
+		got := fmt.Sprintf(tt.format, tt.value)
+		if got != tt.want {
+			t.Errorf("%#v: want %q, got %q", tt, tt.want, got)
+		}
 	}
 }

@@ -1,6 +1,8 @@
 package ints
 
 import (
+	"bytes"
+	"fmt"
 	"math/bits"
 	"strconv"
 )
@@ -962,4 +964,109 @@ func formatBits1024(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11
 
 func isPowerOfTwo(x int) bool {
 	return x&(x-1) == 0
+}
+
+type appender interface {
+	Append(dst []byte, base int) []byte
+}
+
+func format(s fmt.State, verb rune, sign int, v appender) {
+	var out []byte
+	var prefix []byte
+
+	if verb == 'v' {
+		out = v.Append(out, 10)
+		s.Write(out) //nolint:errcheck
+		return
+	}
+
+	if s.Flag('+') {
+		if sign >= 0 {
+			prefix = []byte("+")
+		} else {
+			prefix = []byte("-")
+		}
+	} else if s.Flag(' ') {
+		if sign >= 0 {
+			prefix = []byte(" ")
+		} else {
+			prefix = []byte("-")
+		}
+	} else {
+		if sign < 0 {
+			prefix = []byte("-")
+		}
+	}
+
+	switch verb {
+	case 'b':
+		out = v.Append(out, 2)
+		if s.Flag('#') {
+			prefix = append(prefix, "0b"...)
+		}
+	case 'o':
+		out = v.Append(out, 8)
+		if s.Flag('#') && !(len(out) > 0 && out[0] == '0') {
+			prefix = append(prefix, '0')
+		}
+	case 'O':
+		out = v.Append(out, 8)
+		prefix = append(prefix, "0o"...)
+	case 'd':
+		out = v.Append(out, 10)
+	case 'x':
+		out = v.Append(out, 16)
+		if s.Flag('#') {
+			prefix = append(prefix, "0x"...)
+		}
+	case 'X':
+		out = v.Append(out, 16)
+		out = bytes.ToUpper(out)
+		if s.Flag('#') {
+			prefix = append(prefix, "0X"...)
+		}
+	}
+
+	if w, ok := s.Width(); ok {
+		var buf [8]byte
+		if s.Flag('0') {
+			if len(prefix) > 0 {
+				s.Write(prefix) //nolint:errcheck
+			}
+
+			// pad with zeros
+			buf[0] = '0'
+			for i := len(prefix) + len(out); i < w; i++ {
+				s.Write(buf[:1]) //nolint:errcheck
+			}
+			s.Write(out) //nolint:errcheck
+		} else if s.Flag('-') {
+			if len(prefix) > 0 {
+				s.Write(prefix) //nolint:errcheck
+			}
+			s.Write(out) //nolint:errcheck
+
+			// pad with spaces
+			buf[0] = ' '
+			for i := len(prefix) + len(out); i < w; i++ {
+				s.Write(buf[:1]) //nolint:errcheck
+			}
+		} else {
+			// pad with spaces
+			buf[0] = ' '
+			for i := len(prefix) + len(out); i < w; i++ {
+				s.Write(buf[:1]) //nolint:errcheck
+			}
+			if len(prefix) > 0 {
+				s.Write(prefix) //nolint:errcheck
+			}
+			s.Write(out) //nolint:errcheck
+		}
+		return
+	}
+
+	if len(prefix) > 0 {
+		s.Write(prefix) //nolint:errcheck
+	}
+	s.Write(out) //nolint:errcheck
 }

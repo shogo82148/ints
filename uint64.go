@@ -1,6 +1,9 @@
 package ints
 
-import "cmp"
+import (
+	"cmp"
+	"fmt"
+)
 
 // Uint64 is a type that represents an 64-bit unsigned integer.
 // It is an alias for the built-in uint64 type.
@@ -83,4 +86,9 @@ func (a Uint64) AppendText(dst []byte) ([]byte, error) {
 // String returns the string representation of a in base 10.
 func (a Uint64) String() string {
 	return formatUint(uint64(a), 10)
+}
+
+// Format implements [fmt.Formatter].
+func (a Uint64) Format(s fmt.State, verb rune) {
+	format(s, verb, a.Sign(), a)
 }

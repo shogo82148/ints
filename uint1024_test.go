@@ -1,6 +1,7 @@
 package ints
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 	"runtime"
@@ -998,5 +999,27 @@ func BenchmarkUint1024_String(b *testing.B) {
 	}
 	for b.Loop() {
 		runtime.KeepAlive(a.String())
+	}
+}
+
+func TestUint1024_Format(t *testing.T) {
+	tests := []struct {
+		format string
+		value  Uint1024
+		want   string
+	}{
+		// decimal
+		{
+			"%d",
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			"0",
+		},
+	}
+
+	for _, tt := range tests {
+		got := fmt.Sprintf(tt.format, tt.value)
+		if got != tt.want {
+			t.Errorf("%#v: want %q, got %q", tt, tt.want, got)
+		}
 	}
 }

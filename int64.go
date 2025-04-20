@@ -1,6 +1,9 @@
 package ints
 
-import "cmp"
+import (
+	"cmp"
+	"fmt"
+)
 
 // Int64 is a type that represents an 64-bit signed integer.
 // It is an alias for the built-in int64 type.
@@ -88,4 +91,14 @@ func (a Int64) AppendText(dst []byte) ([]byte, error) {
 // String returns the string representation of a in base 10.
 func (a Int64) String() string {
 	return formatInt(int64(a), 10)
+}
+
+// Format implements [fmt.Formatter].
+func (a Int64) Format(s fmt.State, verb rune) {
+	sign := a.Sign()
+	b := Uint64(a)
+	if sign < 0 {
+		b = b.Neg()
+	}
+	format(s, verb, sign, b)
 }

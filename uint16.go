@@ -1,6 +1,9 @@
 package ints
 
-import "cmp"
+import (
+	"cmp"
+	"fmt"
+)
 
 // Uint16 is a type that represents an 16-bit unsigned integer.
 // It is an alias for the built-in uint16 type.
@@ -83,4 +86,9 @@ func (a Uint16) AppendText(dst []byte) ([]byte, error) {
 // String returns the string representation of a in base 10.
 func (a Uint16) String() string {
 	return formatUint(uint64(a), 10)
+}
+
+// Format implements [fmt.Formatter].
+func (a Uint16) Format(s fmt.State, verb rune) {
+	format(s, verb, a.Sign(), a)
 }
