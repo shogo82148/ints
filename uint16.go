@@ -3,6 +3,7 @@ package ints
 import (
 	"cmp"
 	"fmt"
+	"math/bits"
 )
 
 // Uint16 is a type that represents an 16-bit unsigned integer.
@@ -131,6 +132,11 @@ func (a Uint16) Lsh(i uint) Uint16 {
 // This function's execution time does not depend on the inputs.
 func (a Uint16) Rsh(i uint) Uint16 {
 	return a >> i
+}
+
+// LeadingZeros returns the number of leading zero bits in a; the result is 16 for a == 0.
+func (a Uint16) LeadingZeros() int {
+	return bits.LeadingZeros16(uint16(a))
 }
 
 // Sign returns the sign of a.

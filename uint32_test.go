@@ -253,6 +253,24 @@ func TestUint32_Rsh(t *testing.T) {
 	}
 }
 
+func TestUint32_LeadingZeros(t *testing.T) {
+	testCases := []struct {
+		x    Uint32
+		want int
+	}{
+		{0, 32},
+		{1, 31},
+		{2, 30},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.LeadingZeros()
+		if got != tc.want {
+			t.Errorf("Uint32(%d).LeadingZeros() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint32_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint32
