@@ -65,6 +65,92 @@ func (a Int512) Mul(b Int512) Int512 {
 	return c
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Int512.DivMod] for more details.
+func (a Int512) Div(b Int512) Int512 {
+	q, _ := a.DivMod(b)
+	return q
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Int512.DivMod] for more details.
+func (a Int512) Mod(b Int512) Int512 {
+	_, r := a.DivMod(b)
+	return r
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Int512.QuoRem] for T-division and modulus (like Go).
+func (a Int512) DivMod(b Int512) (Int512, Int512) {
+	q, r := a.QuoRem(b)
+	if r.Sign() < 0 {
+		if b.Sign() > 0 {
+			r = r.Add(b)
+			q = q.Sub(Int512{0, 0, 0, 0, 0, 0, 0, 1})
+		} else {
+			r = r.Sub(b)
+			q = q.Add(Int512{0, 0, 0, 0, 0, 0, 0, 1})
+		}
+	}
+	return q, r
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Int512.QuoRem] for more details.
+func (a Int512) Quo(b Int512) Int512 {
+	q, _ := a.QuoRem(b)
+	return q
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Int512.QuoRem] for more details.
+func (a Int512) Rem(b Int512) Int512 {
+	_, r := a.QuoRem(b)
+	return r
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Int512.DivMod] for Euclidean division and modulus (unlike Go).
+func (a Int512) QuoRem(b Int512) (Int512, Int512) {
+	var negA, negB bool
+	if a.Sign() < 0 {
+		negA = true
+		a = a.Neg()
+	}
+	if b.Sign() < 0 {
+		negB = true
+		b = b.Neg()
+	}
+
+	q, r := Uint512(a).DivMod(Uint512(b))
+	if negA != negB {
+		q = q.Neg()
+	}
+	if negA {
+		r = r.Neg()
+	}
+	return Int512(q), Int512(r)
+}
+
 // And returns the bitwise AND of a and b.
 func (a Int512) And(b Int512) Int512 {
 	return Int512{
