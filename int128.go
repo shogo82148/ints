@@ -2,6 +2,7 @@ package ints
 
 import (
 	"cmp"
+	"fmt"
 	"math/bits"
 )
 
@@ -107,4 +108,14 @@ func (a Int128) AppendText(dst []byte) ([]byte, error) {
 func (a Int128) String() string {
 	_, s := formatBits128(nil, a[0], a[1], 10, int64(a[0]) < 0, false)
 	return s
+}
+
+// Format implements [fmt.Formatter].
+func (a Int128) Format(s fmt.State, verb rune) {
+	sign := a.Sign()
+	b := Uint128(a)
+	if sign < 0 {
+		b = b.Neg()
+	}
+	format(s, verb, sign, b)
 }

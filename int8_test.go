@@ -1,6 +1,7 @@
 package ints
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 	"strconv"
@@ -170,6 +171,33 @@ func TestInt8_String(t *testing.T) {
 		want := strconv.FormatInt(int64(i), 10)
 		if got != want {
 			t.Errorf("Int8(%d).String() = %q, want %q", i, got, want)
+		}
+	}
+}
+
+func TestInt8_Format(t *testing.T) {
+	tests := []struct {
+		format string
+		value  Int8
+		want   string
+	}{
+		// decimal
+		{
+			"%d",
+			0,
+			"0",
+		},
+		{
+			"%d",
+			-128,
+			"-128",
+		},
+	}
+
+	for _, tt := range tests {
+		got := fmt.Sprintf(tt.format, tt.value)
+		if got != tt.want {
+			t.Errorf("%#v: want %q, got %q", tt, tt.want, got)
 		}
 	}
 }

@@ -1,6 +1,9 @@
 package ints
 
-import "cmp"
+import (
+	"cmp"
+	"fmt"
+)
 
 // Int16 is a type that represents an 16-bit signed integer.
 // It is an alias for the built-in int16 type.
@@ -74,4 +77,14 @@ func (a Int16) AppendText(dst []byte) ([]byte, error) {
 // String returns the string representation of a in base 10.
 func (a Int16) String() string {
 	return formatInt(int64(a), 10)
+}
+
+// Format implements [fmt.Formatter].
+func (a Int16) Format(s fmt.State, verb rune) {
+	sign := a.Sign()
+	b := Uint16(a)
+	if sign < 0 {
+		b = b.Neg()
+	}
+	format(s, verb, sign, b)
 }

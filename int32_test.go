@@ -1,6 +1,7 @@
 package ints
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 	"testing"
@@ -191,4 +192,31 @@ func FuzzInt32_String(f *testing.F) {
 			t.Errorf("Int32(%d).String() = %q, want %q", x, got, want)
 		}
 	})
+}
+
+func TestInt32_Format(t *testing.T) {
+	tests := []struct {
+		format string
+		value  Int32
+		want   string
+	}{
+		// decimal
+		{
+			"%d",
+			0,
+			"0",
+		},
+		{
+			"%d",
+			-2147483648,
+			"-2147483648",
+		},
+	}
+
+	for _, tt := range tests {
+		got := fmt.Sprintf(tt.format, tt.value)
+		if got != tt.want {
+			t.Errorf("%#v: want %q, got %q", tt, tt.want, got)
+		}
+	}
 }

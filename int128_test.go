@@ -1,6 +1,7 @@
 package ints
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 	"runtime"
@@ -306,5 +307,32 @@ func BenchmarkInt128_String(b *testing.B) {
 	a := Int128{1 << 63, 0}
 	for b.Loop() {
 		runtime.KeepAlive(a.String())
+	}
+}
+
+func TestInt128_Format(t *testing.T) {
+	tests := []struct {
+		format string
+		value  Int128
+		want   string
+	}{
+		// decimal
+		{
+			"%d",
+			Int128{0, 0},
+			"0",
+		},
+		{
+			"%d",
+			Int128{0x80000000_00000000, 0},
+			"-170141183460469231731687303715884105728",
+		},
+	}
+
+	for _, tt := range tests {
+		got := fmt.Sprintf(tt.format, tt.value)
+		if got != tt.want {
+			t.Errorf("%#v: want %q, got %q", tt, tt.want, got)
+		}
 	}
 }
