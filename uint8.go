@@ -25,6 +25,20 @@ func (a Uint8) Mul(b Uint8) Uint8 {
 	return a * b
 }
 
+// Lsh returns the logical left shift a<<i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint8) Lsh(i uint) Uint8 {
+	return a << i
+}
+
+// Rsh returns the logical right shift a>>i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint8) Rsh(i uint) Uint8 {
+	return a >> i
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint8 is unsigned.

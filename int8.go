@@ -27,6 +27,20 @@ func (a Int8) Mul(b Int8) Int8 {
 	return a * b
 }
 
+// Lsh returns the logical left shift a<<i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int8) Lsh(i uint) Int8 {
+	return a << i
+}
+
+// Rsh returns the arithmetic right shift a>>i, preserving the sign bit.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int8) Rsh(i uint) Int8 {
+	return a >> i
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
 func (a Int8) Sign() int {

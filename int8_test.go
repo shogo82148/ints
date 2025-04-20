@@ -55,6 +55,69 @@ func FuzzInt8_Mul(f *testing.F) {
 	})
 }
 
+func TestInt8_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Int8
+		i    uint
+		want Int8
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 2},
+		{1, 2, 4},
+		{1, 3, 8},
+		{1, 4, 16},
+		{1, 5, 32},
+		{1, 6, 64},
+		{1, 7, -128},
+		{1, 8, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int8(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestInt8_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Int8
+		i    uint
+		want Int8
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{64, 0, 64},
+		{64, 1, 32},
+		{64, 2, 16},
+		{64, 3, 8},
+		{64, 4, 4},
+		{64, 5, 2},
+		{64, 6, 1},
+		{64, 7, 0},
+
+		// Sign extension
+		{-128, 0, -128},
+		{-128, 1, -64},
+		{-128, 2, -32},
+		{-128, 3, -16},
+		{-128, 4, -8},
+		{-128, 5, -4},
+		{-128, 6, -2},
+		{-128, 7, -1},
+		{-128, 8, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int8(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestInt8_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int8

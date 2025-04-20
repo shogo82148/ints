@@ -35,6 +35,20 @@ func (a Uint64) Sign() int {
 	return 1
 }
 
+// Lsh returns the logical left shift a<<i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint64) Lsh(i uint) Uint64 {
+	return a << i
+}
+
+// Rsh returns the logical right shift a>>i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint64) Rsh(i uint) Uint64 {
+	return a >> i
+}
+
 // Neg returns the negation of a.
 //
 // This function's execution time does not depend on the inputs.

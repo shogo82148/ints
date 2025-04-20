@@ -54,6 +54,56 @@ func FuzzInt32_Mul(f *testing.F) {
 	})
 }
 
+func TestInt32_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Int32
+		i    uint
+		want Int32
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 2},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int32(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestInt32_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Int32
+		i    uint
+		want Int32
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 0},
+		{math.MaxInt32, 1, math.MaxInt32 >> 1},
+
+		// Sign extension
+		{-128, 0, -128},
+		{-128, 1, -64},
+		{-128, 2, -32},
+		{-128, 3, -16},
+		{-128, 4, -8},
+		{-128, 5, -4},
+		{-128, 6, -2},
+		{-128, 7, -1},
+		{-128, 8, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int32(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestInt32_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int32
