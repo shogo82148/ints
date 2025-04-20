@@ -57,6 +57,56 @@ func (a Int256) Mul(b Int256) Int256 {
 	return c
 }
 
+// And returns the bitwise AND of a and b.
+func (a Int256) And(b Int256) Int256 {
+	return Int256{
+		a[0] & b[0],
+		a[1] & b[1],
+		a[2] & b[2],
+		a[3] & b[3],
+	}
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Int256) AndNot(b Int256) Int256 {
+	return Int256{
+		a[0] &^ b[0],
+		a[1] &^ b[1],
+		a[2] &^ b[2],
+		a[3] &^ b[3],
+	}
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Int256) Or(b Int256) Int256 {
+	return Int256{
+		a[0] | b[0],
+		a[1] | b[1],
+		a[2] | b[2],
+		a[3] | b[3],
+	}
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Int256) Xor(b Int256) Int256 {
+	return Int256{
+		a[0] ^ b[0],
+		a[1] ^ b[1],
+		a[2] ^ b[2],
+		a[3] ^ b[3],
+	}
+}
+
+// Not returns the bitwise NOT of a.
+func (a Int256) Not() Int256 {
+	return Int256{
+		^a[0],
+		^a[1],
+		^a[2],
+		^a[3],
+	}
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

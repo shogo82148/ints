@@ -33,6 +33,31 @@ func (a Uint16) Mul(b Uint16) Uint16 {
 	return a * b
 }
 
+// And returns the bitwise AND of a and b.
+func (a Uint16) And(b Uint16) Uint16 {
+	return a & b
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Uint16) AndNot(b Uint16) Uint16 {
+	return a &^ b
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Uint16) Or(b Uint16) Uint16 {
+	return a | b
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Uint16) Xor(b Uint16) Uint16 {
+	return a ^ b
+}
+
+// Not returns the bitwise NOT of a.
+func (a Uint16) Not() Uint16 {
+	return ^a
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

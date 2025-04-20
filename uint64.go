@@ -33,14 +33,29 @@ func (a Uint64) Mul(b Uint64) Uint64 {
 	return a * b
 }
 
-// Sign returns the sign of a.
-// It returns 1 if a > 0, and 0 if a == 0.
-// It does not return -1 because Uint64 is unsigned.
-func (a Uint64) Sign() int {
-	if a == 0 {
-		return 0
-	}
-	return 1
+// And returns the bitwise AND of a and b.
+func (a Uint64) And(b Uint64) Uint64 {
+	return a & b
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Uint64) AndNot(b Uint64) Uint64 {
+	return a &^ b
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Uint64) Or(b Uint64) Uint64 {
+	return a | b
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Uint64) Xor(b Uint64) Uint64 {
+	return a ^ b
+}
+
+// Not returns the bitwise NOT of a.
+func (a Uint64) Not() Uint64 {
+	return ^a
 }
 
 // Lsh returns the logical left shift a<<i.
@@ -55,6 +70,16 @@ func (a Uint64) Lsh(i uint) Uint64 {
 // This function's execution time does not depend on the inputs.
 func (a Uint64) Rsh(i uint) Uint64 {
 	return a >> i
+}
+
+// Sign returns the sign of a.
+// It returns 1 if a > 0, and 0 if a == 0.
+// It does not return -1 because Uint64 is unsigned.
+func (a Uint64) Sign() int {
+	if a == 0 {
+		return 0
+	}
+	return 1
 }
 
 // Neg returns the negation of a.

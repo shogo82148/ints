@@ -56,6 +56,104 @@ func FuzzInt8_Mul(f *testing.F) {
 	})
 }
 
+func TestInt8_And(t *testing.T) {
+	testCases := []struct {
+		a, b Int8
+		want Int8
+	}{
+		{0, 0, 0},
+		{1, 0, 0},
+		{1, 1, 1},
+		{1, -1, 1},
+		{-1, -1, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.And(tc.b)
+		if got != tc.want {
+			t.Errorf("Int8(%d).And(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
+func TestInt8_AndNot(t *testing.T) {
+	testCases := []struct {
+		a, b Int8
+		want Int8
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 0},
+		{1, -1, 0},
+		{-1, -1, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.AndNot(tc.b)
+		if got != tc.want {
+			t.Errorf("Int8(%d).AndNot(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
+func TestInt8_Or(t *testing.T) {
+	testCases := []struct {
+		a, b Int8
+		want Int8
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 1},
+		{1, -1, -1},
+		{-1, -1, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Or(tc.b)
+		if got != tc.want {
+			t.Errorf("Int8(%d).Or(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
+func TestInt8_Xor(t *testing.T) {
+	testCases := []struct {
+		a, b Int8
+		want Int8
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 0},
+		{1, -1, -2},
+		{-1, -1, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Xor(tc.b)
+		if got != tc.want {
+			t.Errorf("Int8(%d).Xor(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
+func TestInt8_Not(t *testing.T) {
+	testCases := []struct {
+		x    Int8
+		want Int8
+	}{
+		{0, -1},
+		{1, -2},
+		{-1, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Not()
+		if got != tc.want {
+			t.Errorf("Int8(%d).Not() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestInt8_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Int8

@@ -35,6 +35,31 @@ func (a Int8) Mul(b Int8) Int8 {
 	return a * b
 }
 
+// And returns the bitwise AND of a and b.
+func (a Int8) And(b Int8) Int8 {
+	return a & b
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Int8) AndNot(b Int8) Int8 {
+	return a &^ b
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Int8) Or(b Int8) Int8 {
+	return a | b
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Int8) Xor(b Int8) Int8 {
+	return a ^ b
+}
+
+// Not returns the bitwise NOT of a.
+func (a Int8) Not() Int8 {
+	return ^a
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.
