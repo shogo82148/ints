@@ -9,6 +9,12 @@ import (
 // Uint128 is a type that represents an 128-bit unsigned integer.
 type Uint128 [2]uint64
 
+// IsZero returns true if a is zero.
+func (a Uint128) IsZero() bool {
+	var zero Uint128
+	return a == zero
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.

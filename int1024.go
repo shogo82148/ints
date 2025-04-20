@@ -9,6 +9,12 @@ import (
 // Int1024 is a type that represents an 1024-bit signed integer.
 type Int1024 [16]uint64
 
+// IsZero returns true if a is zero.
+func (a Int1024) IsZero() bool {
+	var zero Int1024
+	return a == zero
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.

@@ -9,6 +9,11 @@ import (
 // It is an alias for the built-in uint16 type.
 type Uint16 uint16
 
+// IsZero returns true if a is zero.
+func (a Uint16) IsZero() bool {
+	return a == 0
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.
