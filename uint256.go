@@ -236,6 +236,16 @@ func (a Uint256) QuoRem(b Uint256) (Uint256, Uint256) {
 	return a.DivMod(b)
 }
 
+// And returns the bitwise AND of a and b.
+func (a Uint256) And(b Uint256) Uint256 {
+	return Uint256{a[0] & b[0], a[1] & b[1], a[2] & b[2], a[3] & b[3]}
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Uint256) Or(b Uint256) Uint256 {
+	return Uint256{a[0] | b[0], a[1] | b[1], a[2] | b[2], a[3] | b[3]}
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.
@@ -278,6 +288,20 @@ func (a Uint256) Rsh(i uint) Uint256 {
 		a[2]>>i | a[1]>>n1 | a[1]<<n2 | a[0]>>n3 | a[0]<<n4,
 		a[3]>>i | a[2]>>n1 | a[2]<<n2 | a[1]>>n3 | a[1]<<n4 | a[0]>>n5 | a[0]<<n6,
 	}
+}
+
+// LeadingZeros returns the number of leading zero bits in x; the result is 256 for x == 0.
+func (a Uint256) LeadingZeros() int {
+	if a[0] != 0 {
+		return bits.LeadingZeros64(a[0])
+	}
+	if a[1] != 0 {
+		return bits.LeadingZeros64(a[1]) + 64
+	}
+	if a[2] != 0 {
+		return bits.LeadingZeros64(a[2]) + 128
+	}
+	return bits.LeadingZeros64(a[3]) + 192
 }
 
 // Sign returns the sign of a.

@@ -165,7 +165,7 @@ func (a Uint128) Rsh(i uint) Uint128 {
 	}
 }
 
-// LeadingZeros64 returns the number of leading zero bits in x; the result is 128 for x == 0.
+// LeadingZeros returns the number of leading zero bits in x; the result is 128 for x == 0.
 func (a Uint128) LeadingZeros() int {
 	if a[0] != 0 {
 		return bits.LeadingZeros64(a[0])
