@@ -168,7 +168,7 @@ func (a Int8) String() string {
 // Format implements [fmt.Formatter].
 func (a Int8) Format(s fmt.State, verb rune) {
 	sign := a.Sign()
-	b := Int8(a)
+	b := Uint8(a)
 	if sign < 0 {
 		b = b.Neg()
 	}
