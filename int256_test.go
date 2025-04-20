@@ -181,6 +181,57 @@ func FuzzInt256_DivMod(f *testing.F) {
 	})
 }
 
+func FuzzInt256_QuoRem(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(0), uint64(0), uint64(0), // 0
+		uint64(0), uint64(0), uint64(0), uint64(0), // 0
+	)
+	f.Add(
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), // -1
+		uint64(1<<63-1), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), // MaxInt256
+	)
+	f.Add(
+		uint64(1<<63), uint64(0), uint64(0), uint64(0), // MinInt256
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), // -1
+	)
+
+	base := new(big.Int).Lsh(big.NewInt(1), 256-1)
+	mod := new(big.Int).Lsh(big.NewInt(1), 256)
+	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, v0, v1, v2, v3 uint64) {
+		a := Int256{u0, u1, u2, u3}
+		b := Int256{v0, v1, v2, v3}
+		if b.IsZero() {
+			t.Skip("division by zero")
+		}
+		q, r := a.QuoRem(b)
+		gotQ := int256ToBigInt(q)
+		gotR := int256ToBigInt(r)
+
+		ba := int256ToBigInt(a)
+		bb := int256ToBigInt(b)
+		wantQ, wantR := new(big.Int).QuoRem(ba, bb, new(big.Int))
+		wantQ = wantQ.Add(wantQ, base)
+		wantQ = wantQ.Mod(wantQ, mod)
+		wantQ = wantQ.Sub(wantQ, base)
+
+		if gotQ.Cmp(wantQ) != 0 || gotR.Cmp(wantR) != 0 {
+			t.Errorf("Int256(%s).QuoRem(%s) = (%d, %d), want (%d, %d)", a, b, gotQ, gotR, wantQ, wantR)
+		}
+
+		q = a.Quo(b)
+		gotQ = int256ToBigInt(q)
+		if gotQ.Cmp(wantQ) != 0 {
+			t.Errorf("Int256(%s).Quo(%s) = %d, want %d", a, b, gotQ, wantQ)
+		}
+
+		r = a.Rem(b)
+		gotR = int256ToBigInt(r)
+		if gotR.Cmp(wantR) != 0 {
+			t.Errorf("Int256(%s).Rem(%s) = %d, want %d", a, b, gotR, wantR)
+		}
+	})
+}
+
 func TestInt256_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Int256
