@@ -67,6 +67,9 @@ func TestInt8_DivMod(t *testing.T) {
 		{127, -10, -12, 7},
 		{-127, 10, -13, 3},
 		{-127, -10, 13, 3},
+
+		// integer overflow
+		{-128, -1, -128, 0},
 	}
 
 	for _, tc := range testCases {
@@ -100,6 +103,9 @@ func TestInt8_QuoRem(t *testing.T) {
 		{127, -10, -12, 7},
 		{-127, 10, -12, -7},
 		{-127, -10, 12, -7},
+
+		// integer overflow
+		{-128, -1, -128, 0},
 	}
 
 	for _, tc := range testCases {
