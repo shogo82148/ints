@@ -52,6 +52,45 @@ func FuzzUint8_Mul(f *testing.F) {
 	})
 }
 
+func TestUint8_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Uint8
+		i    uint
+		want Uint8
+	}{
+		{0, 0, 0},
+		{1, 1, 2},
+		{1, 7, 128},
+		{1, 8, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Uint8(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestUint8_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Uint8
+		i    uint
+		want Uint8
+	}{
+		{0, 0, 0},
+		{1, 1, 0},
+		{0xff, 1, 0x7f},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Uint8(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestUint8_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint8

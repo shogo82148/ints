@@ -98,6 +98,50 @@ func (a Uint256) Mul(b Uint256) Uint256 {
 	return Uint256{u0, u1, u2, u3}
 }
 
+// Lsh returns the logical left shift a<<i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint256) Lsh(i uint) Uint256 {
+	// This operation may overflow, but it's okay because when it overflows,
+	// the result is always greater than or equal to 64.
+	// And shifts of 64 bits or more always result in 0, so they don't affect the final result.
+	n1 := uint(i - 64)
+	n2 := uint(64 - i)
+	n3 := uint(i - 128)
+	n4 := uint(128 - i)
+	n5 := uint(i - 192)
+	n6 := uint(192 - i)
+
+	return Uint256{
+		a[0]<<i | a[1]<<n1 | a[1]>>n2 | a[2]<<n3 | a[2]>>n4 | a[3]<<n5 | a[3]>>n6,
+		a[1]<<i | a[2]<<n1 | a[2]>>n2 | a[3]<<n3 | a[3]>>n4,
+		a[2]<<i | a[3]<<n1 | a[3]>>n2,
+		a[3] << i,
+	}
+}
+
+// Rsh returns the logical right shift a>>i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint256) Rsh(i uint) Uint256 {
+	// This operation may overflow, but it's okay because when it overflows,
+	// the result is always greater than or equal to 64.
+	// And shifts of 64 bits or more always result in 0, so they don't affect the final result.
+	n1 := uint(i - 64)
+	n2 := uint(64 - i)
+	n3 := uint(i - 128)
+	n4 := uint(128 - i)
+	n5 := uint(i - 192)
+	n6 := uint(192 - i)
+
+	return Uint256{
+		a[0] >> i,
+		a[1]>>i | a[0]>>n1 | a[0]<<n2,
+		a[2]>>i | a[1]>>n1 | a[1]<<n2 | a[0]>>n3 | a[0]<<n4,
+		a[3]>>i | a[2]>>n1 | a[2]<<n2 | a[1]>>n3 | a[1]<<n4 | a[0]>>n5 | a[0]<<n6,
+	}
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint128 is unsigned.

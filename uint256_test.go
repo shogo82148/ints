@@ -104,6 +104,108 @@ func FuzzUint256_Mul(f *testing.F) {
 	})
 }
 
+func TestUint256_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Uint256
+		i    uint
+		want Uint256
+	}{
+		{
+			Uint256{0, 0, 0, 0},
+			0,
+			Uint256{0, 0, 0, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			1,
+			Uint256{2, 2, 2, 2},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			64,
+			Uint256{1, 1, 1, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			65,
+			Uint256{2, 2, 2, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			128,
+			Uint256{1, 1, 0, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			129,
+			Uint256{2, 2, 0, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			192,
+			Uint256{1, 0, 0, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			193,
+			Uint256{2, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Uint256(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestUint256_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Uint256
+		i    uint
+		want Uint256
+	}{
+		{
+			Uint256{0, 0, 0, 0},
+			0,
+			Uint256{0, 0, 0, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			1,
+			Uint256{0, 0x80000000_00000000, 0x80000000_00000000, 0x80000000_00000000},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			64,
+			Uint256{0, 1, 1, 1},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			65,
+			Uint256{0, 0, 0x80000000_00000000, 0x80000000_00000000},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			128,
+			Uint256{0, 0, 1, 1},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			129,
+			Uint256{0, 0, 0, 0x80000000_00000000},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Uint256(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestUint256_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint256

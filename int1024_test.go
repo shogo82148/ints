@@ -154,6 +154,60 @@ func FuzzInt1024_Mul(f *testing.F) {
 	})
 }
 
+func TestInt1024_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Int1024
+		i    uint
+		want Int1024
+	}{
+		{
+			Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			0,
+			Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Uint1024(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestInt1024_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Int1024
+		i    uint
+		want Int1024
+	}{
+		{
+			Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			0,
+			Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+
+		// sign extension
+		{
+			Int1024{0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			1,
+			Int1024{0xc0000000_00000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			Int1024{0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			64,
+			Int1024{0xffffffff_ffffffff, 0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Uint1024(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestInt1024_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int1024

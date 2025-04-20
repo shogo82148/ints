@@ -55,6 +55,48 @@ func FuzzInt16_Mul(f *testing.F) {
 	})
 }
 
+func TestInt16_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Int16
+		i    uint
+		want Int16
+	}{
+		{0, 1, 0},
+		{1, 1, 2},
+		{-1, 1, -2},
+		{127, 1, 254},
+		{-128, 1, -256},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int16(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestInt16_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Int16
+		i    uint
+		want Int16
+	}{
+		{0, 1, 0},
+		{1, 1, 0},
+		{-1, 1, -1},
+		{127, 1, 63},
+		{-128, 1, -64},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int16(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestInt16_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int16

@@ -46,6 +46,39 @@ func (a Int128) Mul(b Int128) Int128 {
 	return c
 }
 
+// Lsh returns the logical left shift a<<i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int128) Lsh(i uint) Int128 {
+	// This operation may overflow, but it's okay because when it overflows,
+	// the result is always greater than or equal to 64.
+	// And shifts of 64 bits or more always result in 0, so they don't affect the final result.
+	n := uint(i - 64)
+	m := uint(64 - i)
+
+	return Int128{
+		a[0]<<i | a[1]<<n | a[1]>>m,
+		a[1] << i,
+	}
+}
+
+// Rsh returns the logical right shift a>>i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Int128) Rsh(i uint) Int128 {
+	// This operation may overflow, but it's okay because when it overflows,
+	// the result is always greater than or equal to 64.
+	// And shifts of 64 bits or more always result in 0, so they don't affect the final result.
+	n, v := bits.Sub(i, 64, 0)
+	m := uint(64 - i)
+	mask := uint64(int(v) - 1)
+
+	return Int128{
+		uint64(int64(a[0]) >> i),
+		mask&uint64(int64(a[0])>>n) | a[0]<<m | a[1]>>i,
+	}
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, -1 if a < 0, and 0 if a == 0.
 func (a Int128) Sign() int {

@@ -129,6 +129,46 @@ func FuzzInt256_Mul(f *testing.F) {
 	})
 }
 
+func TestInt256_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Int256
+		i    uint
+		want Int256
+	}{
+		{Int256{0, 0, 0, 0}, 0, Int256{0, 0, 0, 0}},
+		{Int256{1, 0, 0, 0}, 1, Int256{2, 0, 0, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int256(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestInt256_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Int256
+		i    uint
+		want Int256
+	}{
+		{Int256{0, 0, 0, 0}, 0, Int256{0, 0, 0, 0}},
+		{Int256{1, 0, 0, 0}, 1, Int256{0, 0x80000000_00000000, 0, 0}},
+
+		// sign extension
+		{Int256{0x80000000_00000000, 0, 0, 0}, 1, Int256{0xc0000000_00000000, 0, 0, 0}},
+		{Int256{0xffffffff_ffffffff, 0xffffffff_ffffffff, 0xffffffff_ffffffff, 0xffffffff_ffffffff}, 1, Int256{0xffffffff_ffffffff, 0xffffffff_ffffffff, 0xffffffff_ffffffff, 0xffffffff_ffffffff}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int256(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestInt256_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int256

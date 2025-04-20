@@ -143,6 +143,72 @@ func FuzzInt512_Mul(f *testing.F) {
 	})
 }
 
+func TestInt512_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Int512
+		i    uint
+		want Int512
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, 0, Int512{0, 0, 0, 0, 0, 0, 0, 0}},
+		{Int512{1, 1, 1, 1, 1, 1, 1, 1}, 1, Int512{2, 2, 2, 2, 2, 2, 2, 2}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int512(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Int512
+		i    uint
+		want Int512
+	}{
+		{
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+			1,
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			Int512{2, 2, 2, 2, 2, 2, 2, 2},
+			1,
+			Int512{1, 1, 1, 1, 1, 1, 1, 1},
+		},
+
+		// sign extension
+		{
+			Int512{0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0},
+			1,
+			Int512{0xc0000000_00000000, 0, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			Int512{0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0},
+			64,
+			Int512{0xffffffff_ffffffff, 0x80000000_00000000, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			Int512{0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0},
+			128,
+			Int512{0xffffffff_ffffffff, 0xffffffff_ffffffff, 0x80000000_00000000, 0, 0, 0, 0, 0},
+		},
+		{
+			Int512{0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0},
+			192,
+			Int512{0xffffffff_ffffffff, 0xffffffff_ffffffff, 0xffffffff_ffffffff, 0x80000000_00000000, 0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int512(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestInt512_Neg(t *testing.T) {
 	testCases := []struct {
 		x    Int512

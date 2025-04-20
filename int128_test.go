@@ -129,6 +129,53 @@ func FuzzInt128_Mul(f *testing.F) {
 	})
 }
 
+func TestInt128_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Int128
+		i    uint
+		want Int128
+	}{
+		{Int128{0, 0}, 0, Int128{0, 0}},
+		{Int128{1, 0}, 1, Int128{2, 0}},
+		{Int128{1, 0}, 2, Int128{4, 0}},
+		{Int128{1, 0}, 3, Int128{8, 0}},
+		{Int128{1, 0}, 4, Int128{16, 0}},
+		{Int128{0, 1}, 64, Int128{1, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int128(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestInt128_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Int128
+		i    uint
+		want Int128
+	}{
+		{Int128{0, 0}, 0, Int128{0, 0}},
+		{Int128{1, 0}, 1, Int128{0, 0x80000000_00000000}},
+		{Int128{1, 0}, 2, Int128{0, 0x40000000_00000000}},
+		{Int128{8, 0}, 3, Int128{1, 0}},
+		{Int128{1, 0}, 64, Int128{0, 1}},
+
+		// Sign extension
+		{Int128{0x80000000_00000000, 0}, 1, Int128{0xc0000000_00000000, 0}},
+		{Int128{0x80000000_00000000, 0}, 2, Int128{0xe0000000_00000000, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int128(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestInt128_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int128

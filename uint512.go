@@ -260,6 +260,74 @@ func (a Uint512) Mul(b Uint512) Uint512 {
 	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
 }
 
+// Lsh returns the logical left shift a<<i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint512) Lsh(i uint) Uint512 {
+	// This operation may overflow, but it's okay because when it overflows,
+	// the result is always greater than or equal to 64.
+	// And shifts of 64 bits or more always result in 0, so they don't affect the final result.
+	n1 := uint(i - 64)
+	n2 := uint(64 - i)
+	n3 := uint(i - 128)
+	n4 := uint(128 - i)
+	n5 := uint(i - 192)
+	n6 := uint(192 - i)
+	n7 := uint(i - 256)
+	n8 := uint(256 - i)
+	n9 := uint(i - 320)
+	n10 := uint(320 - i)
+	n11 := uint(i - 384)
+	n12 := uint(384 - i)
+	n13 := uint(i - 448)
+	n14 := uint(448 - i)
+
+	return Uint512{
+		a[0]<<i | a[1]<<n1 | a[1]>>n2 | a[2]<<n3 | a[2]>>n4 | a[3]<<n5 | a[3]>>n6 | a[4]<<n7 | a[4]>>n8 | a[5]<<n9 | a[5]>>n10 | a[6]<<n11 | a[6]>>n12 | a[7]<<n13 | a[7]>>n14,
+		a[1]<<i | a[2]<<n1 | a[2]>>n2 | a[3]<<n3 | a[3]>>n4 | a[4]<<n5 | a[4]>>n6 | a[5]<<n7 | a[5]>>n8 | a[6]<<n9 | a[6]>>n10 | a[7]<<n11 | a[7]>>n12,
+		a[2]<<i | a[3]<<n1 | a[3]>>n2 | a[4]<<n3 | a[4]>>n4 | a[5]<<n5 | a[5]>>n6 | a[6]<<n7 | a[6]>>n8 | a[7]<<n9 | a[7]>>n10,
+		a[3]<<i | a[4]<<n1 | a[4]>>n2 | a[5]<<n3 | a[5]>>n4 | a[6]<<n5 | a[6]>>n6 | a[7]<<n7 | a[7]>>n8,
+		a[4]<<i | a[5]<<n1 | a[5]>>n2 | a[6]<<n3 | a[6]>>n4 | a[7]<<n5 | a[7]>>n6,
+		a[5]<<i | a[6]<<n1 | a[6]>>n2 | a[7]<<n3 | a[7]>>n4,
+		a[6]<<i | a[7]<<n1 | a[7]>>n2,
+		a[7] << i,
+	}
+}
+
+// Rsh returns the logical right shift a>>i.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint512) Rsh(i uint) Uint512 {
+	// This operation may overflow, but it's okay because when it overflows,
+	// the result is always greater than or equal to 64.
+	// And shifts of 64 bits or more always result in 0, so they don't affect the final result.
+	n1 := uint(i - 64)
+	n2 := uint(64 - i)
+	n3 := uint(i - 128)
+	n4 := uint(128 - i)
+	n5 := uint(i - 192)
+	n6 := uint(192 - i)
+	n7 := uint(i - 256)
+	n8 := uint(256 - i)
+	n9 := uint(i - 320)
+	n10 := uint(320 - i)
+	n11 := uint(i - 384)
+	n12 := uint(384 - i)
+	n13 := uint(i - 448)
+	n14 := uint(448 - i)
+
+	return Uint512{
+		a[0] >> i,
+		a[1]>>i | a[0]>>n1 | a[0]<<n2,
+		a[2]>>i | a[1]>>n1 | a[1]<<n2 | a[0]>>n3 | a[0]<<n4,
+		a[3]>>i | a[2]>>n1 | a[2]<<n2 | a[1]>>n3 | a[1]<<n4 | a[0]>>n5 | a[0]<<n6,
+		a[4]>>i | a[3]>>n1 | a[3]<<n2 | a[2]>>n3 | a[2]<<n4 | a[1]>>n5 | a[1]<<n6 | a[0]>>n7 | a[0]<<n8,
+		a[5]>>i | a[4]>>n1 | a[4]<<n2 | a[3]>>n3 | a[3]<<n4 | a[2]>>n5 | a[2]<<n6 | a[1]>>n7 | a[1]<<n8 | a[0]>>n9 | a[0]<<n10,
+		a[6]>>i | a[5]>>n1 | a[5]<<n2 | a[4]>>n3 | a[4]<<n4 | a[3]>>n5 | a[3]<<n6 | a[2]>>n7 | a[2]<<n8 | a[1]>>n9 | a[1]<<n10 | a[0]>>n11 | a[0]<<n12,
+		a[7]>>i | a[6]>>n1 | a[6]<<n2 | a[5]>>n3 | a[5]<<n4 | a[4]>>n5 | a[4]<<n6 | a[3]>>n7 | a[3]<<n8 | a[2]>>n9 | a[2]<<n10 | a[1]>>n11 | a[1]<<n12 | a[0]>>n13 | a[0]<<n14,
+	}
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint512 is unsigned.

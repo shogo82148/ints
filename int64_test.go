@@ -54,6 +54,53 @@ func FuzzInt64_Mul(f *testing.F) {
 	})
 }
 
+func TestInt64_Lsh(t *testing.T) {
+	testCases := []struct {
+		x    Int64
+		i    uint
+		want Int64
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 2},
+		{1, 2, 4},
+		{1, 3, 8},
+		{1, 4, 16},
+		{1, 5, 32},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Lsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int64(%d).Lsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
+func TestInt64_Rsh(t *testing.T) {
+	testCases := []struct {
+		x    Int64
+		i    uint
+		want Int64
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 0},
+		{math.MaxInt64, 1, math.MaxInt64 >> 1},
+
+		// Sign extension
+		{-128, 0, -128},
+		{-128, 1, -64},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Rsh(tc.i)
+		if got != tc.want {
+			t.Errorf("Int64(%d).Rsh(%d) = %d, want %d", tc.x, tc.i, got, tc.want)
+		}
+	}
+}
+
 func TestInt64_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Int64
