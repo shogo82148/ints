@@ -51,8 +51,8 @@ func (a Uint32) Mod(b Uint32) Uint32 {
 // DivMod returns the quotient and remainder of a/b.
 // DivMod implements Euclidean division and modulus (unlike Go):
 //
-//	q = x div y  such that
-//	m = x - y*q  with 0 <= m < |y|
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
 //
 // (See Raymond T. Boute, “The Euclidean definition of the functions
 // div and mod”. ACM Transactions on Programming Languages and
@@ -81,8 +81,8 @@ func (a Uint32) Rem(b Uint32) Uint32 {
 // QuoRem returns the quotient and remainder of a/b.
 // QuoRem implements T-division and modulus (like Go):
 //
-//	q = x/y      with the result truncated to zero
-//	r = x - y*q
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
 //
 // (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
 // See [Uint32.DivMod] for Euclidean division and modulus (unlike Go).
