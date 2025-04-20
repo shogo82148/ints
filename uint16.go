@@ -65,6 +65,8 @@ func (a Uint16) DivMod(b Uint16) (Uint16, Uint16) {
 // Quo returns the quotient a/b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Quo implements T-division (like Go); see [Uint16.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Quo simply forwards to Div.
 func (a Uint16) Quo(b Uint16) Uint16 {
 	return a / b
 }
@@ -72,6 +74,8 @@ func (a Uint16) Quo(b Uint16) Uint16 {
 // Rem returns the remainder a%b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Rem implements T-division (like Go); see [Uint16.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Rem simply forwards to Mod.
 func (a Uint16) Rem(b Uint16) Uint16 {
 	return a % b
 }
@@ -84,6 +88,8 @@ func (a Uint16) Rem(b Uint16) Uint16 {
 //
 // (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
 // See [Uint16.DivMod] for Euclidean division and modulus (unlike Go).
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore QuoRem simply forwards to DivMod.
 func (a Uint16) QuoRem(b Uint16) (Uint16, Uint16) {
 	return a / b, a % b
 }

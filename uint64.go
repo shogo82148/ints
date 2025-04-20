@@ -66,6 +66,8 @@ func (a Uint64) DivMod(b Uint64) (Uint64, Uint64) {
 // Quo returns the quotient a/b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Quo implements T-division (like Go); see [Uint64.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Quo simply forwards to Div.
 func (a Uint64) Quo(b Uint64) Uint64 {
 	return a / b
 }
@@ -73,6 +75,8 @@ func (a Uint64) Quo(b Uint64) Uint64 {
 // Rem returns the remainder a%b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Rem implements T-division (like Go); see [Uint64.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Rem simply forwards to Mod.
 func (a Uint64) Rem(b Uint64) Uint64 {
 	return a % b
 }
@@ -85,6 +89,8 @@ func (a Uint64) Rem(b Uint64) Uint64 {
 //
 // (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
 // See [Uint64.DivMod] for Euclidean division and modulus (unlike Go).
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore QuoRem simply forwards to DivMod.
 func (a Uint64) QuoRem(b Uint64) (Uint64, Uint64) {
 	q, r := bits.Div64(0, uint64(a), uint64(b))
 	return Uint64(q), Uint64(r)

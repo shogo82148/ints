@@ -375,6 +375,8 @@ func div256(hi, lo, y Uint256) (quo, rem Uint256) {
 // Quo returns the quotient a/b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Quo implements T-division (like Go); see [Uint512.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Quo simply forwards to Div.
 func (a Uint512) Quo(b Uint512) Uint512 {
 	return a.Div(b)
 }
@@ -382,6 +384,8 @@ func (a Uint512) Quo(b Uint512) Uint512 {
 // Rem returns the remainder a%b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Rem implements T-division (like Go); see [Uint512.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Rem simply forwards to Mod.
 func (a Uint512) Rem(b Uint512) Uint512 {
 	return a.Mod(b)
 }
@@ -394,6 +398,8 @@ func (a Uint512) Rem(b Uint512) Uint512 {
 //
 // (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
 // See [Uint512.DivMod] for Euclidean division and modulus (unlike Go).
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore QuoRem simply forwards to DivMod.
 func (a Uint512) QuoRem(b Uint512) (Uint512, Uint512) {
 	return a.DivMod(b)
 }
