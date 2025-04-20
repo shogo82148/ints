@@ -28,6 +28,61 @@ func (a Uint8) Mul(b Uint8) Uint8 {
 	return a * b
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Uint8.DivMod] for more details.
+func (a Uint8) Div(b Uint8) Uint8 {
+	return a / b
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Uint8.DivMod] for more details.
+func (a Uint8) Mod(b Uint8) Uint8 {
+	return a % b
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = x div y  such that
+//	m = x - y*q  with 0 <= m < |y|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Uint8.QuoRem] for T-division and modulus (like Go).
+func (a Uint8) DivMod(b Uint8) (Uint8, Uint8) {
+	return a / b, a % b
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Uint8.QuoRem] for more details.
+func (a Uint8) Quo(b Uint8) Uint8 {
+	return a / b
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Uint8.QuoRem] for more details.
+func (a Uint8) Rem(b Uint8) Uint8 {
+	return a % b
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = x/y      with the result truncated to zero
+//	r = x - y*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Uint8.DivMod] for Euclidean division and modulus (unlike Go).
+func (a Uint8) QuoRem(b Uint8) (Uint8, Uint8) {
+	return a / b, a % b
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

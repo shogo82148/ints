@@ -30,6 +30,73 @@ func (a Int16) Mul(b Int16) Int16 {
 	return a * b
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Int16.DivMod] for more details.
+func (a Int16) Div(b Int16) Int16 {
+	q, _ := a.DivMod(b)
+	return q
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Int16.DivMod] for more details.
+func (a Int16) Mod(b Int16) Int16 {
+	_, r := a.DivMod(b)
+	return r
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = x div y  such that
+//	m = x - y*q  with 0 <= m < |y|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Int16.QuoRem] for T-division and modulus (like Go).
+func (a Int16) DivMod(b Int16) (Int16, Int16) {
+	q, r := a/b, a%b
+	if r < 0 {
+		if b > 0 {
+			r += b
+			q--
+		} else {
+			r -= b
+			q++
+		}
+	}
+	return q, r
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Int16.QuoRem] for more details.
+func (a Int16) Quo(b Int16) Int16 {
+	return a / b
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Int16.QuoRem] for more details.
+func (a Int16) Rem(b Int16) Int16 {
+	return a % b
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = x/y      with the result truncated to zero
+//	r = x - y*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Int16.DivMod] for Euclidean division and modulus (unlike Go).
+func (a Int16) QuoRem(b Int16) (Int16, Int16) {
+	return a / b, a % b
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

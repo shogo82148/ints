@@ -30,6 +30,73 @@ func (a Int8) Mul(b Int8) Int8 {
 	return a * b
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Int8.DivMod] for more details.
+func (a Int8) Div(b Int8) Int8 {
+	q, _ := a.DivMod(b)
+	return q
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Int8.DivMod] for more details.
+func (a Int8) Mod(b Int8) Int8 {
+	_, r := a.DivMod(b)
+	return r
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = x div y  such that
+//	m = x - y*q  with 0 <= m < |y|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Int8.QuoRem] for T-division and modulus (like Go).
+func (a Int8) DivMod(b Int8) (Int8, Int8) {
+	q, r := a/b, a%b
+	if r < 0 {
+		if b > 0 {
+			r += b
+			q--
+		} else {
+			r -= b
+			q++
+		}
+	}
+	return q, r
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Int8.QuoRem] for more details.
+func (a Int8) Quo(b Int8) Int8 {
+	return a / b
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Int8.QuoRem] for more details.
+func (a Int8) Rem(b Int8) Int8 {
+	return a % b
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = x/y      with the result truncated to zero
+//	r = x - y*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Int8.DivMod] for Euclidean division and modulus (unlike Go).
+func (a Int8) QuoRem(b Int8) (Int8, Int8) {
+	return a / b, a % b
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.
@@ -96,7 +163,7 @@ func (a Int8) String() string {
 // Format implements [fmt.Formatter].
 func (a Int8) Format(s fmt.State, verb rune) {
 	sign := a.Sign()
-	b := Uint8(a)
+	b := Int8(a)
 	if sign < 0 {
 		b = b.Neg()
 	}

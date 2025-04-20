@@ -55,6 +55,72 @@ func FuzzInt64_Mul(f *testing.F) {
 	})
 }
 
+func TestInt64_DivMod(t *testing.T) {
+	testCases := []struct {
+		x, y Int64
+		z, r Int64
+	}{
+		{0, 1, 0, 0},
+		{100, 10, 10, 0},
+		{127, 10, 12, 7},
+		{127, -10, -12, 7},
+		{-127, 10, -13, 3},
+		{-127, -10, 13, 3},
+	}
+
+	for _, tc := range testCases {
+		z, r := tc.x.DivMod(tc.y)
+		if z != tc.z {
+			t.Errorf("Int64(%d).Div(%d) = %d, want %d", tc.x, tc.y, z, tc.z)
+		}
+		if r != tc.r {
+			t.Errorf("Int64(%d).Mod(%d) = %d, want %d", tc.x, tc.y, r, tc.r)
+		}
+
+		z = tc.x.Div(tc.y)
+		if z != tc.z {
+			t.Errorf("Int64(%d).Div(%d) = %d, want %d", tc.x, tc.y, z, tc.z)
+		}
+		r = tc.x.Mod(tc.y)
+		if r != tc.r {
+			t.Errorf("Int64(%d).Mod(%d) = %d, want %d", tc.x, tc.y, r, tc.r)
+		}
+	}
+}
+
+func TestInt64_QuoRem(t *testing.T) {
+	testCases := []struct {
+		x, y Int64
+		q, r Int64
+	}{
+		{0, 1, 0, 0},
+		{100, 10, 10, 0},
+		{127, 10, 12, 7},
+		{127, -10, -12, 7},
+		{-127, 10, -12, -7},
+		{-127, -10, 12, -7},
+	}
+
+	for _, tc := range testCases {
+		q, r := tc.x.QuoRem(tc.y)
+		if q != tc.q {
+			t.Errorf("Int64(%d).Quo(%d) = %d, want %d", tc.x, tc.y, q, tc.q)
+		}
+		if r != tc.r {
+			t.Errorf("Int64(%d).Rem(%d) = %d, want %d", tc.x, tc.y, r, tc.r)
+		}
+
+		q = tc.x.Quo(tc.y)
+		if q != tc.q {
+			t.Errorf("Int64(%d).Quo(%d) = %d, want %d", tc.x, tc.y, q, tc.q)
+		}
+		r = tc.x.Rem(tc.y)
+		if r != tc.r {
+			t.Errorf("Int64(%d).Rem(%d) = %d, want %d", tc.x, tc.y, r, tc.r)
+		}
+	}
+}
+
 func TestInt64_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Int64
