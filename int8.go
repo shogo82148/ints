@@ -34,7 +34,7 @@ func (a Int8) Lsh(i uint) Int8 {
 	return a << i
 }
 
-// Rsh returns the logical right shift a>>i.
+// Rsh returns the arithmetic right shift a>>i, preserving the sign bit.
 //
 // This function's execution time does not depend on the inputs.
 func (a Int8) Rsh(i uint) Int8 {

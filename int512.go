@@ -92,7 +92,7 @@ func (a Int512) Lsh(i uint) Int512 {
 	}
 }
 
-// Rsh returns the logical right shift a>>i.
+// Rsh returns the arithmetic right shift a>>i, preserving the sign bit.
 //
 // This function's execution time does not depend on the inputs.
 func (a Int512) Rsh(i uint) Int512 {
