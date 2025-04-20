@@ -43,6 +43,31 @@ func (a Uint128) Mul(b Uint128) Uint128 {
 	return Uint128{h + h1 + h2, l}
 }
 
+// And returns the bitwise AND of a and b.
+func (a Uint128) And(b Uint128) Uint128 {
+	return Uint128{a[0] & b[0], a[1] & b[1]}
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Uint128) AndNot(b Uint128) Uint128 {
+	return Uint128{a[0] &^ b[0], a[1] &^ b[1]}
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Uint128) Or(b Uint128) Uint128 {
+	return Uint128{a[0] | b[0], a[1] | b[1]}
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Uint128) Xor(b Uint128) Uint128 {
+	return Uint128{a[0] ^ b[0], a[1] ^ b[1]}
+}
+
+// Not returns the bitwise NOT of a.
+func (a Uint128) Not() Uint128 {
+	return Uint128{^a[0], ^a[1]}
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

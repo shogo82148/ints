@@ -267,6 +267,76 @@ func (a Uint512) Mul(b Uint512) Uint512 {
 	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
 }
 
+// And returns the bitwise AND of a and b.
+func (a Uint512) And(b Uint512) Uint512 {
+	return Uint512{
+		a[0] & b[0],
+		a[1] & b[1],
+		a[2] & b[2],
+		a[3] & b[3],
+		a[4] & b[4],
+		a[5] & b[5],
+		a[6] & b[6],
+		a[7] & b[7],
+	}
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Uint512) AndNot(b Uint512) Uint512 {
+	return Uint512{
+		a[0] &^ b[0],
+		a[1] &^ b[1],
+		a[2] &^ b[2],
+		a[3] &^ b[3],
+		a[4] &^ b[4],
+		a[5] &^ b[5],
+		a[6] &^ b[6],
+		a[7] &^ b[7],
+	}
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Uint512) Or(b Uint512) Uint512 {
+	return Uint512{
+		a[0] | b[0],
+		a[1] | b[1],
+		a[2] | b[2],
+		a[3] | b[3],
+		a[4] | b[4],
+		a[5] | b[5],
+		a[6] | b[6],
+		a[7] | b[7],
+	}
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Uint512) Xor(b Uint512) Uint512 {
+	return Uint512{
+		a[0] ^ b[0],
+		a[1] ^ b[1],
+		a[2] ^ b[2],
+		a[3] ^ b[3],
+		a[4] ^ b[4],
+		a[5] ^ b[5],
+		a[6] ^ b[6],
+		a[7] ^ b[7],
+	}
+}
+
+// Not returns the bitwise NOT of a.
+func (a Uint512) Not() Uint512 {
+	return Uint512{
+		^a[0],
+		^a[1],
+		^a[2],
+		^a[3],
+		^a[4],
+		^a[5],
+		^a[6],
+		^a[7],
+	}
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

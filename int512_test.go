@@ -144,6 +144,97 @@ func FuzzInt512_Mul(f *testing.F) {
 	})
 }
 
+func TestInt512_And(t *testing.T) {
+	testCases := []struct {
+		a    Int512
+		b    Int512
+		want Int512
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}},
+		{Int512{1, 1, 1, 1, 1, 1, 1, 1}, Int512{2, 2, 2, 2, 2, 2, 2, 2}, Int512{0, 0, 0, 0, 0, 0, 0, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.And(tc.b)
+		if got != tc.want {
+			t.Errorf("Int512(%d).And(%d) = %d, want %d", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_AndNot(t *testing.T) {
+	testCases := []struct {
+		a    Int512
+		b    Int512
+		want Int512
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}},
+		{Int512{1, 1, 1, 1, 1, 1, 1, 1}, Int512{2, 2, 2, 2, 2, 2, 2, 2}, Int512{1, 1, 1, 1, 1, 1, 1, 1}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.AndNot(tc.b)
+		if got != tc.want {
+			t.Errorf("Int512(%d).AndNot(%d) = %d", tc.a, tc.b, got)
+		}
+	}
+}
+
+func TestInt512_Or(t *testing.T) {
+	testCases := []struct {
+		a    Int512
+		b    Int512
+		want Int512
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}},
+		{Int512{1, 1, 1, 1, 1, 1, 1, 1}, Int512{2, 2, 2, 2, 2, 2, 2, 2}, Int512{3, 3, 3, 3, 3, 3, 3, 3}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Or(tc.b)
+		if got != tc.want {
+			t.Errorf("Int512(%d).Or(%d) = %d", tc.a, tc.b, got)
+		}
+	}
+}
+
+func TestInt512_Xor(t *testing.T) {
+	testCases := []struct {
+		a    Int512
+		b    Int512
+		want Int512
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}},
+		{Int512{1, 1, 1, 1, 1, 1, 1, 1}, Int512{2, 2, 2, 2, 2, 2, 2, 2}, Int512{3, 3, 3, 3, 3, 3, 3, 3}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Xor(tc.b)
+		if got != tc.want {
+			t.Errorf("Int512(%d).Xor(%d) = %d", tc.a, tc.b, got)
+		}
+	}
+}
+
+func TestInt512_Not(t *testing.T) {
+	testCases := []struct {
+		x    Int512
+		want Int512
+	}{
+		{
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+			Int512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Not()
+		if got != tc.want {
+			t.Errorf("Int512(%d).Not() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestInt512_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Int512

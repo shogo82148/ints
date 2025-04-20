@@ -35,6 +35,31 @@ func (a Int64) Mul(b Int64) Int64 {
 	return a * b
 }
 
+// And returns the bitwise AND of a and b.
+func (a Int64) And(b Int64) Int64 {
+	return a & b
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Int64) AndNot(b Int64) Int64 {
+	return a &^ b
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Int64) Or(b Int64) Int64 {
+	return a | b
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Int64) Xor(b Int64) Int64 {
+	return a ^ b
+}
+
+// Not returns the bitwise NOT of a.
+func (a Int64) Not() Int64 {
+	return ^a
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

@@ -109,6 +109,95 @@ func FuzzUint128_Mul(f *testing.F) {
 	})
 }
 
+func TestUint128_And(t *testing.T) {
+	testCases := []struct {
+		x    Uint128
+		y    Uint128
+		want Uint128
+	}{
+		{Uint128{0, 0}, Uint128{0, 0}, Uint128{0, 0}},
+		{Uint128{1, 1}, Uint128{1, 1}, Uint128{1, 1}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.And(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint128(%d).And(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint128_AndNot(t *testing.T) {
+	testCases := []struct {
+		x    Uint128
+		y    Uint128
+		want Uint128
+	}{
+		{Uint128{0, 0}, Uint128{0, 0}, Uint128{0, 0}},
+		{Uint128{1, 1}, Uint128{1, 1}, Uint128{0, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.AndNot(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint128(%d).AndNot(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint128_Or(t *testing.T) {
+	testCases := []struct {
+		x    Uint128
+		y    Uint128
+		want Uint128
+	}{
+		{Uint128{0, 0}, Uint128{0, 0}, Uint128{0, 0}},
+		{Uint128{1, 1}, Uint128{1, 1}, Uint128{1, 1}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Or(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint128(%d).Or(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint128_Xor(t *testing.T) {
+	testCases := []struct {
+		x    Uint128
+		y    Uint128
+		want Uint128
+	}{
+		{Uint128{0, 0}, Uint128{0, 0}, Uint128{0, 0}},
+		{Uint128{1, 1}, Uint128{1, 1}, Uint128{0, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Xor(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint128(%d).Xor(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint128_Not(t *testing.T) {
+	testCases := []struct {
+		x    Uint128
+		want Uint128
+	}{
+		{Uint128{0, 0}, Uint128{math.MaxUint64, math.MaxUint64}},
+		{Uint128{1, 1}, Uint128{math.MaxUint64 - 1, math.MaxUint64 - 1}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Not()
+		if got != tc.want {
+			t.Errorf("Uint128(%d).Not() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint128_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Uint128
