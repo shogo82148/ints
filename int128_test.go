@@ -130,6 +130,116 @@ func FuzzInt128_Mul(f *testing.F) {
 	})
 }
 
+func FuzzInt128_DivMod(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(127),
+		uint64(0), uint64(10),
+	)
+	f.Add(
+		uint64(127), uint64(0),
+		uint64(10), uint64(0),
+	)
+	f.Add(
+		uint64(0xffffffff_ffffffff), uint64(0xffffffff_ffffffff), // -1
+		uint64(0xffffffff_ffffffff), uint64(0xffffffff_ffffffff), // -1
+	)
+	f.Add(
+		uint64(0x80000000_00000000), uint64(0), // MinInt128
+		uint64(0xffffffff_ffffffff), uint64(0xffffffff_ffffffff), // -1
+	)
+
+	base := new(big.Int).Lsh(big.NewInt(1), 128-1)
+	mod := new(big.Int).Lsh(big.NewInt(1), 128)
+	f.Fuzz(func(t *testing.T, u0, u1, v0, v1 uint64) {
+		a := Int128{u0, u1}
+		b := Int128{v0, v1}
+		if b.IsZero() {
+			t.Skip("division by zero")
+		}
+		q, r := a.DivMod(b)
+		gotQ := int128ToBigInt(q)
+		gotR := int128ToBigInt(r)
+
+		ba := int128ToBigInt(a)
+		bb := int128ToBigInt(b)
+		wantQ, wantR := new(big.Int).DivMod(ba, bb, new(big.Int))
+		wantQ = wantQ.Add(wantQ, base)
+		wantQ = wantQ.Mod(wantQ, mod)
+		wantQ = wantQ.Sub(wantQ, base)
+
+		if gotQ.Cmp(wantQ) != 0 || gotR.Cmp(wantR) != 0 {
+			t.Errorf("Uint128(%d).DivMod(%d) = %d, %d, want %d, %d", a, b, gotQ, gotR, wantQ, wantR)
+		}
+
+		q = a.Div(b)
+		gotQ = int128ToBigInt(q)
+		if gotQ.Cmp(wantQ) != 0 {
+			t.Errorf("Uint128(%d).Div(%d) = %d, want %d", a, b, gotQ, wantQ)
+		}
+
+		r = a.Mod(b)
+		gotR = int128ToBigInt(r)
+		if gotR.Cmp(wantR) != 0 {
+			t.Errorf("Uint128(%d).Mod(%d) = %d, want %d", a, b, gotR, wantR)
+		}
+	})
+}
+
+func FuzzInt128_QuoRem(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(127),
+		uint64(0), uint64(10),
+	)
+	f.Add(
+		uint64(127), uint64(0),
+		uint64(10), uint64(0),
+	)
+	f.Add(
+		uint64(0xffffffff_ffffffff), uint64(0xffffffff_ffffffff), // -1
+		uint64(0xffffffff_ffffffff), uint64(0xffffffff_ffffffff), // -1
+	)
+	f.Add(
+		uint64(0x80000000_00000000), uint64(0), // MinInt128
+		uint64(0xffffffff_ffffffff), uint64(0xffffffff_ffffffff), // -1
+	)
+
+	base := new(big.Int).Lsh(big.NewInt(1), 128-1)
+	mod := new(big.Int).Lsh(big.NewInt(1), 128)
+	f.Fuzz(func(t *testing.T, u0, u1, v0, v1 uint64) {
+		a := Int128{u0, u1}
+		b := Int128{v0, v1}
+		if b.IsZero() {
+			t.Skip("division by zero")
+		}
+		q, r := a.QuoRem(b)
+		gotQ := int128ToBigInt(q)
+		gotR := int128ToBigInt(r)
+
+		ba := int128ToBigInt(a)
+		bb := int128ToBigInt(b)
+		wantQ, wantR := new(big.Int).QuoRem(ba, bb, new(big.Int))
+		wantQ = wantQ.Add(wantQ, base)
+		wantQ = wantQ.Mod(wantQ, mod)
+		wantQ = wantQ.Sub(wantQ, base)
+
+		if gotQ.Cmp(wantQ) != 0 || gotR.Cmp(wantR) != 0 {
+			t.Errorf("Uint128(%d).QuoRem(%d) = %d, %d, want %d, %d", a, b, gotQ, gotR, wantQ, wantR)
+		}
+
+		q = a.Quo(b)
+		gotQ = int128ToBigInt(q)
+		if gotQ.Cmp(wantQ) != 0 {
+			t.Errorf("Uint128(%d).Quo(%d) = %d, want %d", a, b, gotQ, wantQ)
+		}
+
+		r = a.Rem(b)
+		gotR = int128ToBigInt(r)
+		if gotR.Cmp(wantR) != 0 {
+			t.Errorf("Uint128(%d).Rem(%d) = %d, want %d", a, b, gotR, wantR)
+		}
+	})
+}
+
 func TestInt128_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Int128
