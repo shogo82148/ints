@@ -9,6 +9,12 @@ import (
 // Int128 is a type that represents an 128-bit signed integer.
 type Int128 [2]uint64
 
+// IsZero returns true if a is zero.
+func (a Int128) IsZero() bool {
+	var zero Int128
+	return a == zero
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.

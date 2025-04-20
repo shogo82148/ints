@@ -9,6 +9,11 @@ import (
 // It is an alias for the built-in int32 type.
 type Int32 int32
 
+// IsZero returns true if a is zero.
+func (a Int32) IsZero() bool {
+	return a == 0
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.

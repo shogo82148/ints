@@ -9,6 +9,11 @@ import (
 // It is an alias for the built-in uint64 type.
 type Uint64 uint64
 
+// IsZero returns true if a is zero.
+func (a Uint64) IsZero() bool {
+	return a == 0
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.

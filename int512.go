@@ -9,6 +9,12 @@ import (
 // Int512 is a type that represents an 512-bit signed integer.
 type Int512 [8]uint64
 
+// IsZero returns true if a is zero.
+func (a Int512) IsZero() bool {
+	var zero Int512
+	return a == zero
+}
+
 // Add returns the sum a+b.
 //
 // This function's execution time does not depend on the inputs.
