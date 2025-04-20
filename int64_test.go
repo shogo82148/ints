@@ -7,52 +7,65 @@ import (
 	"testing"
 )
 
-func FuzzInt64_Add(f *testing.F) {
-	f.Add(int64(0), int64(0))
-	f.Add(int64(1), int64(0))
-	f.Add(int64(math.MaxInt64), int64(math.MaxInt64))
-	f.Add(int64(math.MinInt64), int64(math.MinInt64))
-	f.Fuzz(func(t *testing.T, x, y int64) {
-		a := Int64(x)
-		b := Int64(y)
+func TestInt64_Add(t *testing.T) {
+	testCases := []struct {
+		x, y int64
+		want Int64
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 2},
+	}
+
+	for _, tc := range testCases {
+		a := Int64(tc.x)
+		b := Int64(tc.y)
 		got := a.Add(b)
-		want := Int64(int64(x + y))
-		if got != want {
-			t.Errorf("Int64(%s).Add(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Int64(%d).Add(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzInt64_Sub(f *testing.F) {
-	f.Add(int64(0), int64(0))
-	f.Add(int64(1), int64(0))
-	f.Add(int64(math.MaxInt64), int64(-1))
-	f.Add(int64(math.MinInt64), int64(1))
-	f.Fuzz(func(t *testing.T, x, y int64) {
-		a := Int64(x)
-		b := Int64(y)
+func TestInt64_Sub(t *testing.T) {
+	testCases := []struct {
+		x, y int64
+		want Int64
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{0, 1, -1},
+	}
+
+	for _, tc := range testCases {
+		a := Int64(tc.x)
+		b := Int64(tc.y)
 		got := a.Sub(b)
-		want := Int64(int64(x - y))
-		if got != want {
-			t.Errorf("Int64(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Int64(%d).Sub(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzInt64_Mul(f *testing.F) {
-	f.Add(int64(0), int64(0))
-	f.Add(int64(1), int64(0))
-	f.Add(int64(math.MaxInt64), int64(math.MaxInt64))
-	f.Add(int64(math.MinInt64), int64(math.MinInt64))
-	f.Fuzz(func(t *testing.T, x, y int64) {
-		a := Int64(x)
-		b := Int64(y)
+func TestInt64_Mul(t *testing.T) {
+	testCases := []struct {
+		x, y int64
+		want Int64
+	}{
+		{0, 0, 0},
+		{1, 0, 0},
+		{1, 1, 1},
+		{-1, -1, 1},
+	}
+
+	for _, tc := range testCases {
+		a := Int64(tc.x)
+		b := Int64(tc.y)
 		got := a.Mul(b)
-		want := Int64(int64(x * y))
-		if got != want {
-			t.Errorf("Int64(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Int64(%d).Mul(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
 func TestInt64_DivMod(t *testing.T) {

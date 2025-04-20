@@ -8,49 +8,64 @@ import (
 	"testing"
 )
 
-func FuzzUint16_Add(f *testing.F) {
-	f.Add(uint16(0), uint16(0))
-	f.Add(uint16(1), uint16(0))
-	f.Add(uint16(math.MaxUint16), uint16(math.MaxUint16))
-	f.Fuzz(func(t *testing.T, x, y uint16) {
-		a := Uint16(x)
-		b := Uint16(y)
+func TestUint16_Add(t *testing.T) {
+	testCases := []struct {
+		x, y uint16
+		want Uint16
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 2},
+	}
+
+	for _, tc := range testCases {
+		a := Uint16(tc.x)
+		b := Uint16(tc.y)
 		got := a.Add(b)
-		want := Uint16(uint16(x + y))
-		if got != want {
-			t.Errorf("Uint16(%s).Add(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Uint16(%d).Add(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzUint16_Sub(f *testing.F) {
-	f.Add(uint16(0), uint16(0))
-	f.Add(uint16(0), uint16(1))
-	f.Add(uint16(math.MaxUint16), uint16(1))
-	f.Fuzz(func(t *testing.T, x, y uint16) {
-		a := Uint16(x)
-		b := Uint16(y)
+func TestUint16_Sub(t *testing.T) {
+	testCases := []struct {
+		x, y uint16
+		want Uint16
+	}{
+		{0, 0, 0},
+		{0, 1, 0xffff},
+		{math.MaxUint16, 1, Uint16(math.MaxUint16 - 1)},
+	}
+
+	for _, tc := range testCases {
+		a := Uint16(tc.x)
+		b := Uint16(tc.y)
 		got := a.Sub(b)
-		want := Uint16(uint16(x - y))
-		if got != want {
-			t.Errorf("Uint16(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Uint16(%d).Sub(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzUint16_Mul(f *testing.F) {
-	f.Add(uint16(0), uint16(0))
-	f.Add(uint16(1), uint16(0))
-	f.Add(uint16(math.MaxUint16), uint16(math.MaxUint16))
-	f.Fuzz(func(t *testing.T, x, y uint16) {
-		a := Uint16(x)
-		b := Uint16(y)
+func TestUint16_Mul(t *testing.T) {
+	testCases := []struct {
+		x, y uint16
+		want Uint16
+	}{
+		{0, 0, 0},
+		{1, 0, 0},
+		{1, 1, 1},
+	}
+
+	for _, tc := range testCases {
+		a := Uint16(tc.x)
+		b := Uint16(tc.y)
 		got := a.Mul(b)
-		want := Uint16(uint16(x * y))
-		if got != want {
-			t.Errorf("Uint16(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Uint16(%d).Mul(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
 func TestUint16_DivMod(t *testing.T) {

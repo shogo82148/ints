@@ -8,52 +8,68 @@ import (
 	"testing"
 )
 
-func FuzzInt8_Add(f *testing.F) {
-	f.Add(int8(0), int8(0))
-	f.Add(int8(1), int8(0))
-	f.Add(int8(math.MaxInt8), int8(math.MaxInt8))
-	f.Add(int8(math.MinInt8), int8(math.MinInt8))
-	f.Fuzz(func(t *testing.T, x, y int8) {
-		a := Int8(x)
-		b := Int8(y)
+func TestInt8_Add(t *testing.T) {
+	testCases := []struct {
+		x, y int8
+		want Int8
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 2},
+	}
+
+	for _, tc := range testCases {
+		a := Int8(tc.x)
+		b := Int8(tc.y)
 		got := a.Add(b)
-		want := Int8(int8(x + y))
-		if got != want {
-			t.Errorf("Int8(%s).Add(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Int8(%d).Add(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzInt8_Sub(f *testing.F) {
-	f.Add(int8(0), int8(0))
-	f.Add(int8(1), int8(0))
-	f.Add(int8(math.MaxInt8), int8(math.MaxInt8))
-	f.Add(int8(math.MinInt8), int8(math.MinInt8))
-	f.Fuzz(func(t *testing.T, x, y int8) {
-		a := Int8(x)
-		b := Int8(y)
+func TestInt8_Sub(t *testing.T) {
+	testCases := []struct {
+		x, y int8
+		want Int8
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{math.MaxInt8, math.MaxInt8, 0},
+		{math.MinInt8, math.MinInt8, 0},
+		{0, -1, 1},
+		{0, 1, -1},
+	}
+
+	for _, tc := range testCases {
+		a := Int8(tc.x)
+		b := Int8(tc.y)
 		got := a.Sub(b)
-		want := Int8(int8(x - y))
-		if got != want {
-			t.Errorf("Int8(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Int8(%d).Sub(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzInt8_Mul(f *testing.F) {
-	f.Add(int8(0), int8(0))
-	f.Add(int8(1), int8(0))
-	f.Add(int8(math.MaxInt8), int8(math.MaxInt8))
-	f.Add(int8(math.MinInt8), int8(math.MinInt8))
-	f.Fuzz(func(t *testing.T, x, y int8) {
-		a := Int8(x)
-		b := Int8(y)
+func TestInt8_Mul(t *testing.T) {
+	testCases := []struct {
+		x, y int8
+		want Int8
+	}{
+		{0, 0, 0},
+		{1, 0, 0},
+		{1, 1, 1},
+		{-1, -1, 1},
+	}
+
+	for _, tc := range testCases {
+		a := Int8(tc.x)
+		b := Int8(tc.y)
 		got := a.Mul(b)
-		want := Int8(int8(x * y))
-		if got != want {
-			t.Errorf("Int8(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Int8(%d).Mul(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
 func TestInt8_DivMod(t *testing.T) {

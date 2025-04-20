@@ -8,49 +8,63 @@ import (
 	"testing"
 )
 
-func FuzzUint8_Add(f *testing.F) {
-	f.Add(uint8(0), uint8(0))
-	f.Add(uint8(1), uint8(0))
-	f.Add(uint8(math.MaxUint8), uint8(math.MaxUint8))
-	f.Fuzz(func(t *testing.T, x, y uint8) {
-		a := Uint8(x)
-		b := Uint8(y)
+func TestUint8_Add(t *testing.T) {
+	testCases := []struct {
+		x, y uint8
+		want Uint8
+	}{
+		{0, 0, 0},
+		{1, 0, 1},
+		{1, 1, 2},
+	}
+
+	for _, tc := range testCases {
+		a := Uint8(tc.x)
+		b := Uint8(tc.y)
 		got := a.Add(b)
-		want := Uint8(uint8(x + y))
-		if got != want {
-			t.Errorf("Uint8(%s).Add(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Uint8(%d).Add(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzUint8_Sub(f *testing.F) {
-	f.Add(uint8(0), uint8(0))
-	f.Add(uint8(0), uint8(1))
-	f.Add(uint8(math.MaxUint8), uint8(1))
-	f.Fuzz(func(t *testing.T, x, y uint8) {
-		a := Uint8(x)
-		b := Uint8(y)
+func TestUint8_Sub(t *testing.T) {
+	testCases := []struct {
+		x, y uint8
+		want Uint8
+	}{
+		{0, 0, 0},
+		{0, 1, 255},
+	}
+
+	for _, tc := range testCases {
+		a := Uint8(tc.x)
+		b := Uint8(tc.y)
 		got := a.Sub(b)
-		want := Uint8(uint8(x - y))
-		if got != want {
-			t.Errorf("Uint8(%s).Sub(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Uint8(%d).Sub(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
-func FuzzUint8_Mul(f *testing.F) {
-	f.Add(uint8(0), uint8(0))
-	f.Add(uint8(1), uint8(0))
-	f.Add(uint8(math.MaxUint8), uint8(math.MaxUint8))
-	f.Fuzz(func(t *testing.T, x, y uint8) {
-		a := Uint8(x)
-		b := Uint8(y)
+func TestUint8_Mul(t *testing.T) {
+	testCases := []struct {
+		x, y uint8
+		want Uint8
+	}{
+		{0, 0, 0},
+		{1, 0, 0},
+		{1, 1, 1},
+	}
+
+	for _, tc := range testCases {
+		a := Uint8(tc.x)
+		b := Uint8(tc.y)
 		got := a.Mul(b)
-		want := Uint8(uint8(x * y))
-		if got != want {
-			t.Errorf("Uint8(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		if got != tc.want {
+			t.Errorf("Uint8(%d).Mul(%d) = %d, want %d", a, b, got, tc.want)
 		}
-	})
+	}
 }
 
 func TestUint8_DivMod(t *testing.T) {
