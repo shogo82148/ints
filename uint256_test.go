@@ -133,19 +133,19 @@ func FuzzUint256_DivMod(f *testing.F) {
 		wantQ, wantR := new(big.Int).DivMod(ba, bb, new(big.Int))
 
 		if gotQ.Cmp(wantQ) != 0 || gotR.Cmp(wantR) != 0 {
-			t.Errorf("Uint128(%s).DivMod(%s) = %d, %d, want %d, %d", a, b, gotQ, gotR, wantQ, wantR)
+			t.Errorf("Uint256(%s).DivMod(%s) = %d, %d, want %d, %d", a, b, gotQ, gotR, wantQ, wantR)
 		}
 
 		q = a.Div(b)
 		gotQ = uint256ToBigInt(q)
 		if gotQ.Cmp(wantQ) != 0 {
-			t.Errorf("Uint128(%s).Div(%s) = %d, want %d", a, b, gotQ, wantQ)
+			t.Errorf("Uint256(%s).Div(%s) = %d, want %d", a, b, gotQ, wantQ)
 		}
 
 		r = a.Mod(b)
 		gotR = uint256ToBigInt(r)
 		if gotR.Cmp(wantR) != 0 {
-			t.Errorf("Uint128(%s).Mod(%s) = %d, want %d", a, b, gotR, wantR)
+			t.Errorf("Uint256(%s).Mod(%s) = %d, want %d", a, b, gotR, wantR)
 		}
 	})
 }
