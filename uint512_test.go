@@ -422,6 +422,57 @@ func TestUint512_Rsh(t *testing.T) {
 	}
 }
 
+func TestUint512_LeadingZeros(t *testing.T) {
+	testCases := []struct {
+		x    Uint512
+		want int
+	}{
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 0},
+			512,
+		},
+		{
+			Uint512{1, 1, 1, 1, 1, 1, 1, 1},
+			63,
+		},
+		{
+			Uint512{0, 1, 1, 1, 1, 1, 1, 1},
+			127,
+		},
+		{
+			Uint512{0, 0, 1, 1, 1, 1, 1, 1},
+			191,
+		},
+		{
+			Uint512{0, 0, 0, 1, 1, 1, 1, 1},
+			255,
+		},
+		{
+			Uint512{0, 0, 0, 0, 1, 1, 1, 1},
+			319,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 1, 1, 1},
+			383,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 1, 1},
+			447,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 1},
+			511,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.LeadingZeros()
+		if got != tc.want {
+			t.Errorf("Uint512(%d).LeadingZeros() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint512_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint512
