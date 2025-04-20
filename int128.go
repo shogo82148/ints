@@ -53,6 +53,92 @@ func (a Int128) Mul(b Int128) Int128 {
 	return c
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Int128.DivMod] for more details.
+func (a Int128) Div(b Int128) Int128 {
+	q, _ := a.DivMod(b)
+	return q
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Int128.DivMod] for more details.
+func (a Int128) Mod(b Int128) Int128 {
+	_, r := a.DivMod(b)
+	return r
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Int128.QuoRem] for T-division and modulus (like Go).
+func (a Int128) DivMod(b Int128) (Int128, Int128) {
+	q, r := a.QuoRem(b)
+	if r.Sign() < 0 {
+		if b.Sign() > 0 {
+			r = r.Add(b)
+			q = q.Sub(Int128{0, 1})
+		} else {
+			r = r.Sub(b)
+			q = q.Add(Int128{0, 1})
+		}
+	}
+	return q, r
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Int128.QuoRem] for more details.
+func (a Int128) Quo(b Int128) Int128 {
+	q, _ := a.QuoRem(b)
+	return q
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Int128.QuoRem] for more details.
+func (a Int128) Rem(b Int128) Int128 {
+	_, r := a.QuoRem(b)
+	return r
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Int128.DivMod] for Euclidean division and modulus (unlike Go).
+func (a Int128) QuoRem(b Int128) (Int128, Int128) {
+	var negA, negB bool
+	if a.Sign() < 0 {
+		negA = true
+		a = a.Neg()
+	}
+	if b.Sign() < 0 {
+		negB = true
+		b = b.Neg()
+	}
+
+	q, r := Uint128(a).DivMod(Uint128(b))
+	if negA != negB {
+		q = q.Neg()
+	}
+	if negA {
+		r = r.Neg()
+	}
+	return Int128(q), Int128(r)
+}
+
 // And returns the bitwise AND of a and b.
 func (a Int128) And(b Int128) Int128 {
 	return Int128{a[0] & b[0], a[1] & b[1]}

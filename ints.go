@@ -1025,6 +1025,8 @@ func format(s fmt.State, verb rune, sign int, v appender) {
 		if s.Flag('#') {
 			prefix = append(prefix, "0X"...)
 		}
+	case 's':
+		out = v.Append(out, 10)
 	}
 
 	if w, ok := s.Width(); ok {

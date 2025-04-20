@@ -3,6 +3,7 @@ package ints
 import (
 	"cmp"
 	"fmt"
+	"math/bits"
 )
 
 // Uint64 is a type that represents an 64-bit unsigned integer.
@@ -31,6 +32,68 @@ func (a Uint64) Sub(b Uint64) Uint64 {
 // Mul returns the product a*b.
 func (a Uint64) Mul(b Uint64) Uint64 {
 	return a * b
+}
+
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Uint64.DivMod] for more details.
+func (a Uint64) Div(b Uint64) Uint64 {
+	return a / b
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Uint64.DivMod] for more details.
+func (a Uint64) Mod(b Uint64) Uint64 {
+	return a % b
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Uint64.QuoRem] for T-division and modulus (like Go).
+func (a Uint64) DivMod(b Uint64) (Uint64, Uint64) {
+	return a / b, a % b
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Uint64.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Quo simply forwards to Div.
+func (a Uint64) Quo(b Uint64) Uint64 {
+	return a / b
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Uint64.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Rem simply forwards to Mod.
+func (a Uint64) Rem(b Uint64) Uint64 {
+	return a % b
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Uint64.DivMod] for Euclidean division and modulus (unlike Go).
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore QuoRem simply forwards to DivMod.
+func (a Uint64) QuoRem(b Uint64) (Uint64, Uint64) {
+	q, r := bits.Div64(0, uint64(a), uint64(b))
+	return Uint64(q), Uint64(r)
 }
 
 // And returns the bitwise AND of a and b.

@@ -105,6 +105,51 @@ func FuzzUint256_Mul(f *testing.F) {
 	})
 }
 
+func FuzzUint256_DivMod(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(0), uint64(0), uint64(127),
+		uint64(0), uint64(0), uint64(0), uint64(10),
+	)
+	f.Add(
+		uint64(0), uint64(1), uint64(0), uint64(1),
+		uint64(0), uint64(0), uint64(0), uint64(10),
+	)
+	f.Add(
+		uint64(127), uint64(0), uint64(0), uint64(0),
+		uint64(10), uint64(0), uint64(0), uint64(0),
+	)
+	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, v0, v1, v2, v3 uint64) {
+		a := Uint256{u0, u1, u2, u3}
+		b := Uint256{v0, v1, v2, v3}
+		if b.IsZero() {
+			t.Skip("division by zero")
+		}
+		q, r := a.DivMod(b)
+		gotQ := uint256ToBigInt(q)
+		gotR := uint256ToBigInt(r)
+
+		ba := uint256ToBigInt(a)
+		bb := uint256ToBigInt(b)
+		wantQ, wantR := new(big.Int).DivMod(ba, bb, new(big.Int))
+
+		if gotQ.Cmp(wantQ) != 0 || gotR.Cmp(wantR) != 0 {
+			t.Errorf("Uint256(%s).DivMod(%s) = %d, %d, want %d, %d", a, b, gotQ, gotR, wantQ, wantR)
+		}
+
+		q = a.Div(b)
+		gotQ = uint256ToBigInt(q)
+		if gotQ.Cmp(wantQ) != 0 {
+			t.Errorf("Uint256(%s).Div(%s) = %d, want %d", a, b, gotQ, wantQ)
+		}
+
+		r = a.Mod(b)
+		gotR = uint256ToBigInt(r)
+		if gotR.Cmp(wantR) != 0 {
+			t.Errorf("Uint256(%s).Mod(%s) = %d, want %d", a, b, gotR, wantR)
+		}
+	})
+}
+
 func TestUint256_And(t *testing.T) {
 	testCases := []struct {
 		x    Uint256

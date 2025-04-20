@@ -33,6 +33,67 @@ func (a Uint16) Mul(b Uint16) Uint16 {
 	return a * b
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Uint16.DivMod] for more details.
+func (a Uint16) Div(b Uint16) Uint16 {
+	return a / b
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Uint16.DivMod] for more details.
+func (a Uint16) Mod(b Uint16) Uint16 {
+	return a % b
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Uint16.QuoRem] for T-division and modulus (like Go).
+func (a Uint16) DivMod(b Uint16) (Uint16, Uint16) {
+	return a / b, a % b
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Uint16.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Quo simply forwards to Div.
+func (a Uint16) Quo(b Uint16) Uint16 {
+	return a / b
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Uint16.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Rem simply forwards to Mod.
+func (a Uint16) Rem(b Uint16) Uint16 {
+	return a % b
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Uint16.DivMod] for Euclidean division and modulus (unlike Go).
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore QuoRem simply forwards to DivMod.
+func (a Uint16) QuoRem(b Uint16) (Uint16, Uint16) {
+	return a / b, a % b
+}
+
 // And returns the bitwise AND of a and b.
 func (a Uint16) And(b Uint16) Uint16 {
 	return a & b

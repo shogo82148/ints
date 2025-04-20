@@ -3,6 +3,7 @@ package ints
 import (
 	"cmp"
 	"fmt"
+	"math/bits"
 )
 
 // Uint32 is a type that represents an 32-bit unsigned integer.
@@ -31,6 +32,69 @@ func (a Uint32) Sub(b Uint32) Uint32 {
 // Mul returns the product a*b.
 func (a Uint32) Mul(b Uint32) Uint32 {
 	return a * b
+}
+
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Uint32.DivMod] for more details.
+func (a Uint32) Div(b Uint32) Uint32 {
+	return a / b
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Uint32.DivMod] for more details.
+func (a Uint32) Mod(b Uint32) Uint32 {
+	return a % b
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Uint32.QuoRem] for T-division and modulus (like Go).
+func (a Uint32) DivMod(b Uint32) (Uint32, Uint32) {
+	q, r := bits.Div32(0, uint32(a), uint32(b))
+	return Uint32(q), Uint32(r)
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Uint32.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Quo simply forwards to Div.
+func (a Uint32) Quo(b Uint32) Uint32 {
+	return a / b
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Uint32.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Rem simply forwards to Mod.
+func (a Uint32) Rem(b Uint32) Uint32 {
+	return a % b
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Uint32.DivMod] for Euclidean division and modulus (unlike Go).
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore QuoRem simply forwards to DivMod.
+func (a Uint32) QuoRem(b Uint32) (Uint32, Uint32) {
+	q, r := bits.Div32(0, uint32(a), uint32(b))
+	return Uint32(q), Uint32(r)
 }
 
 // And returns the bitwise AND of a and b.

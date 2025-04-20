@@ -57,6 +57,92 @@ func (a Int256) Mul(b Int256) Int256 {
 	return c
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Int256.DivMod] for more details.
+func (a Int256) Div(b Int256) Int256 {
+	q, _ := a.DivMod(b)
+	return q
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Int256.DivMod] for more details.
+func (a Int256) Mod(b Int256) Int256 {
+	_, r := a.DivMod(b)
+	return r
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Int256.QuoRem] for T-division and modulus (like Go).
+func (a Int256) DivMod(b Int256) (Int256, Int256) {
+	q, r := a.QuoRem(b)
+	if r.Sign() < 0 {
+		if b.Sign() > 0 {
+			r = r.Add(b)
+			q = q.Sub(Int256{0, 0, 0, 1})
+		} else {
+			r = r.Sub(b)
+			q = q.Add(Int256{0, 0, 0, 1})
+		}
+	}
+	return q, r
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Int256.QuoRem] for more details.
+func (a Int256) Quo(b Int256) Int256 {
+	q, _ := a.QuoRem(b)
+	return q
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Int256.QuoRem] for more details.
+func (a Int256) Rem(b Int256) Int256 {
+	_, r := a.QuoRem(b)
+	return r
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Int256.DivMod] for Euclidean division and modulus (unlike Go).
+func (a Int256) QuoRem(b Int256) (Int256, Int256) {
+	var negA, negB bool
+	if a.Sign() < 0 {
+		negA = true
+		a = a.Neg()
+	}
+	if b.Sign() < 0 {
+		negB = true
+		b = b.Neg()
+	}
+
+	q, r := Uint256(a).DivMod(Uint256(b))
+	if negA != negB {
+		q = q.Neg()
+	}
+	if negA {
+		r = r.Neg()
+	}
+	return Int256(q), Int256(r)
+}
+
 // And returns the bitwise AND of a and b.
 func (a Int256) And(b Int256) Int256 {
 	return Int256{

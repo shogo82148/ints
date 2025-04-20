@@ -53,6 +53,66 @@ func FuzzUint8_Mul(f *testing.F) {
 	})
 }
 
+func TestUint8_DivMod(t *testing.T) {
+	testCases := []struct {
+		x, y Uint8
+		z, r Uint8
+	}{
+		{0, 1, 0, 0},
+		{100, 10, 10, 0},
+		{127, 10, 12, 7},
+	}
+
+	for _, tc := range testCases {
+		z, r := tc.x.DivMod(tc.y)
+		if z != tc.z {
+			t.Errorf("Uint8(%d).Div(%d) = %d, want %d", tc.x, tc.y, z, tc.z)
+		}
+		if r != tc.r {
+			t.Errorf("Uint8(%d).Mod(%d) = %d, want %d", tc.x, tc.y, r, tc.r)
+		}
+
+		z = tc.x.Div(tc.y)
+		if z != tc.z {
+			t.Errorf("Uint8(%d).Div(%d) = %d, want %d", tc.x, tc.y, z, tc.z)
+		}
+		r = tc.x.Mod(tc.y)
+		if r != tc.r {
+			t.Errorf("Uint8(%d).Mod(%d) = %d, want %d", tc.x, tc.y, r, tc.r)
+		}
+	}
+}
+
+func TestUint8_QuoRem(t *testing.T) {
+	testCases := []struct {
+		x, y Uint8
+		q, r Uint8
+	}{
+		{0, 1, 0, 0},
+		{100, 10, 10, 0},
+		{127, 10, 12, 7},
+	}
+
+	for _, tc := range testCases {
+		q, r := tc.x.QuoRem(tc.y)
+		if q != tc.q {
+			t.Errorf("Uint8(%d).Quo(%d) = %d, want %d", tc.x, tc.y, q, tc.q)
+		}
+		if r != tc.r {
+			t.Errorf("Uint8(%d).Rem(%d) = %d, want %d", tc.x, tc.y, r, tc.r)
+		}
+
+		q = tc.x.Quo(tc.y)
+		if q != tc.q {
+			t.Errorf("Uint8(%d).Quo(%d) = %d, want %d", tc.x, tc.y, q, tc.q)
+		}
+		r = tc.x.Rem(tc.y)
+		if r != tc.r {
+			t.Errorf("Uint8(%d).Rem(%d) = %d, want %d", tc.x, tc.y, r, tc.r)
+		}
+	}
+}
+
 func TestUint8_And(t *testing.T) {
 	testCases := []struct {
 		x    Uint8

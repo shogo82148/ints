@@ -35,6 +35,73 @@ func (a Int32) Mul(b Int32) Int32 {
 	return a * b
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Int32.DivMod] for more details.
+func (a Int32) Div(b Int32) Int32 {
+	q, _ := a.DivMod(b)
+	return q
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Int32.DivMod] for more details.
+func (a Int32) Mod(b Int32) Int32 {
+	_, r := a.DivMod(b)
+	return r
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Int32.QuoRem] for T-division and modulus (like Go).
+func (a Int32) DivMod(b Int32) (Int32, Int32) {
+	q, r := a/b, a%b
+	if r < 0 {
+		if b > 0 {
+			r += b
+			q--
+		} else {
+			r -= b
+			q++
+		}
+	}
+	return q, r
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Int32.QuoRem] for more details.
+func (a Int32) Quo(b Int32) Int32 {
+	return a / b
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Int32.QuoRem] for more details.
+func (a Int32) Rem(b Int32) Int32 {
+	return a % b
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Int32.DivMod] for Euclidean division and modulus (unlike Go).
+func (a Int32) QuoRem(b Int32) (Int32, Int32) {
+	return a / b, a % b
+}
+
 // And returns the bitwise AND of a and b.
 func (a Int32) And(b Int32) Int32 {
 	return a & b

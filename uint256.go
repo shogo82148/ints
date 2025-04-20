@@ -105,6 +105,143 @@ func (a Uint256) Mul(b Uint256) Uint256 {
 	return Uint256{u0, u1, u2, u3}
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Uint256.DivMod] for more details.
+func (a Uint256) Div(b Uint256) Uint256 {
+	q, _ := a.DivMod(b)
+	return q
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Uint256.DivMod] for more details.
+func (a Uint256) Mod(b Uint256) Uint256 {
+	_, r := a.DivMod(b)
+	return r
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Uint256.QuoRem] for T-division and modulus (like Go).
+func (a Uint256) DivMod(b Uint256) (Uint256, Uint256) {
+	if b[0] == 0 && b[1] == 0 {
+		// optimize for uint256 / uint128
+		q0, r0 := Uint128{a[0], a[1]}.DivMod(Uint128{b[2], b[3]})
+		q1, r1 := div128(r0, Uint128{a[2], a[3]}, Uint128{b[2], b[3]})
+		return Uint256{q0[0], q0[1], q1[0], q1[1]}, Uint256{0, 0, r1[0], r1[1]}
+	}
+
+	n := uint(Uint128{b[0], b[1]}.LeadingZeros())
+	x := a.Rsh(1)
+	y := b.Lsh(n)
+	q, _ := div128(Uint128{x[0], x[1]}, Uint128{x[2], x[3]}, Uint128{y[0], y[1]})
+	q = q.Rsh(127 - n)
+	if q.Sign() > 0 {
+		q = q.Sub(Uint128{0, 1})
+	}
+
+	u := b.Mul(Uint256{0, 0, q[0], q[1]})
+	r := a.Sub(u)
+	if r.Cmp(b) >= 0 {
+		q = q.Add(Uint128{0, 1})
+		r = r.Sub(b)
+	}
+
+	return Uint256{0, 0, q[0], q[1]}, r
+}
+
+// 128-bit of version of bits.Div64.
+// https://github.com/golang/go/blob/c893e1cf821b06aa0602f7944ce52f0eb28fd7b5/src/math/bits/bits.go#L514-L568
+func div128(hi, lo, y Uint128) (quo, rem Uint128) {
+	if y.IsZero() {
+		panic("division by zero")
+	}
+	if y.Cmp(hi) <= 0 {
+		panic("division overflow")
+	}
+
+	// If high part is zero, we can directly return the results.
+	if hi.IsZero() {
+		return lo.DivMod(y)
+	}
+
+	s := uint(y.LeadingZeros())
+	y = y.Lsh(s)
+
+	two64 := Uint128{1, 0}
+	yn1 := Uint128{0, y[0]}
+	yn0 := Uint128{0, y[1]}
+	un64 := hi.Lsh(s).Or(lo.Rsh(128 - s))
+	un10 := lo.Lsh(s)
+	un1 := Uint128{0, un10[0]}
+	un0 := Uint128{0, un10[1]}
+	q1 := un64.Div(yn1)
+	rhat := un64.Sub(q1.Mul(yn1))
+
+	for q1.Cmp(two64) >= 0 || q1.Mul(yn0).Cmp(two64.Mul(rhat).Add(un1)) > 0 {
+		q1 = q1.Sub(Uint128{0, 1})
+		rhat = rhat.Add(yn1)
+		if rhat.Cmp(two64) >= 0 {
+			break
+		}
+	}
+
+	un21 := un64.Mul(two64).Add(un1).Sub(q1.Mul(y))
+	q0 := un21.Div(yn1)
+	rhat = un21.Sub(q0.Mul(yn1))
+
+	for q0.Cmp(two64) >= 0 || q0.Mul(yn0).Cmp(two64.Mul(rhat).Add(un0)) > 0 {
+		q0 = q0.Sub(Uint128{0, 1})
+		rhat = rhat.Add(yn1)
+		if rhat.Cmp(two64) >= 0 {
+			break
+		}
+	}
+
+	return q1.Mul(two64).Add(q0), un21.Mul(two64).Add(un0).Sub(q0.Mul(y)).Rsh(s)
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Uint256.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Quo simply forwards to Div.
+func (a Uint256) Quo(b Uint256) Uint256 {
+	return a.Div(b)
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Uint256.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Rem simply forwards to Mod.
+func (a Uint256) Rem(b Uint256) Uint256 {
+	return a.Mod(b)
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Uint256.DivMod] for Euclidean division and modulus (unlike Go).
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore QuoRem simply forwards to DivMod.
+func (a Uint256) QuoRem(b Uint256) (Uint256, Uint256) {
+	return a.DivMod(b)
+}
+
 // And returns the bitwise AND of a and b.
 func (a Uint256) And(b Uint256) Uint256 {
 	return Uint256{
@@ -199,9 +336,23 @@ func (a Uint256) Rsh(i uint) Uint256 {
 	}
 }
 
+// LeadingZeros returns the number of leading zero bits in x; the result is 256 for x == 0.
+func (a Uint256) LeadingZeros() int {
+	if a[0] != 0 {
+		return bits.LeadingZeros64(a[0])
+	}
+	if a[1] != 0 {
+		return bits.LeadingZeros64(a[1]) + 64
+	}
+	if a[2] != 0 {
+		return bits.LeadingZeros64(a[2]) + 128
+	}
+	return bits.LeadingZeros64(a[3]) + 192
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
-// It does not return -1 because Uint128 is unsigned.
+// It does not return -1 because Uint256 is unsigned.
 func (a Uint256) Sign() int {
 	var zero Uint256
 	if a == zero {

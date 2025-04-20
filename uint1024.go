@@ -800,6 +800,149 @@ func (a Uint1024) Mul(b Uint1024) Uint1024 {
 	return Uint1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Uint1024.DivMod] for more details.
+func (a Uint1024) Div(b Uint1024) Uint1024 {
+	q, _ := a.DivMod(b)
+	return q
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Uint1024.DivMod] for more details.
+func (a Uint1024) Mod(b Uint1024) Uint1024 {
+	_, r := a.DivMod(b)
+	return r
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = a div b  such that
+//	m = a - b*q  with 0 <= m < |b|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Uint1024.QuoRem] for T-division and modulus (like Go).
+func (a Uint1024) DivMod(b Uint1024) (Uint1024, Uint1024) {
+	if b[0] == 0 && b[1] == 0 && b[2] == 0 && b[3] == 0 && b[4] == 0 && b[5] == 0 && b[6] == 0 && b[7] == 0 {
+		// optimize for uint512 / uint256
+		q0, r0 := Uint512{a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]}.DivMod(Uint512{b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]})
+		q1, r1 := div512(r0, Uint512{a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]}, Uint512{b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]})
+		return Uint1024{
+				q0[0], q0[1], q0[2], q0[3], q0[4], q0[5], q0[6], q0[7],
+				q1[0], q1[1], q1[2], q1[3], q1[4], q1[5], q1[6], q1[7],
+			}, Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				r1[0], r1[1], r1[2], r1[3], r1[4], r1[5], r1[6], r1[7],
+			}
+	}
+
+	n := uint(Uint512{b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]}.LeadingZeros())
+	x := a.Rsh(1)
+	y := b.Lsh(n)
+	q, _ := div512(Uint512{x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]}, Uint512{x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]}, Uint512{y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7]})
+	q = q.Rsh(511 - n)
+	if q.Sign() > 0 {
+		q = q.Sub(Uint512{0, 0, 0, 0, 0, 0, 0, 1})
+	}
+
+	u := b.Mul(Uint1024{0, 0, 0, 0, 0, 0, 0, 0, q[0], q[1], q[2], q[3], q[4], q[5], q[6], q[7]})
+	r := a.Sub(u)
+	if r.Cmp(b) >= 0 {
+		q = q.Add(Uint512{0, 0, 0, 0, 0, 0, 0, 1})
+		r = r.Sub(b)
+	}
+
+	return Uint1024{0, 0, 0, 0, 0, 0, 0, 0, q[0], q[1], q[2], q[3], q[4], q[5], q[6], q[7]}, r
+}
+
+// 512-bit of version of bits.Div64.
+// https://github.com/golang/go/blob/c893e1cf821b06aa0602f7944ce52f0eb28fd7b5/src/math/bits/bits.go#L514-L568
+func div512(hi, lo, y Uint512) (quo, rem Uint512) {
+	if y.IsZero() {
+		panic("division by zero")
+	}
+	if y.Cmp(hi) <= 0 {
+		panic("division overflow")
+	}
+
+	// If high part is zero, we can directly return the results.
+	if hi.IsZero() {
+		return lo.DivMod(y)
+	}
+
+	s := uint(y.LeadingZeros())
+	y = y.Lsh(s)
+
+	two256 := Uint512{0, 0, 0, 1, 0, 0, 0, 0}
+	yn1 := Uint512{0, 0, 0, 0, y[0], y[1], y[2], y[3]}
+	yn0 := Uint512{0, 0, 0, 0, y[4], y[5], y[6], y[7]}
+	un256 := hi.Lsh(s).Or(lo.Rsh(512 - s))
+	un10 := lo.Lsh(s)
+	un1 := Uint512{0, 0, 0, 0, un10[0], un10[1], un10[2], un10[3]}
+	un0 := Uint512{0, 0, 0, 0, un10[4], un10[5], un10[6], un10[7]}
+	q1 := un256.Div(yn1)
+	rhat := un256.Sub(q1.Mul(yn1))
+
+	for q1.Cmp(two256) >= 0 || q1.Mul(yn0).Cmp(two256.Mul(rhat).Add(un1)) > 0 {
+		q1 = q1.Sub(Uint512{0, 0, 0, 0, 0, 0, 0, 1})
+		rhat = rhat.Add(yn1)
+		if rhat.Cmp(two256) >= 0 {
+			break
+		}
+	}
+
+	un21 := un256.Mul(two256).Add(un1).Sub(q1.Mul(y))
+	q0 := un21.Div(yn1)
+	rhat = un21.Sub(q0.Mul(yn1))
+
+	for q0.Cmp(two256) >= 0 || q0.Mul(yn0).Cmp(two256.Mul(rhat).Add(un0)) > 0 {
+		q0 = q0.Sub(Uint512{0, 0, 0, 0, 0, 0, 0, 1})
+		rhat = rhat.Add(yn1)
+		if rhat.Cmp(two256) >= 0 {
+			break
+		}
+	}
+
+	return q1.Mul(two256).Add(q0), un21.Mul(two256).Add(un0).Sub(q0.Mul(y)).Rsh(s)
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Uint1024.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Quo simply forwards to Div.
+func (a Uint1024) Quo(b Uint1024) Uint1024 {
+	return a.Div(b)
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Uint1024.QuoRem] for more details.
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore Rem simply forwards to Mod.
+func (a Uint1024) Rem(b Uint1024) Uint1024 {
+	return a.Mod(b)
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = a/b      with the result truncated to zero
+//	r = a - b*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Uint1024.DivMod] for Euclidean division and modulus (unlike Go).
+// For unsigned integers T‑division and Euclidean division are identical,
+// therefore QuoRem simply forwards to DivMod.
+func (a Uint1024) QuoRem(b Uint1024) (Uint1024, Uint1024) {
+	return a.DivMod(b)
+}
+
 // And returns the bitwise AND of a and b.
 func (a Uint1024) And(b Uint1024) Uint1024 {
 	return Uint1024{
