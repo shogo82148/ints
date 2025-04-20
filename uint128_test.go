@@ -109,6 +109,47 @@ func FuzzUint128_Mul(f *testing.F) {
 	})
 }
 
+func FuzzUint128_DivMod(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(127),
+		uint64(0), uint64(10),
+	)
+	f.Add(
+		uint64(127), uint64(0),
+		uint64(10), uint64(0),
+	)
+	f.Fuzz(func(t *testing.T, u0, u1, v0, v1 uint64) {
+		a := Uint128{u0, u1}
+		b := Uint128{v0, v1}
+		if b.IsZero() {
+			t.Skip("division by zero")
+		}
+		q, r := a.DivMod(b)
+		gotQ := uint128ToBigInt(q)
+		gotR := uint128ToBigInt(r)
+
+		ba := uint128ToBigInt(a)
+		bb := uint128ToBigInt(b)
+		wantQ, wantR := new(big.Int).DivMod(ba, bb, new(big.Int))
+
+		if gotQ.Cmp(wantQ) != 0 || gotR.Cmp(wantR) != 0 {
+			t.Errorf("Uint128(%s).DivMod(%s) = %d, %d, want %d, %d", a, b, gotQ, gotR, wantQ, wantR)
+		}
+
+		q = a.Div(b)
+		gotQ = uint128ToBigInt(q)
+		if gotQ.Cmp(wantQ) != 0 {
+			t.Errorf("Uint128(%s).Div(%s) = %d, want %d", a, b, gotQ, wantQ)
+		}
+
+		r = a.Mod(b)
+		gotR = uint128ToBigInt(r)
+		if gotR.Cmp(wantR) != 0 {
+			t.Errorf("Uint128(%s).Mod(%s) = %d, want %d", a, b, gotR, wantR)
+		}
+	})
+}
+
 func TestUint128_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Uint128

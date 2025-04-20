@@ -43,6 +43,86 @@ func (a Uint128) Mul(b Uint128) Uint128 {
 	return Uint128{h + h1 + h2, l}
 }
 
+// Div returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Div implements Euclidean division (unlike Go); see [Uint128.DivMod] for more details.
+func (a Uint128) Div(b Uint128) Uint128 {
+	q, _ := a.DivMod(b)
+	return q
+}
+
+// Mod returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Mod implements Euclidean division (unlike Go); see [Uint128.DivMod] for more details.
+func (a Uint128) Mod(b Uint128) Uint128 {
+	_, r := a.DivMod(b)
+	return r
+}
+
+// DivMod returns the quotient and remainder of a/b.
+// DivMod implements Euclidean division and modulus (unlike Go):
+//
+//	q = x div y  such that
+//	m = x - y*q  with 0 <= m < |y|
+//
+// (See Raymond T. Boute, “The Euclidean definition of the functions
+// div and mod”. ACM Transactions on Programming Languages and
+// Systems (TOPLAS), 14(2):127-144, New York, NY, USA, 4/1992.
+// ACM press.)
+// See [Uint128.QuoRem] for T-division and modulus (like Go).
+func (a Uint128) DivMod(b Uint128) (Uint128, Uint128) {
+	if b[0] == 0 {
+		// optimize for uint128 / uint64
+		u0 := a[0] / b[1]
+		u1, r := bits.Div64(a[0]-u0*b[1], a[1], b[1])
+		return Uint128{u0, u1}, Uint128{0, r}
+	}
+
+	n := uint(bits.LeadingZeros64(b[0]))
+	x := a.Rsh(1)
+	y := b.Lsh(n)
+	q, _ := bits.Div64(x[0], x[1], y[0])
+	q >>= 63 - n
+	if q > 0 {
+		q--
+	}
+
+	u0, u1 := bits.Mul64(b[1], q)
+	u0 += b[0] * q
+	r := a.Sub(Uint128{u0, u1})
+	if r.Cmp(b) >= 0 {
+		q++
+		r = r.Sub(b)
+	}
+	return Uint128{0, q}, r
+}
+
+// Quo returns the quotient a/b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Quo implements T-division (like Go); see [Uint128.QuoRem] for more details.
+func (a Uint128) Quo(b Uint128) Uint128 {
+	return a.Div(b)
+}
+
+// Rem returns the remainder a%b for b != 0.
+// If b == 0, a division-by-zero run-time panic occurs.
+// Rem implements T-division (like Go); see [Uint128.QuoRem] for more details.
+func (a Uint128) Rem(b Uint128) Uint128 {
+	return a.Mod(b)
+}
+
+// QuoRem returns the quotient and remainder of a/b.
+// QuoRem implements T-division and modulus (like Go):
+//
+//	q = x/y      with the result truncated to zero
+//	r = x - y*q
+//
+// (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
+// See [Uint128.DivMod] for Euclidean division and modulus (unlike Go).
+func (a Uint128) QuoRem(b Uint128) (Uint128, Uint128) {
+	return a.DivMod(b)
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.
