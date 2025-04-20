@@ -150,6 +150,138 @@ func FuzzUint256_DivMod(f *testing.F) {
 	})
 }
 
+func TestUint256_And(t *testing.T) {
+	testCases := []struct {
+		x    Uint256
+		y    Uint256
+		want Uint256
+	}{
+		{
+			Uint256{0, 0, 0, 0},
+			Uint256{0, 0, 0, 0},
+			Uint256{0, 0, 0, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			Uint256{1, 1, 1, 1},
+			Uint256{1, 1, 1, 1},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			Uint256{0, 0, 0, 0},
+			Uint256{0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.And(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint256(%d).And(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint256_AndNot(t *testing.T) {
+	testCases := []struct {
+		x    Uint256
+		y    Uint256
+		want Uint256
+	}{
+		{
+			Uint256{0, 0, 0, 0},
+			Uint256{0, 0, 0, 0},
+			Uint256{0, 0, 0, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			Uint256{1, 1, 1, 1},
+			Uint256{0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.AndNot(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint256(%d).AndNot(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint256_Or(t *testing.T) {
+	testCases := []struct {
+		x    Uint256
+		y    Uint256
+		want Uint256
+	}{
+		{
+			Uint256{0, 0, 0, 0},
+			Uint256{0, 0, 0, 0},
+			Uint256{0, 0, 0, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			Uint256{1, 1, 1, 1},
+			Uint256{1, 1, 1, 1},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Or(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint256(%d).Or(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint256_Xor(t *testing.T) {
+	testCases := []struct {
+		x    Uint256
+		y    Uint256
+		want Uint256
+	}{
+		{
+			Uint256{0, 0, 0, 0},
+			Uint256{0, 0, 0, 0},
+			Uint256{0, 0, 0, 0},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			Uint256{1, 1, 1, 1},
+			Uint256{0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Xor(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint256(%d).Xor(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint256_Not(t *testing.T) {
+	testCases := []struct {
+		x    Uint256
+		want Uint256
+	}{
+		{
+			Uint256{0, 0, 0, 0},
+			Uint256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+		},
+		{
+			Uint256{1, 1, 1, 1},
+			Uint256{math.MaxUint64 - 1, math.MaxUint64 - 1, math.MaxUint64 - 1, math.MaxUint64 - 1},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Not()
+		if got != tc.want {
+			t.Errorf("Uint256(%d).Not() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint256_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Uint256

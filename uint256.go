@@ -244,12 +244,52 @@ func (a Uint256) QuoRem(b Uint256) (Uint256, Uint256) {
 
 // And returns the bitwise AND of a and b.
 func (a Uint256) And(b Uint256) Uint256 {
-	return Uint256{a[0] & b[0], a[1] & b[1], a[2] & b[2], a[3] & b[3]}
+	return Uint256{
+		a[0] & b[0],
+		a[1] & b[1],
+		a[2] & b[2],
+		a[3] & b[3],
+	}
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Uint256) AndNot(b Uint256) Uint256 {
+	return Uint256{
+		a[0] &^ b[0],
+		a[1] &^ b[1],
+		a[2] &^ b[2],
+		a[3] &^ b[3],
+	}
 }
 
 // Or returns the bitwise OR of a and b.
 func (a Uint256) Or(b Uint256) Uint256 {
-	return Uint256{a[0] | b[0], a[1] | b[1], a[2] | b[2], a[3] | b[3]}
+	return Uint256{
+		a[0] | b[0],
+		a[1] | b[1],
+		a[2] | b[2],
+		a[3] | b[3],
+	}
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Uint256) Xor(b Uint256) Uint256 {
+	return Uint256{
+		a[0] ^ b[0],
+		a[1] ^ b[1],
+		a[2] ^ b[2],
+		a[3] ^ b[3],
+	}
+}
+
+// Not returns the bitwise NOT of a.
+func (a Uint256) Not() Uint256 {
+	return Uint256{
+		^a[0],
+		^a[1],
+		^a[2],
+		^a[3],
+	}
 }
 
 // Lsh returns the logical left shift a<<i.

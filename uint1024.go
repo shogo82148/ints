@@ -800,6 +800,116 @@ func (a Uint1024) Mul(b Uint1024) Uint1024 {
 	return Uint1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
 }
 
+// And returns the bitwise AND of a and b.
+func (a Uint1024) And(b Uint1024) Uint1024 {
+	return Uint1024{
+		a[0] & b[0],
+		a[1] & b[1],
+		a[2] & b[2],
+		a[3] & b[3],
+		a[4] & b[4],
+		a[5] & b[5],
+		a[6] & b[6],
+		a[7] & b[7],
+		a[8] & b[8],
+		a[9] & b[9],
+		a[10] & b[10],
+		a[11] & b[11],
+		a[12] & b[12],
+		a[13] & b[13],
+		a[14] & b[14],
+		a[15] & b[15],
+	}
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Uint1024) AndNot(b Uint1024) Uint1024 {
+	return Uint1024{
+		a[0] &^ b[0],
+		a[1] &^ b[1],
+		a[2] &^ b[2],
+		a[3] &^ b[3],
+		a[4] &^ b[4],
+		a[5] &^ b[5],
+		a[6] &^ b[6],
+		a[7] &^ b[7],
+		a[8] &^ b[8],
+		a[9] &^ b[9],
+		a[10] &^ b[10],
+		a[11] &^ b[11],
+		a[12] &^ b[12],
+		a[13] &^ b[13],
+		a[14] &^ b[14],
+		a[15] &^ b[15],
+	}
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Uint1024) Or(b Uint1024) Uint1024 {
+	return Uint1024{
+		a[0] | b[0],
+		a[1] | b[1],
+		a[2] | b[2],
+		a[3] | b[3],
+		a[4] | b[4],
+		a[5] | b[5],
+		a[6] | b[6],
+		a[7] | b[7],
+		a[8] | b[8],
+		a[9] | b[9],
+		a[10] | b[10],
+		a[11] | b[11],
+		a[12] | b[12],
+		a[13] | b[13],
+		a[14] | b[14],
+		a[15] | b[15],
+	}
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Uint1024) Xor(b Uint1024) Uint1024 {
+	return Uint1024{
+		a[0] ^ b[0],
+		a[1] ^ b[1],
+		a[2] ^ b[2],
+		a[3] ^ b[3],
+		a[4] ^ b[4],
+		a[5] ^ b[5],
+		a[6] ^ b[6],
+		a[7] ^ b[7],
+		a[8] ^ b[8],
+		a[9] ^ b[9],
+		a[10] ^ b[10],
+		a[11] ^ b[11],
+		a[12] ^ b[12],
+		a[13] ^ b[13],
+		a[14] ^ b[14],
+		a[15] ^ b[15],
+	}
+}
+
+// Not returns the bitwise NOT of a.
+func (a Uint1024) Not() Uint1024 {
+	return Uint1024{
+		^a[0],
+		^a[1],
+		^a[2],
+		^a[3],
+		^a[4],
+		^a[5],
+		^a[6],
+		^a[7],
+		^a[8],
+		^a[9],
+		^a[10],
+		^a[11],
+		^a[12],
+		^a[13],
+		^a[14],
+		^a[15],
+	}
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

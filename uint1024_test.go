@@ -123,6 +123,119 @@ func FuzzUint1024_Mul(f *testing.F) {
 	})
 }
 
+func TestUint1024_And(t *testing.T) {
+	testCases := []struct {
+		x    Uint1024
+		y    Uint1024
+		want Uint1024
+	}{
+		{
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		},
+		{
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.And(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint1024(%s).And(%s) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_AndNot(t *testing.T) {
+	testCases := []struct {
+		x    Uint1024
+		y    Uint1024
+		want Uint1024
+	}{
+		{
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.AndNot(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint1024(%s).AndNot(%s) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Or(t *testing.T) {
+	testCases := []struct {
+		x    Uint1024
+		y    Uint1024
+		want Uint1024
+	}{
+		{
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Or(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint1024(%s).Or(%s) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Xor(t *testing.T) {
+	testCases := []struct {
+		x    Uint1024
+		y    Uint1024
+		want Uint1024
+	}{
+		{
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Xor(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint1024(%s).Xor(%s) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Not(t *testing.T) {
+	testCases := []struct {
+		x    Uint1024
+		want Uint1024
+	}{
+		{
+			Uint1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			Uint1024{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Not()
+		if got != tc.want {
+			t.Errorf("Uint1024(%s).Not() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint1024_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Uint1024

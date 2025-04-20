@@ -112,6 +112,95 @@ func TestUint32_QuoRem(t *testing.T) {
 	}
 }
 
+func TestUint32_And(t *testing.T) {
+	testCases := []struct {
+		x    Uint32
+		y    Uint32
+		want Uint32
+	}{
+		{0, 0, 0},
+		{1, 1, 1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.And(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint32(%d).And(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint32_AndNot(t *testing.T) {
+	testCases := []struct {
+		x    Uint32
+		y    Uint32
+		want Uint32
+	}{
+		{0, 0, 0},
+		{1, 1, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.AndNot(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint32(%d).AndNot(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint32_Or(t *testing.T) {
+	testCases := []struct {
+		x    Uint32
+		y    Uint32
+		want Uint32
+	}{
+		{0, 0, 0},
+		{1, 1, 1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Or(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint32(%d).Or(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint32_Xor(t *testing.T) {
+	testCases := []struct {
+		x    Uint32
+		y    Uint32
+		want Uint32
+	}{
+		{0, 0, 0},
+		{1, 1, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Xor(tc.y)
+		if got != tc.want {
+			t.Errorf("Uint32(%d).Xor(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestUint32_Not(t *testing.T) {
+	testCases := []struct {
+		x    Uint32
+		want Uint32
+	}{
+		{0, math.MaxUint32},
+		{1, math.MaxUint32 - 1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Not()
+		if got != tc.want {
+			t.Errorf("Uint32(%d).Not() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint32_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Uint32

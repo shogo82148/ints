@@ -240,6 +240,99 @@ func FuzzInt128_QuoRem(f *testing.F) {
 	})
 }
 
+func TestInt128_And(t *testing.T) {
+	testCases := []struct {
+		x    Int128
+		y    Int128
+		want Int128
+	}{
+		{Int128{0, 0}, Int128{0, 0}, Int128{0, 0}},
+		{Int128{1, 0}, Int128{1, 0}, Int128{1, 0}},
+		{Int128{1, 0}, Int128{2, 0}, Int128{0, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.And(tc.y)
+		if got != tc.want {
+			t.Errorf("Int128(%d).And(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestInt128_AndNot(t *testing.T) {
+	testCases := []struct {
+		x    Int128
+		y    Int128
+		want Int128
+	}{
+		{Int128{0, 0}, Int128{0, 0}, Int128{0, 0}},
+		{Int128{1, 0}, Int128{1, 0}, Int128{0, 0}},
+		{Int128{1, 0}, Int128{2, 0}, Int128{1, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.AndNot(tc.y)
+		if got != tc.want {
+			t.Errorf("Int128(%d).AndNot(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestInt128_Or(t *testing.T) {
+	testCases := []struct {
+		x    Int128
+		y    Int128
+		want Int128
+	}{
+		{Int128{0, 0}, Int128{0, 0}, Int128{0, 0}},
+		{Int128{1, 0}, Int128{1, 0}, Int128{1, 0}},
+		{Int128{1, 0}, Int128{2, 0}, Int128{3, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Or(tc.y)
+		if got != tc.want {
+			t.Errorf("Int128(%d).Or(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestInt128_Xor(t *testing.T) {
+	testCases := []struct {
+		x    Int128
+		y    Int128
+		want Int128
+	}{
+		{Int128{0, 0}, Int128{0, 0}, Int128{0, 0}},
+		{Int128{1, 0}, Int128{1, 0}, Int128{0, 0}},
+		{Int128{1, 0}, Int128{2, 0}, Int128{3, 0}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Xor(tc.y)
+		if got != tc.want {
+			t.Errorf("Int128(%d).Xor(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestInt128_Not(t *testing.T) {
+	testCases := []struct {
+		x    Int128
+		want Int128
+	}{
+		{Int128{0, 0}, Int128{math.MaxUint64, math.MaxUint64}},
+		{Int128{1, 0}, Int128{math.MaxUint64 - 1, math.MaxUint64}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Not()
+		if got != tc.want {
+			t.Errorf("Int128(%d).Not() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestInt128_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Int128

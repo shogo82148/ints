@@ -122,6 +122,106 @@ func TestInt16_QuoRem(t *testing.T) {
 	}
 }
 
+func TestInt16_And(t *testing.T) {
+	testCases := []struct {
+		x    Int16
+		y    Int16
+		want Int16
+	}{
+		{0, 0, 0},
+		{1, 1, 1},
+		{-1, -1, -1},
+		{127, 255, 127},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.And(tc.y)
+		if got != tc.want {
+			t.Errorf("Int16(%d).And(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestInt16_AndNot(t *testing.T) {
+	testCases := []struct {
+		x    Int16
+		y    Int16
+		want Int16
+	}{
+		{0, 0, 0},
+		{1, 1, 0},
+		{-1, -1, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.AndNot(tc.y)
+		if got != tc.want {
+			t.Errorf("Int16(%d).AndNot(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestInt16_Or(t *testing.T) {
+	testCases := []struct {
+		x    Int16
+		y    Int16
+		want Int16
+	}{
+		{0, 0, 0},
+		{1, 1, 1},
+		{-1, -1, -1},
+		{127, 255, 255},
+		{-128, -255, -127},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Or(tc.y)
+		if got != tc.want {
+			t.Errorf("Int16(%d).Or(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestInt16_Xor(t *testing.T) {
+	testCases := []struct {
+		x    Int16
+		y    Int16
+		want Int16
+	}{
+		{0, 0, 0},
+		{1, 1, 0},
+		{-1, -1, 0},
+		{127, 255, 128},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Xor(tc.y)
+		if got != tc.want {
+			t.Errorf("Int16(%d).Xor(%d) = %d, want %d", tc.x, tc.y, got, tc.want)
+		}
+	}
+}
+
+func TestInt16_Not(t *testing.T) {
+	testCases := []struct {
+		x    Int16
+		want Int16
+	}{
+		{0, -1},
+		{1, -2},
+		{-1, 0},
+		{127, -128},
+		{-128, 127},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.Not()
+		if got != tc.want {
+			t.Errorf("Int16(%d).Not() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestInt16_Lsh(t *testing.T) {
 	testCases := []struct {
 		x    Int16

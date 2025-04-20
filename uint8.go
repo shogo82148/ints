@@ -94,6 +94,31 @@ func (a Uint8) QuoRem(b Uint8) (Uint8, Uint8) {
 	return a / b, a % b
 }
 
+// And returns the bitwise AND of a and b.
+func (a Uint8) And(b Uint8) Uint8 {
+	return a & b
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Uint8) AndNot(b Uint8) Uint8 {
+	return a &^ b
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Uint8) Or(b Uint8) Uint8 {
+	return a | b
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Uint8) Xor(b Uint8) Uint8 {
+	return a ^ b
+}
+
+// Not returns the bitwise NOT of a.
+func (a Uint8) Not() Uint8 {
+	return ^a
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

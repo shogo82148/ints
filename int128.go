@@ -139,6 +139,31 @@ func (a Int128) QuoRem(b Int128) (Int128, Int128) {
 	return Int128(q), Int128(r)
 }
 
+// And returns the bitwise AND of a and b.
+func (a Int128) And(b Int128) Int128 {
+	return Int128{a[0] & b[0], a[1] & b[1]}
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Int128) AndNot(b Int128) Int128 {
+	return Int128{a[0] &^ b[0], a[1] &^ b[1]}
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Int128) Or(b Int128) Int128 {
+	return Int128{a[0] | b[0], a[1] | b[1]}
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Int128) Xor(b Int128) Int128 {
+	return Int128{a[0] ^ b[0], a[1] ^ b[1]}
+}
+
+// Not returns the bitwise NOT of a.
+func (a Int128) Not() Int128 {
+	return Int128{^a[0], ^a[1]}
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.

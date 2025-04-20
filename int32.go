@@ -102,6 +102,31 @@ func (a Int32) QuoRem(b Int32) (Int32, Int32) {
 	return a / b, a % b
 }
 
+// And returns the bitwise AND of a and b.
+func (a Int32) And(b Int32) Int32 {
+	return a & b
+}
+
+// AndNot returns the bitwise AND NOT of a and b.
+func (a Int32) AndNot(b Int32) Int32 {
+	return a &^ b
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Int32) Or(b Int32) Int32 {
+	return a | b
+}
+
+// Xor returns the bitwise XOR of a and b.
+func (a Int32) Xor(b Int32) Int32 {
+	return a ^ b
+}
+
+// Not returns the bitwise NOT of a.
+func (a Int32) Not() Int32 {
+	return ^a
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.
