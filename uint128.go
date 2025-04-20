@@ -123,6 +123,16 @@ func (a Uint128) QuoRem(b Uint128) (Uint128, Uint128) {
 	return a.DivMod(b)
 }
 
+// And returns the bitwise AND of a and b.
+func (a Uint128) And(b Uint128) Uint128 {
+	return Uint128{a[0] & b[0], a[1] & b[1]}
+}
+
+// Or returns the bitwise OR of a and b.
+func (a Uint128) Or(b Uint128) Uint128 {
+	return Uint128{a[0] | b[0], a[1] | b[1]}
+}
+
 // Lsh returns the logical left shift a<<i.
 //
 // This function's execution time does not depend on the inputs.
@@ -153,6 +163,14 @@ func (a Uint128) Rsh(i uint) Uint128 {
 		a[0] >> i,
 		a[0]>>n | a[0]<<m | a[1]>>i,
 	}
+}
+
+// LeadingZeros64 returns the number of leading zero bits in x; the result is 128 for x == 0.
+func (a Uint128) LeadingZeros() int {
+	if a[0] != 0 {
+		return bits.LeadingZeros64(a[0])
+	}
+	return bits.LeadingZeros64(a[1]) + 64
 }
 
 // Sign returns the sign of a.
