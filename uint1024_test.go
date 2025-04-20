@@ -160,19 +160,19 @@ func FuzzUint1024_DivMod(f *testing.F) {
 		wantQ, wantR := new(big.Int).DivMod(ba, bb, new(big.Int))
 
 		if gotQ.Cmp(wantQ) != 0 || gotR.Cmp(wantR) != 0 {
-			t.Errorf("Uint512(%s).DivMod(%s) = %d, %d, want %d, %d", a, b, gotQ, gotR, wantQ, wantR)
+			t.Errorf("Uint1024(%s).DivMod(%s) = %d, %d, want %d, %d", a, b, gotQ, gotR, wantQ, wantR)
 		}
 
 		q = a.Div(b)
 		gotQ = uint1024ToBigInt(q)
 		if gotQ.Cmp(wantQ) != 0 {
-			t.Errorf("Uint512(%s).Div(%s) = %d, want %d", a, b, gotQ, wantQ)
+			t.Errorf("Uint1024(%s).Div(%s) = %d, want %d", a, b, gotQ, wantQ)
 		}
 
 		r = a.Mod(b)
 		gotR = uint1024ToBigInt(r)
 		if gotR.Cmp(wantR) != 0 {
-			t.Errorf("Uint512(%s).Mod(%s) = %d, want %d", a, b, gotR, wantR)
+			t.Errorf("Uint1024(%s).Mod(%s) = %d, want %d", a, b, gotR, wantR)
 		}
 	})
 }
