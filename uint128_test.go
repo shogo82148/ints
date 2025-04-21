@@ -275,7 +275,7 @@ func TestUint128_Rsh(t *testing.T) {
 	}
 }
 
-func TestUin128_LeadingZeros(t *testing.T) {
+func TestUint128_LeadingZeros(t *testing.T) {
 	testCases := []struct {
 		x    Uint128
 		want int
