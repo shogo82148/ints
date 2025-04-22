@@ -515,6 +515,57 @@ func TestUint512_LeadingZeros(t *testing.T) {
 	}
 }
 
+func TestUint512_TrailingZeros(t *testing.T) {
+	testCases := []struct {
+		x    Uint512
+		want int
+	}{
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 0},
+			512,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 1},
+			0,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 1, 0},
+			64,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 1, 0, 0},
+			128,
+		},
+		{
+			Uint512{0, 0, 0, 0, 1, 0, 0, 0},
+			192,
+		},
+		{
+			Uint512{0, 0, 0, 1, 0, 0, 0, 0},
+			256,
+		},
+		{
+			Uint512{0, 0, 1, 0, 0, 0, 0, 0},
+			320,
+		},
+		{
+			Uint512{0, 1, 0, 0, 0, 0, 0, 0},
+			384,
+		},
+		{
+			Uint512{1, 0, 0, 0, 0, 0, 0, 0},
+			448,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.TrailingZeros()
+		if got != tc.want {
+			t.Errorf("Uint512(%d).TrailingZeros() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint512_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint512

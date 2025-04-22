@@ -350,6 +350,20 @@ func (a Uint256) LeadingZeros() int {
 	return bits.LeadingZeros64(a[3]) + 192
 }
 
+// TrailingZeros returns the number of trailing zero bits in a; the result is 256 for a == 0.
+func (a Uint256) TrailingZeros() int {
+	if a[3] != 0 {
+		return bits.TrailingZeros64(a[3])
+	}
+	if a[2] != 0 {
+		return bits.TrailingZeros64(a[2]) + 64
+	}
+	if a[1] != 0 {
+		return bits.TrailingZeros64(a[1]) + 128
+	}
+	return bits.TrailingZeros64(a[0]) + 192
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint256 is unsigned.
