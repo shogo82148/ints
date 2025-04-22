@@ -542,6 +542,7 @@ func (a Uint512) Rsh(i uint) Uint512 {
 	}
 }
 
+// LeadingZeros returns the number of leading zero bits in a; the result is 512 for a == 0.
 func (a Uint512) LeadingZeros() int {
 	if a[0] != 0 {
 		return bits.LeadingZeros64(a[0])

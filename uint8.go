@@ -3,6 +3,7 @@ package ints
 import (
 	"cmp"
 	"fmt"
+	"math/bits"
 )
 
 // Uint8 is a type that represents an 8-bit unsigned integer.
@@ -131,6 +132,11 @@ func (a Uint8) Lsh(i uint) Uint8 {
 // This function's execution time does not depend on the inputs.
 func (a Uint8) Rsh(i uint) Uint8 {
 	return a >> i
+}
+
+// LeadingZeros returns the number of leading zero bits in a; the result is 8 for a == 0.
+func (a Uint8) LeadingZeros() int {
+	return bits.LeadingZeros8(uint8(a))
 }
 
 // Sign returns the sign of a.

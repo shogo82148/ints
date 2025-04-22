@@ -258,6 +258,24 @@ func TestUint64_Rsh(t *testing.T) {
 	}
 }
 
+func TestUint64_LeadingZeros(t *testing.T) {
+	testCases := []struct {
+		x    Uint64
+		want int
+	}{
+		{0, 64},
+		{1, 63},
+		{math.MaxUint64, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.LeadingZeros()
+		if got != tc.want {
+			t.Errorf("Uint64(%d).LeadingZeros() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint64_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint64

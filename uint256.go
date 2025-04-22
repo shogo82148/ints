@@ -336,7 +336,7 @@ func (a Uint256) Rsh(i uint) Uint256 {
 	}
 }
 
-// LeadingZeros returns the number of leading zero bits in x; the result is 256 for x == 0.
+// LeadingZeros returns the number of leading zero bits in a; the result is 256 for a == 0.
 func (a Uint256) LeadingZeros() int {
 	if a[0] != 0 {
 		return bits.LeadingZeros64(a[0])

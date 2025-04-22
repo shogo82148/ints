@@ -135,6 +135,11 @@ func (a Uint64) Rsh(i uint) Uint64 {
 	return a >> i
 }
 
+// LeadingZeros returns the number of leading zero bits in a; the result is 64 for a == 0.
+func (a Uint64) LeadingZeros() int {
+	return bits.LeadingZeros64(uint64(a))
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint64 is unsigned.

@@ -260,6 +260,24 @@ func TestUint8_Rsh(t *testing.T) {
 	}
 }
 
+func TestUint8_LeadingZeros(t *testing.T) {
+	testCases := []struct {
+		x    Uint8
+		want int
+	}{
+		{0, 8},
+		{1, 7},
+		{0x80, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.LeadingZeros()
+		if got != tc.want {
+			t.Errorf("Uint8(%d).LeadingZeros() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint8_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint8

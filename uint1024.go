@@ -1211,6 +1211,56 @@ func (a Uint1024) Rsh(i uint) Uint1024 {
 	}
 }
 
+// LeadingZeros returns the number of leading zero bits in a; the result is 1024 for a == 0.
+func (a Uint1024) LeadingZeros() int {
+	if a[0] != 0 {
+		return bits.LeadingZeros64(a[0])
+	}
+	if a[1] != 0 {
+		return bits.LeadingZeros64(a[1]) + 64
+	}
+	if a[2] != 0 {
+		return bits.LeadingZeros64(a[2]) + 128
+	}
+	if a[3] != 0 {
+		return bits.LeadingZeros64(a[3]) + 192
+	}
+	if a[4] != 0 {
+		return bits.LeadingZeros64(a[4]) + 256
+	}
+	if a[5] != 0 {
+		return bits.LeadingZeros64(a[5]) + 320
+	}
+	if a[6] != 0 {
+		return bits.LeadingZeros64(a[6]) + 384
+	}
+	if a[7] != 0 {
+		return bits.LeadingZeros64(a[7]) + 448
+	}
+	if a[8] != 0 {
+		return bits.LeadingZeros64(a[8]) + 512
+	}
+	if a[9] != 0 {
+		return bits.LeadingZeros64(a[9]) + 576
+	}
+	if a[10] != 0 {
+		return bits.LeadingZeros64(a[10]) + 640
+	}
+	if a[11] != 0 {
+		return bits.LeadingZeros64(a[11]) + 704
+	}
+	if a[12] != 0 {
+		return bits.LeadingZeros64(a[12]) + 768
+	}
+	if a[13] != 0 {
+		return bits.LeadingZeros64(a[13]) + 832
+	}
+	if a[14] != 0 {
+		return bits.LeadingZeros64(a[14]) + 896
+	}
+	return bits.LeadingZeros64(a[15]) + 960
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint128 is unsigned.
