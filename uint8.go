@@ -34,6 +34,11 @@ func (a Uint8) Mul(b Uint8) Uint8 {
 	return a * b
 }
 
+// Mul16 returns the product a*b, the result is a 16-bit integer.
+func (a Uint8) Mul16(b Uint8) Uint16 {
+	return Uint16(a) * Uint16(b)
+}
+
 // Div returns the quotient a/b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Div implements Euclidean division (unlike Go); see [Uint8.DivMod] for more details.

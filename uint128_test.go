@@ -149,6 +149,55 @@ func BenchmarkUint128_Mul(b *testing.B) {
 	})
 }
 
+func FuzzUint128_Mul256(f *testing.F) {
+	f.Add(
+		uint64(0), uint64(0),
+		uint64(0), uint64(0),
+	)
+	f.Add(
+		uint64(1), uint64(0),
+		uint64(1), uint64(0),
+	)
+	f.Add(
+		uint64(math.MaxUint64), uint64(math.MaxUint64),
+		uint64(math.MaxUint64), uint64(math.MaxUint64),
+	)
+
+	f.Fuzz(func(t *testing.T, u0, u1, v0, v1 uint64) {
+		a := Uint128{u0, u1}
+		b := Uint128{v0, v1}
+		got := uint256ToBigInt(a.Mul256(b))
+
+		ba := uint128ToBigInt(a)
+		bb := uint128ToBigInt(b)
+		want := new(big.Int).Mul(ba, bb)
+
+		if got.Cmp(want) != 0 {
+			t.Errorf("Uint128(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
+func BenchmarkUint128_Mul256(b *testing.B) {
+	x := Uint128{0xffffffff_ffffffff, 0xffffffff_ffffffff}
+	y := Uint128{0xffffffff_ffffffff, 0xffffffff_ffffffff}
+
+	b.Run("Uint128", func(b *testing.B) {
+		for b.Loop() {
+			runtime.KeepAlive(x.Mul256(y))
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint128ToBigInt(x)
+		yy := uint128ToBigInt(y)
+		zz := new(big.Int)
+		for b.Loop() {
+			zz.Mul(xx, yy)
+		}
+	})
+}
+
 func FuzzUint128_DivMod(f *testing.F) {
 	f.Add(
 		uint64(0), uint64(127),

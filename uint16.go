@@ -34,6 +34,11 @@ func (a Uint16) Mul(b Uint16) Uint16 {
 	return a * b
 }
 
+// Mul32 returns the product a*b, the result is a 32-bit integer.
+func (a Uint16) Mul32(b Uint16) Uint32 {
+	return Uint32(a) * Uint32(b)
+}
+
 // Div returns the quotient a/b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Div implements Euclidean division (unlike Go); see [Uint16.DivMod] for more details.

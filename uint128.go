@@ -43,6 +43,45 @@ func (a Uint128) Mul(b Uint128) Uint128 {
 	return Uint128{h + h1 + h2, l}
 }
 
+// Mul256 returns the product a*b, the result is a 128-bit integer.
+func (a Uint128) Mul256(b Uint128) Uint256 {
+	//              a0  a1
+	//            x b0  b1
+	//           ---------
+	//             h11 l11 - 1.
+	//         h01 l01     - 2.
+	//         h10 l10     - 3.
+	//     h00 l00         - 4.
+	//     ---------------
+	//      u0  u1  u2  u3
+
+	h11, l11 := bits.Mul64(a[1], b[1])
+	h01, l01 := bits.Mul64(a[0], b[1])
+	h10, l10 := bits.Mul64(a[1], b[0])
+	h00, l00 := bits.Mul64(a[0], b[0])
+
+	var u0, u1, u2, u3, carry uint64
+	// 1.
+	u3 = l11
+	u2 = h11
+
+	// 2.
+	u2, carry = bits.Add64(u2, l01, 0)
+	u1, carry = bits.Add64(u1, h01, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 3.
+	u2, carry = bits.Add64(u2, l10, 0)
+	u1, carry = bits.Add64(u1, h10, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 4.
+	u1, carry = bits.Add64(u1, l00, 0)
+	u0, _ = bits.Add64(u0, h00, carry)
+
+	return Uint256{u0, u1, u2, u3}
+}
+
 // Div returns the quotient a/b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Div implements Euclidean division (unlike Go); see [Uint128.DivMod] for more details.
