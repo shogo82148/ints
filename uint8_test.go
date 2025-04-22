@@ -67,6 +67,26 @@ func TestUint8_Mul(t *testing.T) {
 	}
 }
 
+func TestUint8_Mul16(t *testing.T) {
+	testCases := []struct {
+		x, y uint8
+		want Uint16
+	}{
+		{0, 0, 0},
+		{1, 0, 0},
+		{1, 1, 1},
+	}
+
+	for _, tc := range testCases {
+		a := Uint8(tc.x)
+		b := Uint8(tc.y)
+		got := a.Mul16(b)
+		if got != tc.want {
+			t.Errorf("Uint8(%d).Mul16(%d) = %d, want %d", a, b, got, tc.want)
+		}
+	}
+}
+
 func TestUint8_DivMod(t *testing.T) {
 	testCases := []struct {
 		x, y Uint8

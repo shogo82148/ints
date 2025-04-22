@@ -67,6 +67,26 @@ func TestUint32_Mul(t *testing.T) {
 	}
 }
 
+func TestUint32_Mul64(t *testing.T) {
+	testCases := []struct {
+		x, y uint32
+		want Uint64
+	}{
+		{0, 0, 0},
+		{1, 0, 0},
+		{1, 1, 1},
+	}
+
+	for _, tc := range testCases {
+		a := Uint32(tc.x)
+		b := Uint32(tc.y)
+		got := a.Mul64(b)
+		if got != tc.want {
+			t.Errorf("Uint32(%d).Mul64(%d) = %d, want %d", a, b, got, tc.want)
+		}
+	}
+}
+
 func TestUint32_DivMod(t *testing.T) {
 	testCases := []struct {
 		x, y Uint32

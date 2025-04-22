@@ -34,6 +34,12 @@ func (a Uint32) Mul(b Uint32) Uint32 {
 	return a * b
 }
 
+// Mul64 returns the product a*b, the result is a 64-bit integer.
+func (a Uint32) Mul64(b Uint32) Uint64 {
+	h, l := bits.Mul32(uint32(a), uint32(b))
+	return Uint64(h)<<32 | Uint64(l)
+}
+
 // Div returns the quotient a/b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Div implements Euclidean division (unlike Go); see [Uint32.DivMod] for more details.

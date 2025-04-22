@@ -67,6 +67,25 @@ func TestUint64_Mul(t *testing.T) {
 	}
 }
 
+func TestUint64_Mul128(t *testing.T) {
+	tests := []struct {
+		a, b Uint64
+		want Uint128
+	}{
+		{0, 0, Uint128{0, 0}},
+		{0, math.MaxUint64, Uint128{0, 0}},
+		{1, 1, Uint128{0, 1}},
+		{1 << 32, 1 << 32, Uint128{1, 0}},
+		{math.MaxUint64, math.MaxUint64, Uint128{math.MaxUint64 - 1, 1}},
+	}
+	for _, tc := range tests {
+		got := tc.a.Mul128(tc.b)
+		if got != tc.want {
+			t.Errorf("Mul128(%v, %v) = %v; want %v", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func TestUint64_DivMod(t *testing.T) {
 	testCases := []struct {
 		x, y Uint64

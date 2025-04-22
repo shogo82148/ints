@@ -159,6 +159,62 @@ func BenchmarkUint512_Mul(b *testing.B) {
 	})
 }
 
+func FuzzUint512_Mul1024(f *testing.F) {
+	f.Add(
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+	)
+	f.Add(
+		// 0
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		// 1
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
+	)
+	f.Add(
+		// MaxUint512
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64),
+		// MaxUint512
+		uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64), uint64(math.MaxUint64),
+	)
+
+	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, u4, u5, u6, u7, v0, v1, v2, v3, v4, v5, v6, v7 uint64) {
+		a := Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
+		b := Uint512{v0, v1, v2, v3, v4, v5, v6, v7}
+		got := uint1024ToBigInt(a.Mul1024(b))
+
+		ba := uint512ToBigInt(a)
+		bb := uint512ToBigInt(b)
+		want := new(big.Int).Mul(ba, bb)
+
+		if got.Cmp(want) != 0 {
+			t.Errorf("Uint512(%s).Mul(%s) = %d, want %d", a, b, got, want)
+		}
+	})
+}
+
+func BenchmarkUint512_Mul1024(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint512{M, M, M, M, M, M, M, M}
+	y := Uint512{M, M, M, M, M, M, M, M}
+
+	b.Run("Uint512", func(b *testing.B) {
+		for b.Loop() {
+			runtime.KeepAlive(x.Mul1024(y))
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint512ToBigInt(x)
+		yy := uint512ToBigInt(y)
+		zz := new(big.Int)
+		for b.Loop() {
+			zz.Mul(xx, yy)
+		}
+	})
+}
+
 func FuzzUint512_DivMod(f *testing.F) {
 	f.Add(
 		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(127),
