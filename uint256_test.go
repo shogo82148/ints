@@ -424,6 +424,26 @@ func TestUint256_LeadingZeros(t *testing.T) {
 	}
 }
 
+func TestUint256_TrailingZeros(t *testing.T) {
+	testCases := []struct {
+		x    Uint256
+		want int
+	}{
+		{Uint256{0, 0, 0, 0}, 256},
+		{Uint256{1, 0, 0, 0}, 192},
+		{Uint256{0, 1, 0, 0}, 128},
+		{Uint256{0, 0, 1, 0}, 64},
+		{Uint256{0, 0, 0, 1}, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.TrailingZeros()
+		if got != tc.want {
+			t.Errorf("Uint256(%d).TrailingZeros() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint256_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint256

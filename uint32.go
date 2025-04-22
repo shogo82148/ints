@@ -141,6 +141,11 @@ func (a Uint32) LeadingZeros() int {
 	return bits.LeadingZeros32(uint32(a))
 }
 
+// TrailingZeros returns the number of trailing zero bits in a; the result is 32 for a == 0.
+func (a Uint32) TrailingZeros() int {
+	return bits.TrailingZeros32(uint32(a))
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint32 is unsigned.

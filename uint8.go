@@ -139,6 +139,11 @@ func (a Uint8) LeadingZeros() int {
 	return bits.LeadingZeros8(uint8(a))
 }
 
+// TrailingZeros returns the number of trailing zero bits in a; the result is 8 for a == 0.
+func (a Uint8) TrailingZeros() int {
+	return bits.TrailingZeros8(uint8(a))
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint8 is unsigned.

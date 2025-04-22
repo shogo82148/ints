@@ -1261,6 +1261,56 @@ func (a Uint1024) LeadingZeros() int {
 	return bits.LeadingZeros64(a[15]) + 960
 }
 
+// TrailingZeros returns the number of trailing zero bits in a; the result is 1024 for a == 0.
+func (a Uint1024) TrailingZeros() int {
+	if a[15] != 0 {
+		return bits.TrailingZeros64(a[15])
+	}
+	if a[14] != 0 {
+		return bits.TrailingZeros64(a[14]) + 64
+	}
+	if a[13] != 0 {
+		return bits.TrailingZeros64(a[13]) + 128
+	}
+	if a[12] != 0 {
+		return bits.TrailingZeros64(a[12]) + 192
+	}
+	if a[11] != 0 {
+		return bits.TrailingZeros64(a[11]) + 256
+	}
+	if a[10] != 0 {
+		return bits.TrailingZeros64(a[10]) + 320
+	}
+	if a[9] != 0 {
+		return bits.TrailingZeros64(a[9]) + 384
+	}
+	if a[8] != 0 {
+		return bits.TrailingZeros64(a[8]) + 448
+	}
+	if a[7] != 0 {
+		return bits.TrailingZeros64(a[7]) + 512
+	}
+	if a[6] != 0 {
+		return bits.TrailingZeros64(a[6]) + 576
+	}
+	if a[5] != 0 {
+		return bits.TrailingZeros64(a[5]) + 640
+	}
+	if a[4] != 0 {
+		return bits.TrailingZeros64(a[4]) + 704
+	}
+	if a[3] != 0 {
+		return bits.TrailingZeros64(a[3]) + 768
+	}
+	if a[2] != 0 {
+		return bits.TrailingZeros64(a[2]) + 832
+	}
+	if a[1] != 0 {
+		return bits.TrailingZeros64(a[1]) + 896
+	}
+	return bits.TrailingZeros64(a[0]) + 960
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint128 is unsigned.

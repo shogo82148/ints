@@ -139,6 +139,11 @@ func (a Uint16) LeadingZeros() int {
 	return bits.LeadingZeros16(uint16(a))
 }
 
+// TrailingZeros returns the number of trailing zero bits in a; the result is 16 for a == 0.
+func (a Uint16) TrailingZeros() int {
+	return bits.TrailingZeros16(uint16(a))
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint16 is unsigned.

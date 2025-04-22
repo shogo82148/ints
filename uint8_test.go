@@ -278,6 +278,24 @@ func TestUint8_LeadingZeros(t *testing.T) {
 	}
 }
 
+func TestUint8_TrailingZeros(t *testing.T) {
+	testCases := []struct {
+		x    Uint8
+		want int
+	}{
+		{0, 8},
+		{1, 0},
+		{0x80, 7},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.TrailingZeros()
+		if got != tc.want {
+			t.Errorf("Uint8(%d).TrailingZeros() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint8_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint8

@@ -194,6 +194,14 @@ func (a Uint128) LeadingZeros() int {
 	return bits.LeadingZeros64(a[1]) + 64
 }
 
+// TrailingZeros returns the number of trailing zero bits in x; the result is 128 for x == 0.
+func (a Uint128) TrailingZeros() int {
+	if a[1] != 0 {
+		return bits.TrailingZeros64(a[1])
+	}
+	return bits.TrailingZeros64(a[0]) + 64
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint128 is unsigned.

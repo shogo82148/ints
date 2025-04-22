@@ -313,6 +313,24 @@ func TestUint128_LeadingZeros(t *testing.T) {
 	}
 }
 
+func TestUint128_TrailingZeros(t *testing.T) {
+	testCases := []struct {
+		x    Uint128
+		want int
+	}{
+		{Uint128{0, 0}, 128},
+		{Uint128{1, 0}, 64},
+		{Uint128{0, 1}, 0},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.TrailingZeros()
+		if got != tc.want {
+			t.Errorf("Uint128(%d).TrailingZeros() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint128_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint128
