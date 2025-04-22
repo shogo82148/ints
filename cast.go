@@ -233,7 +233,7 @@ func (a Int64) Int64() Int64 {
 	return a
 }
 
-// Int128 returns a to an Int128.
+// Int128 converts a to an Int128.
 func (a Int64) Int128() Int128 {
 	return Int128{uint64(a >> 63), uint64(a)}
 }
