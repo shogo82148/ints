@@ -166,26 +166,26 @@ func BenchmarkUint1024_Mul(b *testing.B) {
 }
 
 func FuzzUint1024_DivMod(f *testing.F) {
-	// f.Add(
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(127),
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(10),
-	// )
+	f.Add(
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(127),
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(10),
+	)
 
-	// f.Add(
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(10),
-	// )
+	f.Add(
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(10),
+	)
 
-	// f.Add(
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(2),
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
-	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
-	// )
+	f.Add(
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(2),
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(1),
+		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
+	)
 
 	f.Fuzz(func(t *testing.T, u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15 uint64) {
 		a := Uint1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
@@ -215,6 +215,28 @@ func FuzzUint1024_DivMod(f *testing.F) {
 		gotR = uint1024ToBigInt(r)
 		if gotR.Cmp(wantR) != 0 {
 			t.Errorf("Uint1024(%s).Mod(%s) = %d, want %d", a, b, gotR, wantR)
+		}
+	})
+}
+
+func BenchmarkUint1024_DivMod(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint1024{M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M}
+	y := Uint1024{1, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M}
+
+	b.Run("Uint1024", func(b *testing.B) {
+		for b.Loop() {
+			x.DivMod(y)
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint1024ToBigInt(x)
+		yy := uint1024ToBigInt(y)
+		q := new(big.Int)
+		r := new(big.Int)
+		for b.Loop() {
+			q.DivMod(xx, yy, r)
 		}
 	})
 }
