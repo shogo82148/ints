@@ -43,7 +43,7 @@ func (a Uint128) Mul(b Uint128) Uint128 {
 	return Uint128{h + h1 + h2, l}
 }
 
-// Mul256 returns the product a*b, the result is a 128-bit integer.
+// Mul256 returns the product a*b, the result is a 256-bit integer.
 func (a Uint128) Mul256(b Uint128) Uint256 {
 	//              a0  a1
 	//            x b0  b1
