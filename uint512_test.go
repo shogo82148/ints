@@ -204,6 +204,28 @@ func FuzzUint512_DivMod(f *testing.F) {
 	})
 }
 
+func BenchmarkUint512_DivMod(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint512{M, M, M, M, M, M, M, M}
+	y := Uint512{1, M, M, M, M, M, M, M}
+
+	b.Run("Uint512", func(b *testing.B) {
+		for b.Loop() {
+			x.DivMod(y)
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint512ToBigInt(x)
+		yy := uint512ToBigInt(y)
+		q := new(big.Int)
+		r := new(big.Int)
+		for b.Loop() {
+			q.DivMod(xx, yy, r)
+		}
+	})
+}
+
 func TestUint512_And(t *testing.T) {
 	testCases := []struct {
 		x    Uint512

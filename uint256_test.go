@@ -191,6 +191,28 @@ func FuzzUint256_DivMod(f *testing.F) {
 	})
 }
 
+func BenchmarkUint256_DivMod(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint256{M, M, M, M}
+	y := Uint256{1, M, M, M}
+
+	b.Run("Uint256", func(b *testing.B) {
+		for b.Loop() {
+			x.DivMod(y)
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint256ToBigInt(x)
+		yy := uint256ToBigInt(y)
+		q := new(big.Int)
+		r := new(big.Int)
+		for b.Loop() {
+			q.DivMod(xx, yy, r)
+		}
+	})
+}
+
 func TestUint256_And(t *testing.T) {
 	testCases := []struct {
 		x    Uint256

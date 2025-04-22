@@ -190,6 +190,28 @@ func FuzzUint128_DivMod(f *testing.F) {
 	})
 }
 
+func BenchmarkUint128_DivMod(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint128{M, M}
+	y := Uint128{1, M}
+
+	b.Run("Uint128", func(b *testing.B) {
+		for b.Loop() {
+			x.DivMod(y)
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint128ToBigInt(x)
+		yy := uint128ToBigInt(y)
+		q := new(big.Int)
+		r := new(big.Int)
+		for b.Loop() {
+			q, r = q.DivMod(xx, yy, r)
+		}
+	})
+}
+
 func TestUint128_And(t *testing.T) {
 	testCases := []struct {
 		x    Uint128

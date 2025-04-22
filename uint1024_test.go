@@ -219,6 +219,28 @@ func FuzzUint1024_DivMod(f *testing.F) {
 	})
 }
 
+func BenchmarkUint1024_DivMod(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint1024{M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M}
+	y := Uint1024{1, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M}
+
+	b.Run("Uint1024", func(b *testing.B) {
+		for b.Loop() {
+			x.DivMod(y)
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint1024ToBigInt(x)
+		yy := uint1024ToBigInt(y)
+		q := new(big.Int)
+		r := new(big.Int)
+		for b.Loop() {
+			q.DivMod(xx, yy, r)
+		}
+	})
+}
+
 func TestUint1024_And(t *testing.T) {
 	testCases := []struct {
 		x    Uint1024
