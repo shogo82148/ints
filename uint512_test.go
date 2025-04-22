@@ -49,6 +49,27 @@ func FuzzUint512_Add(f *testing.F) {
 	})
 }
 
+func BenchmarkUint512_Add(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint512{0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0}
+	y := Uint512{0x7f000000_00000000, M, M, M, M, M, M, M}
+
+	b.Run("Uint512", func(b *testing.B) {
+		for b.Loop() {
+			runtime.KeepAlive(x.Add(y))
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint512ToBigInt(x)
+		yy := uint512ToBigInt(y)
+		zz := new(big.Int)
+		for b.Loop() {
+			zz.Add(xx, yy)
+		}
+	})
+}
+
 func FuzzUint512_Sub(f *testing.F) {
 	f.Add(
 		// 0
