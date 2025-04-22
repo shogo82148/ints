@@ -588,6 +588,57 @@ func TestUint512_TrailingZeros(t *testing.T) {
 	}
 }
 
+func TestUint512_BitLen(t *testing.T) {
+	testCases := []struct {
+		x    Uint512
+		want int
+	}{
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 0},
+			0,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 0, 1},
+			1,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 0, 1, 0},
+			65,
+		},
+		{
+			Uint512{0, 0, 0, 0, 0, 1, 0, 0},
+			129,
+		},
+		{
+			Uint512{0, 0, 0, 0, 1, 0, 0, 0},
+			193,
+		},
+		{
+			Uint512{0, 0, 0, 1, 0, 0, 0, 0},
+			257,
+		},
+		{
+			Uint512{0, 0, 1, 0, 0, 0, 0, 0},
+			321,
+		},
+		{
+			Uint512{0, 1, 0, 0, 0, 0, 0, 0},
+			385,
+		},
+		{
+			Uint512{1, 0, 0, 0, 0, 0, 0, 0},
+			449,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.BitLen()
+		if got != tc.want {
+			t.Errorf("Uint512(%#0128x).BitLen() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint512_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint512

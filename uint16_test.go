@@ -294,6 +294,25 @@ func TestUint16_TrailingZeros(t *testing.T) {
 	}
 }
 
+func TestUint16_BitLen(t *testing.T) {
+	testCases := []struct {
+		x    Uint16
+		want int
+	}{
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{0xffff, 16},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.BitLen()
+		if got != tc.want {
+			t.Errorf("Uint16(%#04x).BitLen() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint16_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint16
