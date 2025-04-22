@@ -776,3 +776,74 @@ func (a Uint32) Uint1024() Uint1024 {
 		uint64(a),
 	}
 }
+
+// Uint8 converts a to an Uint8.
+func (a Uint64) Uint8() Uint8 {
+	return Uint8(a)
+}
+
+// Uint16 converts a to an Uint16.
+func (a Uint64) Uint16() Uint16 {
+	return Uint16(a)
+}
+
+// Uint32 converts a to an Uint32.
+func (a Uint64) Uint32() Uint32 {
+	return Uint32(a)
+}
+
+// Uint64 returns a itself.
+func (a Uint64) Uint64() Uint64 {
+	return a
+}
+
+// Uint128 converts a to an Uint128.
+func (a Uint64) Uint128() Uint128 {
+	return Uint128{0, uint64(a)}
+}
+
+// Uint256 converts a to an Uint256.
+func (a Uint64) Uint256() Uint256 {
+	return Uint256{
+		0,
+		0,
+		0,
+		uint64(a),
+	}
+}
+
+// Uint512 converts a to an Uint512.
+func (a Uint64) Uint512() Uint512 {
+	return Uint512{
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		uint64(a),
+	}
+}
+
+// Uint1024 converts a to an Uint1024.
+func (a Uint64) Uint1024() Uint1024 {
+	return Uint1024{
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		uint64(a),
+	}
+}
