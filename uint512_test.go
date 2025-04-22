@@ -138,6 +138,27 @@ func FuzzUint512_Mul(f *testing.F) {
 	})
 }
 
+func BenchmarkUint512_Mul(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint512{0, 0, 0, 0, M, M, M, M}
+	y := Uint512{0, 0, 0, 0, M, M, M, M}
+
+	b.Run("Uint512", func(b *testing.B) {
+		for b.Loop() {
+			runtime.KeepAlive(x.Mul(y))
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint512ToBigInt(x)
+		yy := uint512ToBigInt(y)
+		zz := new(big.Int)
+		for b.Loop() {
+			zz.Mul(xx, yy)
+		}
+	})
+}
+
 func FuzzUint512_DivMod(f *testing.F) {
 	f.Add(
 		uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(127),

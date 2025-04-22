@@ -125,6 +125,27 @@ func FuzzUint256_Mul(f *testing.F) {
 	})
 }
 
+func BenchmarkUint256_Mul(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint256{0, 0, M, M}
+	y := Uint256{0, 0, M, M}
+
+	b.Run("Uint256", func(b *testing.B) {
+		for b.Loop() {
+			runtime.KeepAlive(x.Mul(y))
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint256ToBigInt(x)
+		yy := uint256ToBigInt(y)
+		zz := new(big.Int)
+		for b.Loop() {
+			zz.Mul(xx, yy)
+		}
+	})
+}
+
 func FuzzUint256_DivMod(f *testing.F) {
 	f.Add(
 		uint64(0), uint64(0), uint64(0), uint64(127),
