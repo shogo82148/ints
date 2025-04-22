@@ -976,3 +976,178 @@ func TestInt128_Int1024(t *testing.T) {
 		}
 	}
 }
+
+func TestInt256_Int8(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int256
+		want Int8
+	}{
+		{Int256{0, 0, 0, 0}, 0},
+		{Int256{0, 0, 0, 1}, 1},
+		{Int256{M - 1, M - 1, M - 1, M - 1}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int8()
+		if got != tc.want {
+			t.Errorf("Int256(%#032x).Int8() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt256_Int16(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int256
+		want Int16
+	}{
+		{Int256{0, 0, 0, 0}, 0},
+		{Int256{0, 0, 0, 1}, 1},
+		{Int256{M - 1, M - 1, M - 1, M - 1}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int16()
+		if got != tc.want {
+			t.Errorf("Int256(%#032x).Int16() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt256_Int32(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int256
+		want Int32
+	}{
+		{Int256{0, 0, 0, 0}, 0},
+		{Int256{0, 0, 0, 1}, 1},
+		{Int256{M - 1, M - 1, M - 1, M - 1}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int32()
+		if got != tc.want {
+			t.Errorf("Int256(%#032x).Int32() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt256_Int64(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int256
+		want Int64
+	}{
+		{Int256{0, 0, 0, 0}, 0},
+		{Int256{0, 0, 0, 1}, 1},
+		{Int256{M - 1, M - 1, M - 1, M - 1}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int64()
+		if got != tc.want {
+			t.Errorf("Int256(%#032x).Int64() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt256_Int128(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int256
+		want Int128
+	}{
+		{Int256{0, 0, 0, 0}, Int128{0, 0}},
+		{Int256{0, 0, 0, 1}, Int128{0, 1}},
+		{Int256{M - 1, M - 1, M - 1, M - 1}, Int128{M - 1, M - 1}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int128()
+		if got != tc.want {
+			t.Errorf("Int256(%#032x).Int128() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt256_Int256(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int256
+		want Int256
+	}{
+		{Int256{0, 0, 0, 0}, Int256{0, 0, 0, 0}},
+		{Int256{0, 0, 0, 1}, Int256{0, 0, 0, 1}},
+		{Int256{M - 1, M - 1, M - 1, M - 1}, Int256{M - 1, M - 1, M - 1, M - 1}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int256()
+		if got != tc.want {
+			t.Errorf("Int256(%#032x).Int256() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt256_Int512(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int256
+		want Int512
+	}{
+		{Int256{0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}},
+		{Int256{0, 0, 0, 1}, Int512{0, 0, 0, 0, 0, 0, 0, 1}},
+		{Int256{M - 1, M - 1, M - 1, M - 1}, Int512{
+			M - 1, M - 1, M - 1, M - 1,
+			M - 1, M - 1, M - 1, M - 1,
+		}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int512()
+		if got != tc.want {
+			t.Errorf("Int256(%#032x).Int512() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt256_Int1024(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int256
+		want Int1024
+	}{
+		{
+			Int256{0, 0, 0, 0},
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+		},
+		{
+			Int256{0, 0, 0, 1},
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+		},
+		{
+			Int256{M - 1, M - 1, M - 1, M - 1},
+			Int1024{
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int1024()
+		if got != tc.want {
+			t.Errorf("Int256(%#032x).Int1024() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
