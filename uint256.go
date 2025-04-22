@@ -105,6 +105,106 @@ func (a Uint256) Mul(b Uint256) Uint256 {
 	return Uint256{u0, u1, u2, u3}
 }
 
+// Mul512 returns the product a*b, the result is a 512-bit integer.
+func (a Uint256) Mul512(b Uint256) Uint512 {
+	//                  a0  a1  a2  a3
+	//                x b0  b1  b2  b3
+	//                ----------------
+	//                         h33 l33 - 1.
+	//                     h23 l23
+	//                 h13 l13
+	//             h03 l03
+	//                     h32 l32     - 2.
+	//                 h22 l22
+	//             h12 l12
+	//         h02 l02
+	//                 h31 l31         - 3.
+	//             h21 l21
+	//         h11 l11
+	//     h01 l01
+	//             h30 l30             - 4.
+	//         h20 l20
+	//     h10 l10
+	// h00 l00
+	// -------------------------------
+	//  u0  u1  u2  u3  u4  u5  u6  u7
+
+	h33, l33 := bits.Mul64(a[3], b[3])
+	h23, l23 := bits.Mul64(a[2], b[3])
+	h13, l13 := bits.Mul64(a[1], b[3])
+	h03, l03 := bits.Mul64(a[0], b[3])
+
+	h32, l32 := bits.Mul64(a[3], b[2])
+	h22, l22 := bits.Mul64(a[2], b[2])
+	h12, l12 := bits.Mul64(a[1], b[2])
+	h02, l02 := bits.Mul64(a[0], b[2])
+
+	h31, l31 := bits.Mul64(a[3], b[1])
+	h21, l21 := bits.Mul64(a[2], b[1])
+	h11, l11 := bits.Mul64(a[1], b[1])
+	h01, l01 := bits.Mul64(a[0], b[1])
+
+	h30, l30 := bits.Mul64(a[3], b[0])
+	h20, l20 := bits.Mul64(a[2], b[0])
+	h10, l10 := bits.Mul64(a[1], b[0])
+	h00, l00 := bits.Mul64(a[0], b[0])
+
+	var u0, u1, u2, u3, u4, u5, u6, u7, carry uint64
+	// 1.
+	u7 = l33
+	u6 = l23
+	u5 = l13
+	u4 = l03
+	u6, carry = bits.Add64(u6, h33, 0)
+	u5, carry = bits.Add64(u5, h23, carry)
+	u4, carry = bits.Add64(u4, h13, carry)
+	u3, carry = bits.Add64(u3, h03, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 2.
+	u6, carry = bits.Add64(u6, l32, 0)
+	u5, carry = bits.Add64(u5, l22, carry)
+	u4, carry = bits.Add64(u4, l12, carry)
+	u3, carry = bits.Add64(u3, l02, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u5, carry = bits.Add64(u5, h32, 0)
+	u4, carry = bits.Add64(u4, h22, carry)
+	u3, carry = bits.Add64(u3, h12, carry)
+	u2, carry = bits.Add64(u2, h02, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 3.
+	u5, carry = bits.Add64(u5, l31, 0)
+	u4, carry = bits.Add64(u4, l21, carry)
+	u3, carry = bits.Add64(u3, l11, carry)
+	u2, carry = bits.Add64(u2, l01, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u4, carry = bits.Add64(u4, h31, 0)
+	u3, carry = bits.Add64(u3, h21, carry)
+	u2, carry = bits.Add64(u2, h11, carry)
+	u1, carry = bits.Add64(u1, h01, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 4.
+	u4, carry = bits.Add64(u4, l30, 0)
+	u3, carry = bits.Add64(u3, l20, carry)
+	u2, carry = bits.Add64(u2, l10, carry)
+	u1, carry = bits.Add64(u1, l00, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u3, carry = bits.Add64(u3, h30, 0)
+	u2, carry = bits.Add64(u2, h20, carry)
+	u1, carry = bits.Add64(u1, h10, carry)
+	u0, _ = bits.Add64(u0, h00, carry)
+
+	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
+}
+
 // Div returns the quotient a/b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Div implements Euclidean division (unlike Go); see [Uint256.DivMod] for more details.
