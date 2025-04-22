@@ -27,46 +27,49 @@ func (a Int8) Int128() Int128 {
 
 // Int256 converts a to an Int256.
 func (a Int8) Int256() Int256 {
+	sign := uint64(a >> 7)
 	return Int256{
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
 
 // Int512 converts a to an Int512.
 func (a Int8) Int512() Int512 {
+	sign := uint64(a >> 7)
 	return Int512{
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
 
 // Int1024 converts a to an Int1024.
 func (a Int8) Int1024() Int1024 {
+	sign := uint64(a >> 7)
 	return Int1024{
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
-		uint64(a >> 7),
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
@@ -98,46 +101,49 @@ func (a Int16) Int128() Int128 {
 
 // Int256 converts a to an Int256.
 func (a Int16) Int256() Int256 {
+	sign := uint64(a >> 15)
 	return Int256{
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
 
 // Int512 converts a to an Int512.
 func (a Int16) Int512() Int512 {
+	sign := uint64(a >> 15)
 	return Int512{
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
 
 // Int1024 converts a to an Int1024.
 func (a Int16) Int1024() Int1024 {
+	sign := uint64(a >> 15)
 	return Int1024{
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
-		uint64(a >> 15),
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
@@ -169,46 +175,49 @@ func (a Int32) Int128() Int128 {
 
 // Int256 converts a to an Int256.
 func (a Int32) Int256() Int256 {
+	sign := uint64(a >> 31)
 	return Int256{
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
 
 // Int512 converts a to an Int512.
 func (a Int32) Int512() Int512 {
+	sign := uint64(a >> 31)
 	return Int512{
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
 
 // Int1024 converts a to an Int1024.
 func (a Int32) Int1024() Int1024 {
+	sign := uint64(a >> 31)
 	return Int1024{
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
-		uint64(a >> 31),
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
@@ -240,46 +249,49 @@ func (a Int64) Int128() Int128 {
 
 // Int256 converts a to an Int256.
 func (a Int64) Int256() Int256 {
+	sign := uint64(a >> 63)
 	return Int256{
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
 
 // Int512 converts a to an Int512.
 func (a Int64) Int512() Int512 {
+	sign := uint64(a >> 63)
 	return Int512{
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
 
 // Int1024 converts a to an Int1024.
 func (a Int64) Int1024() Int1024 {
+	sign := uint64(a >> 63)
 	return Int1024{
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
-		uint64(a >> 63),
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
 		uint64(a),
 	}
 }
