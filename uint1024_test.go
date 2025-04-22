@@ -144,6 +144,27 @@ func FuzzUint1024_Mul(f *testing.F) {
 	})
 }
 
+func BenchmarkUint1024_Mul(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint1024{0, 0, 0, 0, 0, 0, 0, 0, M, M, M, M, M, M, M, M}
+	y := Uint1024{0, 0, 0, 0, 0, 0, 0, 0, M, M, M, M, M, M, M, M}
+
+	b.Run("Uint1024", func(b *testing.B) {
+		for b.Loop() {
+			runtime.KeepAlive(x.Mul(y))
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint1024ToBigInt(x)
+		yy := uint1024ToBigInt(y)
+		zz := new(big.Int)
+		for b.Loop() {
+			zz.Mul(xx, yy)
+		}
+	})
+}
+
 func FuzzUint1024_DivMod(f *testing.F) {
 	// f.Add(
 	// 	uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0), uint64(0),
