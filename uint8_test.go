@@ -296,6 +296,24 @@ func TestUint8_TrailingZeros(t *testing.T) {
 	}
 }
 
+func TestUint8_BitLen(t *testing.T) {
+	testCases := []struct {
+		x    Uint8
+		want int
+	}{
+		{0, 0},
+		{1, 1},
+		{0x80, 8},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.BitLen()
+		if got != tc.want {
+			t.Errorf("Uint8(%#02x).BitLen() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint8_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint8

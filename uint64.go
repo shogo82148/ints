@@ -145,6 +145,11 @@ func (a Uint64) TrailingZeros() int {
 	return bits.TrailingZeros64(uint64(a))
 }
 
+// BitLen returns the number of bits required to represent a in binary; the result is 0 for a == 0.
+func (a Uint64) BitLen() int {
+	return bits.Len64(uint64(a))
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint64 is unsigned.

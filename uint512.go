@@ -594,6 +594,32 @@ func (a Uint512) TrailingZeros() int {
 	return bits.TrailingZeros64(a[0]) + 448
 }
 
+// BitLen returns the number of bits required to represent a in binary; the result is 0 for a == 0.
+func (a Uint512) BitLen() int {
+	if a[0] != 0 {
+		return bits.Len64(a[0]) + 448
+	}
+	if a[1] != 0 {
+		return bits.Len64(a[1]) + 384
+	}
+	if a[2] != 0 {
+		return bits.Len64(a[2]) + 320
+	}
+	if a[3] != 0 {
+		return bits.Len64(a[3]) + 256
+	}
+	if a[4] != 0 {
+		return bits.Len64(a[4]) + 192
+	}
+	if a[5] != 0 {
+		return bits.Len64(a[5]) + 128
+	}
+	if a[6] != 0 {
+		return bits.Len64(a[6]) + 64
+	}
+	return bits.Len64(a[7])
+}
+
 // Sign returns the sign of a.
 // It returns 1 if a > 0, and 0 if a == 0.
 // It does not return -1 because Uint512 is unsigned.

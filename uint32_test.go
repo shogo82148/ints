@@ -289,6 +289,25 @@ func TestUint32_TrailingZeros(t *testing.T) {
 	}
 }
 
+func TestUint32_BitLen(t *testing.T) {
+	testCases := []struct {
+		x    Uint32
+		want int
+	}{
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{math.MaxUint32, 32},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.BitLen()
+		if got != tc.want {
+			t.Errorf("Uint32(%d).BitLen() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint32_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint32

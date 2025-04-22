@@ -487,6 +487,27 @@ func TestUint256_TrailingZeros(t *testing.T) {
 	}
 }
 
+func TestUint256_BitLen(t *testing.T) {
+	testCases := []struct {
+		x    Uint256
+		want int
+	}{
+		{Uint256{0, 0, 0, 0}, 0},
+		{Uint256{1, 0, 0, 0}, 193},
+		{Uint256{0, 1, 0, 0}, 129},
+		{Uint256{0, 0, 1, 0}, 65},
+		{Uint256{0, 0, 0, 1}, 1},
+		{Uint256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}, 256},
+	}
+
+	for _, tc := range testCases {
+		got := tc.x.BitLen()
+		if got != tc.want {
+			t.Errorf("Uint256(%#064x).BitLen() = %d, want %d", tc.x, got, tc.want)
+		}
+	}
+}
+
 func TestUint256_Sign(t *testing.T) {
 	testCases := []struct {
 		x    Uint256
