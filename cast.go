@@ -328,6 +328,8 @@ func (a Int128) Int512() Int512 {
 		sign,
 		sign,
 		sign,
+		sign,
+		sign,
 		a[0],
 		a[1],
 	}
