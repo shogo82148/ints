@@ -1154,3 +1154,204 @@ func TestInt256_Int1024(t *testing.T) {
 		}
 	}
 }
+
+func TestInt512_Int8(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int512
+		want Int8
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, 0},
+		{Int512{0, 0, 0, 0, 0, 0, 0, 1}, 1},
+		{Int512{
+			M - 1, M - 1, M - 1, M - 1,
+			M - 1, M - 1, M - 1, M - 1,
+		}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int8()
+		if got != tc.want {
+			t.Errorf("Int512(%#0128x).Int8() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_Int16(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int512
+		want Int16
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, 0},
+		{Int512{0, 0, 0, 0, 0, 0, 0, 1}, 1},
+		{Int512{
+			M - 1, M - 1, M - 1, M - 1,
+			M - 1, M - 1, M - 1, M - 1,
+		}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int16()
+		if got != tc.want {
+			t.Errorf("Int512(%#0128x).Int16() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_Int32(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int512
+		want Int32
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, 0},
+		{Int512{0, 0, 0, 0, 0, 0, 0, 1}, 1},
+		{Int512{
+			M - 1, M - 1, M - 1, M - 1,
+			M - 1, M - 1, M - 1, M - 1,
+		}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int32()
+		if got != tc.want {
+			t.Errorf("Int512(%#0128x).Int32() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_Int64(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int512
+		want Int64
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, 0},
+		{Int512{0, 0, 0, 0, 0, 0, 0, 1}, 1},
+		{Int512{
+			M - 1, M - 1, M - 1, M - 1,
+			M - 1, M - 1, M - 1, M - 1,
+		}, -1},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int64()
+		if got != tc.want {
+			t.Errorf("Int512(%#0128x).Int64() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_Int128(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int512
+		want Int128
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int128{0, 0}},
+		{Int512{0, 0, 0, 0, 0, 0, 0, 1}, Int128{0, 1}},
+		{Int512{
+			M - 1, M - 1, M - 1, M - 1,
+			M - 1, M - 1, M - 1, M - 1,
+		}, Int128{M - 1, M - 1}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int128()
+		if got != tc.want {
+			t.Errorf("Int512(%#0128x).Int128() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_Int256(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int512
+		want Int256
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int256{0, 0, 0, 0}},
+		{Int512{0, 0, 0, 0, 0, 0, 0, 1}, Int256{0, 0, 0, 1}},
+		{Int512{
+			M - 1, M - 1, M - 1, M - 1,
+			M - 1, M - 1, M - 1, M - 1,
+		}, Int256{
+			M - 1, M - 1, M - 1, M - 1,
+		}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int256()
+		if got != tc.want {
+			t.Errorf("Int512(%#0128x).Int256() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_Int512(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int512
+		want Int512
+	}{
+		{Int512{0, 0, 0, 0, 0, 0, 0, 0}, Int512{0, 0, 0, 0, 0, 0, 0, 0}},
+		{Int512{0, 0, 0, 0, 0, 0, 0, 1}, Int512{0, 0, 0, 0, 0, 0, 0, 1}},
+		{Int512{
+			M - 1, M - 1, M - 1, M - 1,
+			M - 1, M - 1, M - 1, M - 1,
+		}, Int512{
+			M - 1, M - 1, M - 1, M - 1,
+			M - 1, M - 1, M - 1, M - 1,
+		}},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int512()
+		if got != tc.want {
+			t.Errorf("Int512(%#0128x).Int512() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt512_Int1024(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int512
+		want Int1024
+	}{
+		{
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+		},
+		{
+			Int512{0, 0, 0, 0, 0, 0, 0, 1},
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+		},
+		{
+			Int512{
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+			},
+			Int1024{
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int1024()
+		if got != tc.want {
+			t.Errorf("Int512(%#0128x).Int1024() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
