@@ -67,6 +67,25 @@ func TestUint32_Mul(t *testing.T) {
 	}
 }
 
+func TestUint16_Mul32(t *testing.T) {
+	tests := []struct {
+		a, b Uint16
+		want Uint32
+	}{
+		{0, 0, 0},
+		{1, 1, 1},
+		{2, 3, 6},
+		{0xFFFF, 1, 0xFFFF},
+		{0xFFFF, 2, 0x1FFFE}, // max value overflow check
+	}
+	for _, tc := range tests {
+		got := tc.a.Mul32(tc.b)
+		if got != tc.want {
+			t.Errorf("Mul32(%v, %v) = %v; want %v", tc.a, tc.b, got, tc.want)
+		}
+	}
+}
+
 func TestUint32_DivMod(t *testing.T) {
 	testCases := []struct {
 		x, y Uint32
