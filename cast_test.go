@@ -1462,7 +1462,7 @@ func TestInt1024_Int32(t *testing.T) {
 	for _, tc := range testCases {
 		got := tc.a.Int32()
 		if got != tc.want {
-			t.Errorf("Int1024(%#0256x).Int16() = %#08x, want %#08x", tc.a, got, tc.want)
+			t.Errorf("Int1024(%#0256x).Int32() = %#08x, want %#08x", tc.a, got, tc.want)
 		}
 	}
 }
@@ -1499,7 +1499,7 @@ func TestInt1024_Int64(t *testing.T) {
 	for _, tc := range testCases {
 		got := tc.a.Int64()
 		if got != tc.want {
-			t.Errorf("Int1024(%#0256x).Int16() = %#016x, want %#016x", tc.a, got, tc.want)
+			t.Errorf("Int1024(%#0256x).Int64() = %#016x, want %#016x", tc.a, got, tc.want)
 		}
 	}
 }
@@ -1536,7 +1536,7 @@ func TestInt1024_Int128(t *testing.T) {
 	for _, tc := range testCases {
 		got := tc.a.Int128()
 		if got != tc.want {
-			t.Errorf("Int1024(%#0256x).Int16() = %#032x, want %#032x", tc.a, got, tc.want)
+			t.Errorf("Int1024(%#0256x).Int128() = %#032x, want %#032x", tc.a, got, tc.want)
 		}
 	}
 }
@@ -1575,7 +1575,7 @@ func TestInt1024_Int256(t *testing.T) {
 	for _, tc := range testCases {
 		got := tc.a.Int256()
 		if got != tc.want {
-			t.Errorf("Int1024(%#0256x).Int16() = %#064x, want %#064x", tc.a, got, tc.want)
+			t.Errorf("Int1024(%#0256x).Int256() = %#064x, want %#064x", tc.a, got, tc.want)
 		}
 	}
 }
@@ -1617,7 +1617,7 @@ func TestInt1024_Int512(t *testing.T) {
 	for _, tc := range testCases {
 		got := tc.a.Int512()
 		if got != tc.want {
-			t.Errorf("Int1024(%#0256x).Int16() = %#0128x, want %#0128x", tc.a, got, tc.want)
+			t.Errorf("Int1024(%#0256x).Int512() = %#0128x, want %#0128x", tc.a, got, tc.want)
 		}
 	}
 }
@@ -1652,7 +1652,7 @@ func TestInt1024_Int1024(t *testing.T) {
 	for _, tc := range testCases {
 		got := tc.a.Int1024()
 		if got != tc.want {
-			t.Errorf("Int1024(%#0256x).Int16() = %#0256x, want %#0256x", tc.a, got, tc.want)
+			t.Errorf("Int1024(%#0256x).Int1024() = %#0256x, want %#0256x", tc.a, got, tc.want)
 		}
 	}
 }
