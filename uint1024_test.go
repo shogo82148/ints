@@ -53,6 +53,27 @@ func FuzzUint1024_Add(f *testing.F) {
 	})
 }
 
+func BenchmarkUint1024_Add(b *testing.B) {
+	const M = 0xffffffff_ffffffff
+	x := Uint1024{0x80000000_00000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	y := Uint1024{0x7f000000_00000000, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M}
+
+	b.Run("Uint1024", func(b *testing.B) {
+		for b.Loop() {
+			runtime.KeepAlive(x.Add(y))
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint1024ToBigInt(x)
+		yy := uint1024ToBigInt(y)
+		zz := new(big.Int)
+		for b.Loop() {
+			zz.Add(xx, yy)
+		}
+	})
+}
+
 func FuzzUint1024_Sub(f *testing.F) {
 	f.Add(
 		// 0

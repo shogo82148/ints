@@ -47,6 +47,26 @@ func FuzzUint128_Add(f *testing.F) {
 	})
 }
 
+func BenchmarkUint128_Add(b *testing.B) {
+	x := Uint128{0x80000000_00000000, 0}
+	y := Uint128{0x7f000000_00000000, 0xffffffff_ffffffff}
+
+	b.Run("Uint128", func(b *testing.B) {
+		for b.Loop() {
+			runtime.KeepAlive(x.Add(y))
+		}
+	})
+
+	b.Run("BigInt", func(b *testing.B) {
+		xx := uint128ToBigInt(x)
+		yy := uint128ToBigInt(y)
+		zz := new(big.Int)
+		for b.Loop() {
+			zz.Add(xx, yy)
+		}
+	})
+}
+
 func FuzzUint128_Sub(f *testing.F) {
 	f.Add(
 		uint64(0), uint64(0),
