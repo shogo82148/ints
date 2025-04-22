@@ -1355,3 +1355,304 @@ func TestInt512_Int1024(t *testing.T) {
 		}
 	}
 }
+
+func TestInt1024_Int8(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int1024
+		want Int8
+	}{
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+			0,
+		},
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			1,
+		},
+		{
+			Int1024{
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+			},
+			-1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int8()
+		if got != tc.want {
+			t.Errorf("Int1024(%#0256x).Int8() = %#02x, want %#02x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt1024_Int16(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int1024
+		want Int16
+	}{
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+			0,
+		},
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			1,
+		},
+		{
+			Int1024{
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+			},
+			-1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int16()
+		if got != tc.want {
+			t.Errorf("Int1024(%#0256x).Int16() = %#04x, want %#04x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt1024_Int32(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int1024
+		want Int32
+	}{
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+			0,
+		},
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			1,
+		},
+		{
+			Int1024{
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+			},
+			-1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int32()
+		if got != tc.want {
+			t.Errorf("Int1024(%#0256x).Int16() = %#08x, want %#08x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt1024_Int64(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int1024
+		want Int64
+	}{
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+			0,
+		},
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			1,
+		},
+		{
+			Int1024{
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+			},
+			-1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int64()
+		if got != tc.want {
+			t.Errorf("Int1024(%#0256x).Int16() = %#016x, want %#016x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt1024_Int128(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int1024
+		want Int128
+	}{
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+			Int128{0, 0},
+		},
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			Int128{0, 1},
+		},
+		{
+			Int1024{
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1, M - 1,
+			},
+			Int128{M - 1, M - 1},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int128()
+		if got != tc.want {
+			t.Errorf("Int1024(%#0256x).Int16() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt1024_Int256(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int1024
+		want Int256
+	}{
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+			Int256{0, 0, 0, 0},
+		},
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			Int256{0, 0, 0, 1},
+		},
+		{
+			Int1024{
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+			},
+			Int256{M - 1, M - 1, M - 1, M - 1},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int256()
+		if got != tc.want {
+			t.Errorf("Int1024(%#0256x).Int16() = %#064x, want %#064x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt1024_Int512(t *testing.T) {
+	const M = 0x1_00000000_00000000
+	testCases := []struct {
+		a    Int1024
+		want Int512
+	}{
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+			Int512{0, 0, 0, 0, 0, 0, 0, 0},
+		},
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			Int512{0, 0, 0, 0, 0, 0, 0, 1},
+		},
+		{
+			Int1024{
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+			},
+			Int512{
+				M - 1, M - 1, M - 1, M - 1,
+				M - 1, M - 1, M - 1, M - 1,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int512()
+		if got != tc.want {
+			t.Errorf("Int1024(%#0256x).Int16() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestInt1024_Int1024(t *testing.T) {
+	testCases := []struct {
+		a    Int1024
+		want Int1024
+	}{
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+			},
+		},
+		{
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			Int1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Int1024()
+		if got != tc.want {
+			t.Errorf("Int1024(%#0256x).Int16() = %#0256x, want %#0256x", tc.a, got, tc.want)
+		}
+	}
+}
