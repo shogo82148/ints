@@ -267,6 +267,354 @@ func (a Uint512) Mul(b Uint512) Uint512 {
 	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
 }
 
+// Mul1024 returns the product a*b, the result is a 1024-bit integer.
+//
+// This function's execution time does not depend on the inputs.
+func (a Uint512) Mul1024(b Uint512) Uint1024 {
+	//                                 a0  a1  a2  a3  a4  a5  a6  a7
+	//                               x b0  b1  b2  b3  b4  b5  b6  b7
+	//                               --------------------------------
+	//                                                        h77 l77 - 1.
+	//                                                    h67 l67
+	//                                                h57 l57
+	//                                            h47 l47
+	//                                        h37 l37
+	//                                    h27 l27
+	//                                h17 l17
+	//                            h07 l07
+	//                                                    h76 l76     - 2.
+	//                                                h66 l66
+	//                                            h56 l56
+	//                                        h46 l46
+	//                                    h36 l36
+	//                                h26 l26
+	//                            h16 l16
+	//                        h06 l06
+	//                                                h75 l75         - 3.
+	//                                            h65 l65
+	//                                        h55 l55
+	//                                    h45 l45
+	//                                h35 l35
+	//                            h25 l25
+	//                        h15 l15
+	//                    h05 l05
+	//                                            h74 l74             - 4.
+	//                                        h64 l64
+	//                                    h54 l54
+	//                                h44 l44
+	//                            h34 l34
+	//                        h24 l24
+	//                    h14 l14
+	//                h04 l04
+	//                                        h73 l73                 - 5.
+	//                                    h63 l63
+	//                                h53 l53
+	//                            h43 l43
+	//                        h33 l33
+	//                    h23 l23
+	//                h13 l13
+	//            h03 l03
+	//                                    h72 l72                     - 6.
+	//                                h62 l62
+	//                            h52 l52
+	//                        h42 l42
+	//                    h32 l32
+	//                h22 l22
+	//            h12 l12
+	//        h02 l02
+	//                                h71 l71                         - 7.
+	//                            h61 l61
+	//                        h51 l51
+	//                    h41 l41
+	//                h31 l31
+	//            h21 l21
+	//        h11 l11
+	//    h01 l01
+	//                            h70 l70                             - 8.
+	//                        h60 l60
+	//                    h50 l50
+	//                h40 l40
+	//            h30 l30
+	//        h20 l20
+	//    h10 l10
+	// h00l00
+	// --------------------------------------------------------------
+	// u0  u1  u2  u3  u4  u5  u6  u7  u8 u9 u10 u11 u12 u13 u14 u15
+	h77, l77 := bits.Mul64(a[7], b[7])
+	h67, l67 := bits.Mul64(a[6], b[7])
+	h57, l57 := bits.Mul64(a[5], b[7])
+	h47, l47 := bits.Mul64(a[4], b[7])
+	h37, l37 := bits.Mul64(a[3], b[7])
+	h27, l27 := bits.Mul64(a[2], b[7])
+	h17, l17 := bits.Mul64(a[1], b[7])
+	h07, l07 := bits.Mul64(a[0], b[7])
+
+	h76, l76 := bits.Mul64(a[7], b[6])
+	h66, l66 := bits.Mul64(a[6], b[6])
+	h56, l56 := bits.Mul64(a[5], b[6])
+	h46, l46 := bits.Mul64(a[4], b[6])
+	h36, l36 := bits.Mul64(a[3], b[6])
+	h26, l26 := bits.Mul64(a[2], b[6])
+	h16, l16 := bits.Mul64(a[1], b[6])
+	h06, l06 := bits.Mul64(a[0], b[6])
+
+	h75, l75 := bits.Mul64(a[7], b[5])
+	h65, l65 := bits.Mul64(a[6], b[5])
+	h55, l55 := bits.Mul64(a[5], b[5])
+	h45, l45 := bits.Mul64(a[4], b[5])
+	h35, l35 := bits.Mul64(a[3], b[5])
+	h25, l25 := bits.Mul64(a[2], b[5])
+	h15, l15 := bits.Mul64(a[1], b[5])
+	h05, l05 := bits.Mul64(a[0], b[5])
+
+	h74, l74 := bits.Mul64(a[7], b[4])
+	h64, l64 := bits.Mul64(a[6], b[4])
+	h54, l54 := bits.Mul64(a[5], b[4])
+	h44, l44 := bits.Mul64(a[4], b[4])
+	h34, l34 := bits.Mul64(a[3], b[4])
+	h24, l24 := bits.Mul64(a[2], b[4])
+	h14, l14 := bits.Mul64(a[1], b[4])
+	h04, l04 := bits.Mul64(a[0], b[4])
+
+	h73, l73 := bits.Mul64(a[7], b[3])
+	h63, l63 := bits.Mul64(a[6], b[3])
+	h53, l53 := bits.Mul64(a[5], b[3])
+	h43, l43 := bits.Mul64(a[4], b[3])
+	h33, l33 := bits.Mul64(a[3], b[3])
+	h23, l23 := bits.Mul64(a[2], b[3])
+	h13, l13 := bits.Mul64(a[1], b[3])
+	h03, l03 := bits.Mul64(a[0], b[3])
+
+	h72, l72 := bits.Mul64(a[7], b[2])
+	h62, l62 := bits.Mul64(a[6], b[2])
+	h52, l52 := bits.Mul64(a[5], b[2])
+	h42, l42 := bits.Mul64(a[4], b[2])
+	h32, l32 := bits.Mul64(a[3], b[2])
+	h22, l22 := bits.Mul64(a[2], b[2])
+	h12, l12 := bits.Mul64(a[1], b[2])
+	h02, l02 := bits.Mul64(a[0], b[2])
+
+	h71, l71 := bits.Mul64(a[7], b[1])
+	h61, l61 := bits.Mul64(a[6], b[1])
+	h51, l51 := bits.Mul64(a[5], b[1])
+	h41, l41 := bits.Mul64(a[4], b[1])
+	h31, l31 := bits.Mul64(a[3], b[1])
+	h21, l21 := bits.Mul64(a[2], b[1])
+	h11, l11 := bits.Mul64(a[1], b[1])
+	h01, l01 := bits.Mul64(a[0], b[1])
+
+	h70, l70 := bits.Mul64(a[7], b[0])
+	h60, l60 := bits.Mul64(a[6], b[0])
+	h50, l50 := bits.Mul64(a[5], b[0])
+	h40, l40 := bits.Mul64(a[4], b[0])
+	h30, l30 := bits.Mul64(a[3], b[0])
+	h20, l20 := bits.Mul64(a[2], b[0])
+	h10, l10 := bits.Mul64(a[1], b[0])
+	h00, l00 := bits.Mul64(a[0], b[0])
+
+	var u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15, carry uint64
+	// 1.
+	u15 = l77
+	u14 = l67
+	u13 = l57
+	u12 = l47
+	u11 = l37
+	u10 = l27
+	u9 = l17
+	u8 = l07
+	u14, carry = bits.Add64(u14, h77, 0)
+	u13, carry = bits.Add64(u13, h67, carry)
+	u12, carry = bits.Add64(u12, h57, carry)
+	u11, carry = bits.Add64(u11, h47, carry)
+	u10, carry = bits.Add64(u10, h37, carry)
+	u9, carry = bits.Add64(u9, h27, carry)
+	u8, carry = bits.Add64(u8, h17, carry)
+	u7, carry = bits.Add64(u7, h07, carry)
+	u6, carry = bits.Add64(u6, 0, carry)
+	u5, carry = bits.Add64(u5, 0, carry)
+	u4, carry = bits.Add64(u4, 0, carry)
+	u3, carry = bits.Add64(u3, 0, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 2.
+	u14, carry = bits.Add64(u14, l76, 0)
+	u13, carry = bits.Add64(u13, l66, carry)
+	u12, carry = bits.Add64(u12, l56, carry)
+	u11, carry = bits.Add64(u11, l46, carry)
+	u10, carry = bits.Add64(u10, l36, carry)
+	u9, carry = bits.Add64(u9, l26, carry)
+	u8, carry = bits.Add64(u8, l16, carry)
+	u7, carry = bits.Add64(u7, l06, carry)
+	u6, carry = bits.Add64(u6, 0, carry)
+	u5, carry = bits.Add64(u5, 0, carry)
+	u4, carry = bits.Add64(u4, 0, carry)
+	u3, carry = bits.Add64(u3, 0, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u13, carry = bits.Add64(u13, h76, 0)
+	u12, carry = bits.Add64(u12, h66, carry)
+	u11, carry = bits.Add64(u11, h56, carry)
+	u10, carry = bits.Add64(u10, h46, carry)
+	u9, carry = bits.Add64(u9, h36, carry)
+	u8, carry = bits.Add64(u8, h26, carry)
+	u7, carry = bits.Add64(u7, h16, carry)
+	u6, carry = bits.Add64(u6, h06, carry)
+	u5, carry = bits.Add64(u5, 0, carry)
+	u4, carry = bits.Add64(u4, 0, carry)
+	u3, carry = bits.Add64(u3, 0, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 3.
+	u13, carry = bits.Add64(u13, l75, 0)
+	u12, carry = bits.Add64(u12, l65, carry)
+	u11, carry = bits.Add64(u11, l55, carry)
+	u10, carry = bits.Add64(u10, l45, carry)
+	u9, carry = bits.Add64(u9, l35, carry)
+	u8, carry = bits.Add64(u8, l25, carry)
+	u7, carry = bits.Add64(u7, l15, carry)
+	u6, carry = bits.Add64(u6, l05, carry)
+	u5, carry = bits.Add64(u5, 0, carry)
+	u4, carry = bits.Add64(u4, 0, carry)
+	u3, carry = bits.Add64(u3, 0, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u12, carry = bits.Add64(u12, h75, 0)
+	u11, carry = bits.Add64(u11, h65, carry)
+	u10, carry = bits.Add64(u10, h55, carry)
+	u9, carry = bits.Add64(u9, h45, carry)
+	u8, carry = bits.Add64(u8, h35, carry)
+	u7, carry = bits.Add64(u7, h25, carry)
+	u6, carry = bits.Add64(u6, h15, carry)
+	u5, carry = bits.Add64(u5, h05, carry)
+	u4, carry = bits.Add64(u4, 0, carry)
+	u3, carry = bits.Add64(u3, 0, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 4.
+	u12, carry = bits.Add64(u12, l74, 0)
+	u11, carry = bits.Add64(u11, l64, carry)
+	u10, carry = bits.Add64(u10, l54, carry)
+	u9, carry = bits.Add64(u9, l44, carry)
+	u8, carry = bits.Add64(u8, l34, carry)
+	u7, carry = bits.Add64(u7, l24, carry)
+	u6, carry = bits.Add64(u6, l14, carry)
+	u5, carry = bits.Add64(u5, l04, carry)
+	u4, carry = bits.Add64(u4, 0, carry)
+	u3, carry = bits.Add64(u3, 0, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u11, carry = bits.Add64(u11, h74, 0)
+	u10, carry = bits.Add64(u10, h64, carry)
+	u9, carry = bits.Add64(u9, h54, carry)
+	u8, carry = bits.Add64(u8, h44, carry)
+	u7, carry = bits.Add64(u7, h34, carry)
+	u6, carry = bits.Add64(u6, h24, carry)
+	u5, carry = bits.Add64(u5, h14, carry)
+	u4, carry = bits.Add64(u4, h04, carry)
+	u3, carry = bits.Add64(u3, 0, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 5.
+	u11, carry = bits.Add64(u11, l73, 0)
+	u10, carry = bits.Add64(u10, l63, carry)
+	u9, carry = bits.Add64(u9, l53, carry)
+	u8, carry = bits.Add64(u8, l43, carry)
+	u7, carry = bits.Add64(u7, l33, carry)
+	u6, carry = bits.Add64(u6, l23, carry)
+	u5, carry = bits.Add64(u5, l13, carry)
+	u4, carry = bits.Add64(u4, l03, carry)
+	u3, carry = bits.Add64(u3, 0, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u10, carry = bits.Add64(u10, h73, 0)
+	u9, carry = bits.Add64(u9, h63, carry)
+	u8, carry = bits.Add64(u8, h53, carry)
+	u7, carry = bits.Add64(u7, h43, carry)
+	u6, carry = bits.Add64(u6, h33, carry)
+	u5, carry = bits.Add64(u5, h23, carry)
+	u4, carry = bits.Add64(u4, h13, carry)
+	u3, carry = bits.Add64(u3, h03, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 6.
+	u10, carry = bits.Add64(u10, l72, 0)
+	u9, carry = bits.Add64(u9, l62, carry)
+	u8, carry = bits.Add64(u8, l52, carry)
+	u7, carry = bits.Add64(u7, l42, carry)
+	u6, carry = bits.Add64(u6, l32, carry)
+	u5, carry = bits.Add64(u5, l22, carry)
+	u4, carry = bits.Add64(u4, l12, carry)
+	u3, carry = bits.Add64(u3, l02, carry)
+	u2, carry = bits.Add64(u2, 0, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u9, carry = bits.Add64(u9, h72, 0)
+	u8, carry = bits.Add64(u8, h62, carry)
+	u7, carry = bits.Add64(u7, h52, carry)
+	u6, carry = bits.Add64(u6, h42, carry)
+	u5, carry = bits.Add64(u5, h32, carry)
+	u4, carry = bits.Add64(u4, h22, carry)
+	u3, carry = bits.Add64(u3, h12, carry)
+	u2, carry = bits.Add64(u2, h02, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 7.
+	u9, carry = bits.Add64(u9, l71, 0)
+	u8, carry = bits.Add64(u8, l61, carry)
+	u7, carry = bits.Add64(u7, l51, carry)
+	u6, carry = bits.Add64(u6, l41, carry)
+	u5, carry = bits.Add64(u5, l31, carry)
+	u4, carry = bits.Add64(u4, l21, carry)
+	u3, carry = bits.Add64(u3, l11, carry)
+	u2, carry = bits.Add64(u2, l01, carry)
+	u1, carry = bits.Add64(u1, 0, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u8, carry = bits.Add64(u8, h71, 0)
+	u7, carry = bits.Add64(u7, h61, carry)
+	u6, carry = bits.Add64(u6, h51, carry)
+	u5, carry = bits.Add64(u5, h41, carry)
+	u4, carry = bits.Add64(u4, h31, carry)
+	u3, carry = bits.Add64(u3, h21, carry)
+	u2, carry = bits.Add64(u2, h11, carry)
+	u1, carry = bits.Add64(u1, h01, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+
+	// 8.
+	u8, carry = bits.Add64(u8, l70, 0)
+	u7, carry = bits.Add64(u7, l60, carry)
+	u6, carry = bits.Add64(u6, l50, carry)
+	u5, carry = bits.Add64(u5, l40, carry)
+	u4, carry = bits.Add64(u4, l30, carry)
+	u3, carry = bits.Add64(u3, l20, carry)
+	u2, carry = bits.Add64(u2, l10, carry)
+	u1, carry = bits.Add64(u1, l00, carry)
+	u0, _ = bits.Add64(u0, 0, carry)
+	u7, carry = bits.Add64(u7, h70, 0)
+	u6, carry = bits.Add64(u6, h60, carry)
+	u5, carry = bits.Add64(u5, h50, carry)
+	u4, carry = bits.Add64(u4, h40, carry)
+	u3, carry = bits.Add64(u3, h30, carry)
+	u2, carry = bits.Add64(u2, h20, carry)
+	u1, carry = bits.Add64(u1, h10, carry)
+	u0, _ = bits.Add64(u0, h00, carry)
+	return Uint1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
+}
+
 // Div returns the quotient a/b for b != 0.
 // If b == 0, a division-by-zero run-time panic occurs.
 // Div implements Euclidean division (unlike Go); see [Uint512.DivMod] for more details.
