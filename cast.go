@@ -212,3 +212,74 @@ func (a Int32) Int1024() Int1024 {
 		uint64(a),
 	}
 }
+
+// Int8 converts a to an Int8.
+func (a Int64) Int8() Int8 {
+	return Int8(a)
+}
+
+// Int16 converts a to an Int16.
+func (a Int64) Int16() Int16 {
+	return Int16(a)
+}
+
+// Int32 converts a to an Int32.
+func (a Int64) Int32() Int32 {
+	return Int32(a)
+}
+
+// Int64 returns a itself.
+func (a Int64) Int64() Int64 {
+	return a
+}
+
+// Int128 returns a to an Int128.
+func (a Int64) Int128() Int128 {
+	return Int128{uint64(a >> 63), uint64(a)}
+}
+
+// Int256 converts a to an Int256.
+func (a Int64) Int256() Int256 {
+	return Int256{
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a),
+	}
+}
+
+// Int512 converts a to an Int512.
+func (a Int64) Int512() Int512 {
+	return Int512{
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a),
+	}
+}
+
+// Int1024 converts a to an Int1024.
+func (a Int64) Int1024() Int1024 {
+	return Int1024{
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a >> 63),
+		uint64(a),
+	}
+}
