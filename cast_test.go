@@ -2744,3 +2744,182 @@ func TestUint512_Uint1024(t *testing.T) {
 		}
 	}
 }
+
+func TestUint1024_Uint8(t *testing.T) {
+	testCases := []struct {
+		a    Uint1024
+		want Uint8
+	}{
+		{
+			Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Uint8()
+		if got != tc.want {
+			t.Errorf("Uint1024(%#0256x).Uint8() = %#02x, want %#02x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Uint16(t *testing.T) {
+	testCases := []struct {
+		a    Uint1024
+		want Uint16
+	}{
+		{
+			Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Uint16()
+		if got != tc.want {
+			t.Errorf("Uint1024(%#0256x).Uint16() = %#04x, want %#04x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Uint32(t *testing.T) {
+	testCases := []struct {
+		a    Uint1024
+		want Uint32
+	}{
+		{
+			Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Uint32()
+		if got != tc.want {
+			t.Errorf("Uint1024(%#0256x).Uint32() = %#08x, want %#08x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Uint64(t *testing.T) {
+	testCases := []struct {
+		a    Uint1024
+		want Uint64
+	}{
+		{
+			Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Uint64()
+		if got != tc.want {
+			t.Errorf("Uint1024(%#0256x).Uint64() = %#016x, want %#016x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Uint128(t *testing.T) {
+	testCases := []struct {
+		a    Uint1024
+		want Uint128
+	}{
+		{
+			Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			Uint128{0, 1},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Uint128()
+		if got != tc.want {
+			t.Errorf("Uint1024(%#0256x).Uint128() = %#032x, want %#032x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Uint256(t *testing.T) {
+	testCases := []struct {
+		a    Uint1024
+		want Uint256
+	}{
+		{
+			Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			Uint256{0, 0, 0, 1},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Uint256()
+		if got != tc.want {
+			t.Errorf("Uint1024(%#0256x).Uint256() = %#064x, want %#064x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Uint512(t *testing.T) {
+	testCases := []struct {
+		a    Uint1024
+		want Uint512
+	}{
+		{
+			Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			Uint512{0, 0, 0, 0, 0, 0, 0, 0x01},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Uint512()
+		if got != tc.want {
+			t.Errorf("Uint1024(%#0256x).Uint512() = %#0128x, want %#0128x", tc.a, got, tc.want)
+		}
+	}
+}
+
+func TestUint1024_Uint1024(t *testing.T) {
+	testCases := []struct {
+		a    Uint1024
+		want Uint1024
+	}{
+		{
+			Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+			Uint1024{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.a.Uint1024()
+		if got != tc.want {
+			t.Errorf("Uint1024(%#0256x).Uint1024() = %#0256x, want %#0256x", tc.a, got, tc.want)
+		}
+	}
+}
