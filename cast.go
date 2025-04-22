@@ -283,3 +283,75 @@ func (a Int64) Int1024() Int1024 {
 		uint64(a),
 	}
 }
+
+// Int8 converts a to an Int8.
+func (a Int128) Int8() Int8 {
+	return Int8(a[1])
+}
+
+// Int16 converts a to an Int16.
+func (a Int128) Int16() Int16 {
+	return Int16(a[1])
+}
+
+// Int32 converts a to an Int32.
+func (a Int128) Int32() Int32 {
+	return Int32(a[1])
+}
+
+// Int64 converts a to an Int64.
+func (a Int128) Int64() Int64 {
+	return Int64(a[1])
+}
+
+// Int128 returns a itself.
+func (a Int128) Int128() Int128 {
+	return a
+}
+
+// Int256 converts a to an Int256.
+func (a Int128) Int256() Int256 {
+	sign := uint64(int64(a[0]) >> 63)
+	return Int256{
+		sign,
+		sign,
+		a[0],
+		a[1],
+	}
+}
+
+// Int512 converts a to an Int512.
+func (a Int128) Int512() Int512 {
+	sign := uint64(int64(a[0]) >> 63)
+	return Int512{
+		sign,
+		sign,
+		sign,
+		sign,
+		a[0],
+		a[1],
+	}
+}
+
+// Int1024 converts a to an Int1024.
+func (a Int128) Int1024() Int1024 {
+	sign := uint64(int64(a[0]) >> 63)
+	return Int1024{
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		sign,
+		a[0],
+		a[1],
+	}
+}
