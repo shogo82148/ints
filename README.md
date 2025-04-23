@@ -1,5 +1,8 @@
 # ints
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/shogo82148/ints.svg)](https://pkg.go.dev/github.com/shogo82148/ints)
+[![Test](https://github.com/shogo82148/ints/actions/workflows/test.yaml/badge.svg)](https://github.com/shogo82148/ints/actions/workflows/test.yaml)
+
 The ints package is a package for handling integer types of various sizes that are not included in the built-in types.
 
 ## SYNOPSIS
