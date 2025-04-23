@@ -287,7 +287,7 @@ func div128(hi, lo, y Uint128) (quo, rem Uint128) {
 	q1 := un64.Div(yn1)
 	rhat := un64.Sub(q1.Mul(yn1))
 
-	for q1.Cmp(two64) >= 0 || q1.Mul(yn0).Cmp(two64.Mul(rhat).Add(un1)) > 0 {
+	for q1.Cmp(two64) >= 0 || q1.Mul(yn0).Cmp(Uint128{rhat[1], 0}.Add(un1)) > 0 {
 		q1 = q1.Sub(Uint128{0, 1})
 		rhat = rhat.Add(yn1)
 		if rhat.Cmp(two64) >= 0 {
@@ -295,11 +295,11 @@ func div128(hi, lo, y Uint128) (quo, rem Uint128) {
 		}
 	}
 
-	un21 := un64.Mul(two64).Add(un1).Sub(q1.Mul(y))
+	un21 := Uint128{un64[1], 0}.Add(un1).Sub(q1.Mul(y))
 	q0 := un21.Div(yn1)
 	rhat = un21.Sub(q0.Mul(yn1))
 
-	for q0.Cmp(two64) >= 0 || q0.Mul(yn0).Cmp(two64.Mul(rhat).Add(un0)) > 0 {
+	for q0.Cmp(two64) >= 0 || q0.Mul(yn0).Cmp(Uint128{rhat[1], 0}.Add(un0)) > 0 {
 		q0 = q0.Sub(Uint128{0, 1})
 		rhat = rhat.Add(yn1)
 		if rhat.Cmp(two64) >= 0 {
@@ -307,7 +307,7 @@ func div128(hi, lo, y Uint128) (quo, rem Uint128) {
 		}
 	}
 
-	return q1.Mul(two64).Add(q0), un21.Mul(two64).Add(un0).Sub(q0.Mul(y)).Rsh(s)
+	return Uint128{q1[1], 0}.Add(q0), Uint128{un21[1], 0}.Add(un0).Sub(q0.Mul(y)).Rsh(s)
 }
 
 // Quo returns the quotient a/b for b != 0.
