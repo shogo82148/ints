@@ -436,7 +436,7 @@ func TestInt512_Cmp(t *testing.T) {
 		{
 			Int512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
 			Int512{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64 - 1},
-			-1,
+			1,
 		},
 	}
 

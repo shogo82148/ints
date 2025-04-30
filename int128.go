@@ -226,11 +226,7 @@ func (a Int128) Cmp(b Int128) int {
 	if ret := cmp.Compare(int64(a[0]), int64(b[0])); ret != 0 {
 		return ret
 	}
-	sign := 1
-	if int64(a[0]) < 0 {
-		sign = -1
-	}
-	return cmp.Compare(a[1], b[1]) * sign
+	return cmp.Compare(a[1], b[1])
 }
 
 // Text returns the string representation of a in the given base.

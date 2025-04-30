@@ -494,53 +494,49 @@ func (a Int1024) Cmp(b Int1024) int {
 	if ret := cmp.Compare(int64(a[0]), int64(b[0])); ret != 0 {
 		return ret
 	}
-	sign := 1
-	if int64(a[0]) < 0 {
-		sign = -1
-	}
 	if ret := cmp.Compare(a[1], b[1]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[2], b[2]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[3], b[3]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[4], b[4]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[5], b[5]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[6], b[6]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[7], b[7]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[8], b[8]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[9], b[9]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[10], b[10]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[11], b[11]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[12], b[12]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[13], b[13]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[14], b[14]); ret != 0 {
-		return ret * sign
+		return ret
 	}
-	return cmp.Compare(a[15], b[15]) * sign
+	return cmp.Compare(a[15], b[15])
 }
 
 // Text returns the string representation of a in the given base.

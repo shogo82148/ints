@@ -425,7 +425,7 @@ func TestInt128_Cmp(t *testing.T) {
 		{Int128{1, 0}, Int128{0, 1}, 1},
 		{Int128{0, 1}, Int128{1, 0}, -1},
 		{Int128{math.MaxUint64, math.MaxUint64}, Int128{math.MaxUint64, math.MaxUint64}, 0},
-		{Int128{math.MaxUint64, math.MaxUint64}, Int128{math.MaxUint64, math.MaxUint64 - 1}, -1},
+		{Int128{math.MaxUint64, math.MaxUint64}, Int128{math.MaxUint64, math.MaxUint64 - 1}, 1},
 	}
 
 	for _, tc := range testCases {

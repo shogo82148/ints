@@ -425,7 +425,7 @@ func TestInt256_Cmp(t *testing.T) {
 		{
 			Int256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64},
 			Int256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64 - 1},
-			-1,
+			1,
 		},
 	}
 
