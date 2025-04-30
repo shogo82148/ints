@@ -332,29 +332,25 @@ func (a Int512) Cmp(b Int512) int {
 	if ret := cmp.Compare(int64(a[0]), int64(b[0])); ret != 0 {
 		return ret
 	}
-	sign := 1
-	if int64(a[0]) < 0 {
-		sign = -1
-	}
 	if ret := cmp.Compare(a[1], b[1]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[2], b[2]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[3], b[3]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[4], b[4]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[5], b[5]); ret != 0 {
-		return ret * sign
+		return ret
 	}
 	if ret := cmp.Compare(a[6], b[6]); ret != 0 {
-		return ret * sign
+		return ret
 	}
-	return cmp.Compare(a[7], b[7]) * sign
+	return cmp.Compare(a[7], b[7])
 }
 
 // Text returns the string representation of a in the given base.
