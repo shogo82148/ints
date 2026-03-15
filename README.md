@@ -8,7 +8,7 @@ The ints package is a package for handling integer types of various sizes that a
 ## SYNOPSIS
 
 ```go
-import "github.com/shogo82148/bits"
+import "github.com/shogo82148/ints"
 
 func main() {
   // a and b are 128-bit integer.
