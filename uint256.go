@@ -233,79 +233,131 @@ func (a Uint256) Mod(b Uint256) Uint256 {
 // ACM press.)
 // See [Uint256.QuoRem] for T-division and modulus (like Go).
 func (a Uint256) DivMod(b Uint256) (Uint256, Uint256) {
-	if b[0] == 0 && b[1] == 0 {
-		// optimize for uint256 / uint128
-		q0, r0 := Uint128{a[0], a[1]}.DivMod(Uint128{b[2], b[3]})
-		q1, r1 := div128(r0, Uint128{a[2], a[3]}, Uint128{b[2], b[3]})
-		return Uint256{q0[0], q0[1], q1[0], q1[1]}, Uint256{0, 0, r1[0], r1[1]}
+	// Convert to little-endian word slices (word 0 is least significant).
+	var u, v [4]uint64
+	for i := 0; i < 4; i++ {
+		u[i] = a[3-i]
+		v[i] = b[3-i]
 	}
 
-	n := uint(Uint128{b[0], b[1]}.LeadingZeros())
-	x := a.Rsh(1)
-	y := b.Lsh(n)
-	q, _ := div128(Uint128{x[0], x[1]}, Uint128{x[2], x[3]}, Uint128{y[0], y[1]})
-	q = q.Rsh(127 - n)
-	if q.Sign() > 0 {
-		q = q.Sub(Uint128{0, 1})
+	// n is the number of significant words in the divisor.
+	n := 4
+	for n > 0 && v[n-1] == 0 {
+		n--
 	}
-
-	u := b.Mul(Uint256{0, 0, q[0], q[1]})
-	r := a.Sub(u)
-	if r.Cmp(b) >= 0 {
-		q = q.Add(Uint128{0, 1})
-		r = r.Sub(b)
-	}
-
-	return Uint256{0, 0, q[0], q[1]}, r
-}
-
-// 128-bit of version of bits.Div64.
-// https://github.com/golang/go/blob/c893e1cf821b06aa0602f7944ce52f0eb28fd7b5/src/math/bits/bits.go#L514-L568
-func div128(hi, lo, y Uint128) (quo, rem Uint128) {
-	if y.IsZero() {
+	if n == 0 {
 		panic("division by zero")
 	}
-	if y.Cmp(hi) <= 0 {
-		panic("division overflow")
+
+	// m is the number of significant words in the dividend.
+	m := 4
+	for m > 0 && u[m-1] == 0 {
+		m--
 	}
 
-	// If high part is zero, we can directly return the results.
-	if hi.IsZero() {
-		return lo.DivMod(y)
+	// If the dividend has fewer significant words than the divisor,
+	// the quotient is zero and the remainder is the dividend.
+	if m < n {
+		return Uint256{}, a
 	}
 
-	s := uint(y.LeadingZeros())
-	y = y.Lsh(s)
+	var q, r [4]uint64
 
-	two64 := Uint128{1, 0}
-	yn1 := Uint128{0, y[0]}
-	yn0 := Uint128{0, y[1]}
-	un64 := hi.Lsh(s).Or(lo.Rsh(128 - s))
-	un10 := lo.Lsh(s)
-	q1 := un64.Div(yn1)
-	rhat := un64.Sub(q1.Mul(yn1))
-
-	for q1.Cmp(two64) >= 0 || q1.Mul(yn0).Cmp(Uint128{rhat[1], un10[0]}) > 0 {
-		q1 = q1.Sub(Uint128{0, 1})
-		rhat = rhat.Add(yn1)
-		if rhat.Cmp(two64) >= 0 {
-			break
+	if n == 1 {
+		// Single-word divisor: a simple long division suffices.
+		d := v[0]
+		var rem uint64
+		for j := m - 1; j >= 0; j-- {
+			q[j], rem = bits.Div64(rem, u[j], d)
 		}
+		r[0] = rem
+	} else {
+		divmnu256(&q, &r, &u, &v, m, n)
 	}
 
-	un21 := Uint128{un64[1], un10[0]}.Sub(q1.Mul(y))
-	q0 := un21.Div(yn1)
-	rhat = un21.Sub(q0.Mul(yn1))
+	// Convert the results back to big-endian Uint256.
+	var quo, rem Uint256
+	for i := 0; i < 4; i++ {
+		quo[3-i] = q[i]
+		rem[3-i] = r[i]
+	}
+	return quo, rem
+}
 
-	for q0.Cmp(two64) >= 0 || q0.Mul(yn0).Cmp(Uint128{rhat[1], un10[1]}) > 0 {
-		q0 = q0.Sub(Uint128{0, 1})
-		rhat = rhat.Add(yn1)
-		if rhat.Cmp(two64) >= 0 {
-			break
+// divmnu256 divides the m-word dividend u by the n-word divisor v
+// (both little-endian, n >= 2, v[n-1] != 0) using Knuth's Algorithm D
+// and stores the quotient in q and the remainder in r.
+// It mirrors [divmnu1024]; see there for a detailed description.
+func divmnu256(q, r, u, v *[4]uint64, m, n int) {
+	s := uint(bits.LeadingZeros64(v[n-1]))
+	var vn [4]uint64
+	for i := n - 1; i > 0; i-- {
+		vn[i] = v[i]<<s | v[i-1]>>(64-s)
+	}
+	vn[0] = v[0] << s
+
+	var un [5]uint64
+	un[m] = u[m-1] >> (64 - s)
+	for i := m - 1; i > 0; i-- {
+		un[i] = u[i]<<s | u[i-1]>>(64-s)
+	}
+	un[0] = u[0] << s
+
+	vn1 := vn[n-1]
+	vn2 := vn[n-2]
+	ujn := un[m]
+	var qhatv [5]uint64
+
+	for j := m - n; j >= 0; j-- {
+		qhat := ^uint64(0)
+		if ujn != vn1 {
+			var rhat uint64
+			qhat, rhat = bits.Div64(ujn, un[j+n-1], vn1)
+
+			x1, x2 := bits.Mul64(qhat, vn2)
+			ujn2 := un[j+n-2]
+			for greaterThanVW(x1, x2, rhat, ujn2) {
+				qhat--
+				prevRhat := rhat
+				rhat += vn1
+				if rhat < prevRhat {
+					break
+				}
+				if vn2 > x2 {
+					x1--
+				}
+				x2 -= vn2
+			}
 		}
+
+		qhatv[n] = mulAddVWW(qhatv[:n], vn[:n], qhat, 0)
+		qhl := n + 1
+		if j+qhl > m+1 && qhatv[n] == 0 {
+			qhl--
+		}
+		c := subVV(un[j:j+qhl], un[j:j+qhl], qhatv[:qhl])
+		if c != 0 {
+			c := addVV(un[j:j+n], un[j:j+n], vn[:n])
+			if n < qhl {
+				un[j+n] += c
+			}
+			qhat--
+		}
+
+		ujn = un[j+n-1]
+		q[j] = qhat
 	}
 
-	return Uint128{q1[1], 0}.Add(q0), Uint128{un21[1], un10[1]}.Sub(q0.Mul(y)).Rsh(s)
+	if s == 0 {
+		for i := 0; i < n; i++ {
+			r[i] = un[i]
+		}
+	} else {
+		for i := 0; i < n-1; i++ {
+			r[i] = un[i]>>s | un[i+1]<<(64-s)
+		}
+		r[n-1] = un[n-1] >> s
+	}
 }
 
 // Quo returns the quotient a/b for b != 0.

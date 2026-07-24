@@ -828,87 +828,182 @@ func (a Uint1024) Mod(b Uint1024) Uint1024 {
 // ACM press.)
 // See [Uint1024.QuoRem] for T-division and modulus (like Go).
 func (a Uint1024) DivMod(b Uint1024) (Uint1024, Uint1024) {
-	if b[0] == 0 && b[1] == 0 && b[2] == 0 && b[3] == 0 && b[4] == 0 && b[5] == 0 && b[6] == 0 && b[7] == 0 {
-		// optimize for uint512 / uint256
-		q0, r0 := Uint512{a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]}.DivMod(Uint512{b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]})
-		q1, r1 := div512(r0, Uint512{a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]}, Uint512{b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]})
-		return Uint1024{
-				q0[0], q0[1], q0[2], q0[3], q0[4], q0[5], q0[6], q0[7],
-				q1[0], q1[1], q1[2], q1[3], q1[4], q1[5], q1[6], q1[7],
-			}, Uint1024{
-				0, 0, 0, 0, 0, 0, 0, 0,
-				r1[0], r1[1], r1[2], r1[3], r1[4], r1[5], r1[6], r1[7],
-			}
+	// Convert to little-endian word slices (word 0 is least significant).
+	var u, v [16]uint64
+	for i := 0; i < 16; i++ {
+		u[i] = a[15-i]
+		v[i] = b[15-i]
 	}
 
-	n := uint(Uint512{b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]}.LeadingZeros())
-	x := a.Rsh(1)
-	y := b.Lsh(n)
-	q, _ := div512(Uint512{x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]}, Uint512{x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]}, Uint512{y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7]})
-	q = q.Rsh(511 - n)
-	if q.Sign() > 0 {
-		q = q.Sub(Uint512{0, 0, 0, 0, 0, 0, 0, 1})
+	// n is the number of significant words in the divisor.
+	n := 16
+	for n > 0 && v[n-1] == 0 {
+		n--
 	}
-
-	u := b.Mul(Uint1024{0, 0, 0, 0, 0, 0, 0, 0, q[0], q[1], q[2], q[3], q[4], q[5], q[6], q[7]})
-	r := a.Sub(u)
-	if r.Cmp(b) >= 0 {
-		q = q.Add(Uint512{0, 0, 0, 0, 0, 0, 0, 1})
-		r = r.Sub(b)
-	}
-
-	return Uint1024{0, 0, 0, 0, 0, 0, 0, 0, q[0], q[1], q[2], q[3], q[4], q[5], q[6], q[7]}, r
-}
-
-// 512-bit of version of bits.Div64.
-// https://github.com/golang/go/blob/c893e1cf821b06aa0602f7944ce52f0eb28fd7b5/src/math/bits/bits.go#L514-L568
-func div512(hi, lo, y Uint512) (quo, rem Uint512) {
-	if y.IsZero() {
+	if n == 0 {
 		panic("division by zero")
 	}
-	if y.Cmp(hi) <= 0 {
-		panic("division overflow")
+
+	// m is the number of significant words in the dividend.
+	m := 16
+	for m > 0 && u[m-1] == 0 {
+		m--
 	}
 
-	// If high part is zero, we can directly return the results.
-	if hi.IsZero() {
-		return lo.DivMod(y)
+	// If the dividend has fewer significant words than the divisor,
+	// the quotient is zero and the remainder is the dividend.
+	if m < n {
+		return Uint1024{}, a
 	}
 
-	s := uint(y.LeadingZeros())
-	y = y.Lsh(s)
+	var q, r [16]uint64
 
-	two256 := Uint512{0, 0, 0, 1, 0, 0, 0, 0}
-	yn1 := Uint512{0, 0, 0, 0, y[0], y[1], y[2], y[3]}
-	yn0 := Uint512{0, 0, 0, 0, y[4], y[5], y[6], y[7]}
-	un256 := hi.Lsh(s).Or(lo.Rsh(512 - s))
-	un10 := lo.Lsh(s)
-	un1 := Uint512{0, 0, 0, 0, un10[0], un10[1], un10[2], un10[3]}
-	un0 := Uint512{0, 0, 0, 0, un10[4], un10[5], un10[6], un10[7]}
-	q1 := un256.Div(yn1)
-	rhat := un256.Sub(q1.Mul(yn1))
-
-	for q1.Cmp(two256) >= 0 || q1.Mul(yn0).Cmp(two256.Mul(rhat).Add(un1)) > 0 {
-		q1 = q1.Sub(Uint512{0, 0, 0, 0, 0, 0, 0, 1})
-		rhat = rhat.Add(yn1)
-		if rhat.Cmp(two256) >= 0 {
-			break
+	if n == 1 {
+		// Single-word divisor: a simple long division suffices.
+		d := v[0]
+		var rem uint64
+		for j := m - 1; j >= 0; j-- {
+			q[j], rem = bits.Div64(rem, u[j], d)
 		}
+		r[0] = rem
+	} else {
+		divmnu1024(&q, &r, &u, &v, m, n)
 	}
 
-	un21 := un256.Mul(two256).Add(un1).Sub(q1.Mul(y))
-	q0 := un21.Div(yn1)
-	rhat = un21.Sub(q0.Mul(yn1))
+	// Convert the results back to big-endian Uint1024.
+	var quo, rem Uint1024
+	for i := 0; i < 16; i++ {
+		quo[15-i] = q[i]
+		rem[15-i] = r[i]
+	}
+	return quo, rem
+}
 
-	for q0.Cmp(two256) >= 0 || q0.Mul(yn0).Cmp(two256.Mul(rhat).Add(un0)) > 0 {
-		q0 = q0.Sub(Uint512{0, 0, 0, 0, 0, 0, 0, 1})
-		rhat = rhat.Add(yn1)
-		if rhat.Cmp(two256) >= 0 {
-			break
+// divmnu1024 divides the m-word dividend u by the n-word divisor v
+// (both little-endian, n >= 2, v[n-1] != 0) using Knuth's Algorithm D
+// and stores the quotient in q and the remainder in r.
+//
+// It is a port of the divBasic routine in the standard library's
+// math/big package, specialized to fixed-size arrays.
+// https://github.com/golang/go/blob/go1.24.0/src/math/big/natdiv.go#L646
+func divmnu1024(q, r, u, v *[16]uint64, m, n int) {
+	// Normalize so that the top bit of the divisor's most significant word
+	// is set. The dividend gains one extra word to hold the shifted-out bits.
+	s := uint(bits.LeadingZeros64(v[n-1]))
+	var vn [16]uint64
+	for i := n - 1; i > 0; i-- {
+		vn[i] = v[i]<<s | v[i-1]>>(64-s)
+	}
+	vn[0] = v[0] << s
+
+	var un [17]uint64
+	un[m] = u[m-1] >> (64 - s)
+	for i := m - 1; i > 0; i-- {
+		un[i] = u[i]<<s | u[i-1]>>(64-s)
+	}
+	un[0] = u[0] << s
+
+	vn1 := vn[n-1]
+	vn2 := vn[n-2]
+
+	// ujn holds un[j+n]; it starts as the invented leading zero word.
+	ujn := un[m]
+
+	// A scratch buffer for qhat*v.
+	var qhatv [17]uint64
+
+	for j := m - n; j >= 0; j-- {
+		// Compute the 2-by-1 quotient estimate qhat.
+		qhat := ^uint64(0) // _M
+		if ujn != vn1 {
+			var rhat uint64
+			qhat, rhat = bits.Div64(ujn, un[j+n-1], vn1)
+
+			// Refine qhat to a 3-by-2 estimate.
+			x1, x2 := bits.Mul64(qhat, vn2)
+			ujn2 := un[j+n-2]
+			for greaterThanVW(x1, x2, rhat, ujn2) {
+				qhat--
+				prevRhat := rhat
+				rhat += vn1
+				if rhat < prevRhat {
+					// rhat overflowed; qhat*v is now definitely small enough.
+					break
+				}
+				if vn2 > x2 {
+					x1--
+				}
+				x2 -= vn2
+			}
 		}
+
+		// Compute qhat*v and subtract it from the current window of un.
+		qhatv[n] = mulAddVWW(qhatv[:n], vn[:n], qhat, 0)
+		qhl := n + 1
+		if j+qhl > m+1 && qhatv[n] == 0 {
+			qhl--
+		}
+		c := subVV(un[j:j+qhl], un[j:j+qhl], qhatv[:qhl])
+		if c != 0 {
+			// qhat was one too large; add v back and correct qhat.
+			c := addVV(un[j:j+n], un[j:j+n], vn[:n])
+			if n < qhl {
+				un[j+n] += c
+			}
+			qhat--
+		}
+
+		ujn = un[j+n-1]
+		q[j] = qhat
 	}
 
-	return q1.Mul(two256).Add(q0), un21.Mul(two256).Add(un0).Sub(q0.Mul(y)).Rsh(s)
+	// Denormalize the remainder.
+	if s == 0 {
+		for i := 0; i < n; i++ {
+			r[i] = un[i]
+		}
+	} else {
+		for i := 0; i < n-1; i++ {
+			r[i] = un[i]>>s | un[i+1]<<(64-s)
+		}
+		r[n-1] = un[n-1] >> s
+	}
+}
+
+// greaterThanVW reports whether the two-word value (x1,x2) is greater
+// than (y1,y2), where the first element of each pair is the high word.
+func greaterThanVW(x1, x2, y1, y2 uint64) bool {
+	return x1 > y1 || x1 == y1 && x2 > y2
+}
+
+// mulAddVWW computes z = x*m + a, returning the final carry.
+func mulAddVWW(z, x []uint64, m, a uint64) uint64 {
+	c := a
+	for i := range x {
+		hi, lo := bits.Mul64(x[i], m)
+		var cc uint64
+		z[i], cc = bits.Add64(lo, c, 0)
+		c = hi + cc
+	}
+	return c
+}
+
+// subVV computes z = x - y, returning the final borrow.
+func subVV(z, x, y []uint64) uint64 {
+	var c uint64
+	for i := range z {
+		z[i], c = bits.Sub64(x[i], y[i], c)
+	}
+	return c
+}
+
+// addVV computes z = x + y, returning the final carry.
+func addVV(z, x, y []uint64) uint64 {
+	var c uint64
+	for i := range z {
+		z[i], c = bits.Add64(x[i], y[i], c)
+	}
+	return c
 }
 
 // Quo returns the quotient a/b for b != 0.
