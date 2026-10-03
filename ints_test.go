@@ -115,3 +115,60 @@ func TestFormat_CompareBigInt(t *testing.T) {
 		}
 	}
 }
+
+// TestDivMod_SmallDivisors checks the reciprocal-based division paths,
+// which are used for one- and two-word divisors.
+func TestDivMod_SmallDivisors(t *testing.T) {
+	r := rand.New(rand.NewPCG(5, 6))
+	divisorWord := func() uint64 {
+		switch r.IntN(4) {
+		case 0:
+			return r.Uint64() | 1<<63 // already normalized
+		case 1:
+			return ^uint64(0)
+		case 2:
+			return r.Uint64() >> r.UintN(63)
+		default:
+			return r.Uint64()
+		}
+	}
+	for range 2000 {
+		var a Uint1024
+		randLimbs(r, a[:])
+		var b Uint1024
+		b[15] = divisorWord()
+		if r.IntN(2) == 0 {
+			b[14] = divisorWord()
+		}
+		if b.IsZero() {
+			continue
+		}
+		ba, bb := uint1024ToBigInt(a), uint1024ToBigInt(b)
+		wantQ, wantR := new(big.Int).QuoRem(ba, bb, new(big.Int))
+
+		q, rem := a.DivMod(b)
+		if uint1024ToBigInt(q).Cmp(wantQ) != 0 || uint1024ToBigInt(rem).Cmp(wantR) != 0 {
+			t.Fatalf("Uint1024(%x).DivMod(%x) = %x, %x, want %x, %x", ba, bb, uint1024ToBigInt(q), uint1024ToBigInt(rem), wantQ, wantR)
+		}
+
+		var a512, b512 Uint512
+		copy(a512[:], a[8:])
+		copy(b512[:], b[8:])
+		ba, bb = uint512ToBigInt(a512), uint512ToBigInt(b512)
+		wantQ, wantR = new(big.Int).QuoRem(ba, bb, new(big.Int))
+		q512, rem512 := a512.DivMod(b512)
+		if uint512ToBigInt(q512).Cmp(wantQ) != 0 || uint512ToBigInt(rem512).Cmp(wantR) != 0 {
+			t.Fatalf("Uint512(%x).DivMod(%x) = %x, %x, want %x, %x", ba, bb, uint512ToBigInt(q512), uint512ToBigInt(rem512), wantQ, wantR)
+		}
+
+		var a256, b256 Uint256
+		copy(a256[:], a[12:])
+		copy(b256[:], b[12:])
+		ba, bb = uint256ToBigInt(a256), uint256ToBigInt(b256)
+		wantQ, wantR = new(big.Int).QuoRem(ba, bb, new(big.Int))
+		q256, rem256 := a256.DivMod(b256)
+		if uint256ToBigInt(q256).Cmp(wantQ) != 0 || uint256ToBigInt(rem256).Cmp(wantR) != 0 {
+			t.Fatalf("Uint256(%x).DivMod(%x) = %x, %x, want %x, %x", ba, bb, uint256ToBigInt(q256), uint256ToBigInt(rem256), wantQ, wantR)
+		}
+	}
+}
