@@ -13,7 +13,7 @@ func shiftAmounts(bits uint) []uint {
 	for i := uint(0); i <= bits+64; i++ {
 		s = append(s, i)
 	}
-	return append(s, 1<<20, 1<<32-1, 1<<63+5, ^uint(0))
+	return append(s, 1<<20, 1<<32-1, ^uint(0)>>1+6, ^uint(0))
 }
 
 // wrapBig reduces x modulo 2**bits, interpreted as signed if signed is true.
