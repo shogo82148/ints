@@ -265,12 +265,7 @@ func (a Uint256) DivMod(b Uint256) (Uint256, Uint256) {
 
 	if n == 1 {
 		// Single-word divisor: a simple long division suffices.
-		d := v[0]
-		var rem uint64
-		for j := m - 1; j >= 0; j-- {
-			q[j], rem = bits.Div64(rem, u[j], d)
-		}
-		r[0] = rem
+		r[0] = divVW(q[:m], u[:m], v[0])
 	} else {
 		divmnu256(&q, &r, &u, &v, m, n)
 	}
@@ -305,6 +300,13 @@ func divmnu256(q, r, u, v *[4]uint64, m, n int) {
 
 	vn1 := vn[n-1]
 	vn2 := vn[n-2]
+	// For a two-word divisor, the 2-by-1 division dominates the loop,
+	// so replace it with a multiplication by the reciprocal of vn1.
+	// For longer divisors, the cost of computing the reciprocal does not pay off.
+	var recip uint64
+	if n == 2 {
+		recip = reciprocal(vn1)
+	}
 	ujn := un[m]
 	var qhatv [5]uint64
 
@@ -312,7 +314,11 @@ func divmnu256(q, r, u, v *[4]uint64, m, n int) {
 		qhat := ^uint64(0)
 		if ujn != vn1 {
 			var rhat uint64
-			qhat, rhat = bits.Div64(ujn, un[j+n-1], vn1)
+			if n == 2 {
+				qhat, rhat = divWW(ujn, un[j+n-1], vn1, recip)
+			} else {
+				qhat, rhat = bits.Div64(ujn, un[j+n-1], vn1)
+			}
 
 			x1, x2 := bits.Mul64(qhat, vn2)
 			ujn2 := un[j+n-2]

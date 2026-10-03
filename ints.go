@@ -400,11 +400,13 @@ func format[T appender](s fmt.State, verb rune, sign int, v T) {
 	s.Write(out) //nolint:errcheck
 }
 
-// bigBase holds, for each base, the largest power of base that fits in a uint64
-// and its exponent.
+// bigBase holds, for each base, the largest power of base that fits in a uint64,
+// its exponent, and what is needed to divide by it with [divWW].
 var bigBase = func() (t [len(digits) + 1]struct {
-	bb uint64 // base**n
-	n  int
+	bb    uint64 // base**n
+	n     int
+	shift uint   // number of leading zeros of bb
+	recip uint64 // reciprocal(bb << shift)
 }) {
 	for base := 2; base <= len(digits); base++ {
 		bb, n := uint64(base), 1
@@ -415,10 +417,69 @@ var bigBase = func() (t [len(digits) + 1]struct {
 			}
 			bb, n = lo, n+1
 		}
+		shift := uint(bits.LeadingZeros64(bb))
 		t[base].bb, t[base].n = bb, n
+		t[base].shift, t[base].recip = shift, reciprocal(bb<<shift)
 	}
 	return
 }()
+
+// reciprocal returns floor((2**128 - 1) / d) - 2**64 for a normalized d (d >= 2**63).
+// See [divWW].
+func reciprocal(d uint64) uint64 {
+	r, _ := bits.Div64(^d, ^uint64(0), d)
+	return r
+}
+
+// divWW returns the quotient and remainder of (x1:x0) / d,
+// where d must be normalized (d >= 2**63), x1 < d, and m = reciprocal(d).
+//
+// It replaces the division by a multiplication by the precomputed reciprocal,
+// which is much faster than [bits.Div64] on platforms without a 128/64-bit
+// division instruction. See Niels Möller and Torbjörn Granlund,
+// "Improved division by invariant integers", IEEE Transactions on Computers, 2011.
+func divWW(x1, x0, d, m uint64) (q, r uint64) {
+	qh, ql := bits.Mul64(x1, m)
+	ql, c := bits.Add64(ql, x0, 0)
+	qh, _ = bits.Add64(qh, x1, c)
+	qh++
+	r = x0 - qh*d
+	if r > ql {
+		qh--
+		r += d
+	}
+	if r >= d {
+		qh++
+		r -= d
+	}
+	return qh, r
+}
+
+// divVW sets q = u / d and returns u % d, where u and q are little-endian
+// (word 0 is the least significant) and have the same length.
+// For long u it divides with [divWW] instead of [bits.Div64].
+func divVW(q, u []uint64, d uint64) uint64 {
+	var r uint64
+	if len(u) < 3 {
+		// Too short to pay for computing the reciprocal.
+		for j := len(u) - 1; j >= 0; j-- {
+			q[j], r = bits.Div64(r, u[j], d)
+		}
+		return r
+	}
+
+	// Dividing (r:x) << s by d << s gives the same quotient,
+	// and the remainder shifted left by s.
+	s := uint(bits.LeadingZeros64(d))
+	dn := d << s
+	m := reciprocal(dn)
+	for j := len(u) - 1; j >= 0; j-- {
+		x := u[j]
+		q[j], r = divWW(r<<s|x>>(64-s), x<<s, dn, m)
+		r >>= s
+	}
+	return r
+}
 
 // formatBitsGeneral writes the digits of the multi-word unsigned integer u
 // (most significant word first) in the given base into a, ending at index i,
@@ -432,12 +493,17 @@ func formatBitsGeneral(a []byte, i int, u []uint64, base int) int {
 	for len(u) > 1 && u[0] == 0 {
 		u = u[1:]
 	}
-	bb, n := bigBase[base].bb, bigBase[base].n
+	n, shift, recip := bigBase[base].n, bigBase[base].shift, bigBase[base].recip
+	d := bigBase[base].bb << shift
 	for len(u) > 1 {
 		// u, r = u / bb, u % bb
+		// Dividing (r:u[j]) << shift by bb << shift gives the same quotient,
+		// and the remainder shifted left by shift.
 		var r uint64
 		for j := range u {
-			u[j], r = bits.Div64(r, u[j], bb)
+			x := u[j]
+			u[j], r = divWW(r<<shift|x>>(64-shift), x<<shift, d, recip)
+			r >>= shift
 		}
 		if u[0] == 0 {
 			u = u[1:]

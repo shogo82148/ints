@@ -1503,3 +1503,13 @@ func TestUint1024_Format(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkUint1024_DivMod64(b *testing.B) {
+	x := Uint1024{}.Not().Rsh(1)
+	y := Uint1024{15: 0x123456789abcdef}
+	for b.Loop() {
+		q, r := x.DivMod(y)
+		runtime.KeepAlive(q)
+		runtime.KeepAlive(r)
+	}
+}
