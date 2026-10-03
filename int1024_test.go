@@ -937,7 +937,7 @@ func BenchmarkInt1024_Text10(b *testing.B) {
 func BenchmarkInt1024_Text62(b *testing.B) {
 	a := Int1024{1 << 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	for b.Loop() {
-		runtime.KeepAlive(a.Text(2))
+		runtime.KeepAlive(a.Text(62))
 	}
 }
 
@@ -1089,5 +1089,13 @@ func TestInt1024_Format(t *testing.T) {
 		if got != tt.want {
 			t.Errorf("%#v: want %q, got %q", tt, tt.want, got)
 		}
+	}
+}
+
+func BenchmarkInt1024_Mul(b *testing.B) {
+	x := Int1024(Uint1024{}.Not().Rsh(1024 / 2))
+	y := Int1024{}.Sub(x)
+	for b.Loop() {
+		runtime.KeepAlive(x.Mul(y))
 	}
 }

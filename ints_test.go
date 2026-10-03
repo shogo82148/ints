@@ -51,3 +51,31 @@ func TestText_RandomAllBases(t *testing.T) {
 		}
 	}
 }
+
+func TestText_PowersOfTwoAllBases(t *testing.T) {
+	one := Uint1024{15: 1}
+	for k := uint(0); k < 1024; k++ {
+		p := one.Lsh(k)
+		for _, v := range []Uint1024{p, p.Sub(one)} {
+			want := uint1024ToBigInt(v)
+			for base := 2; base <= len(digits); base++ {
+				if got, w := v.Text(base), want.Text(base); got != w {
+					t.Fatalf("Uint1024(%s).Text(%d) = %q, want %q", want, base, got, w)
+				}
+				if k < 512 {
+					var u Uint512
+					copy(u[:], v[8:])
+					if got, w := u.Text(base), want.Text(base); got != w {
+						t.Fatalf("Uint512(%s).Text(%d) = %q, want %q", want, base, got, w)
+					}
+				}
+				if k < 128 {
+					u := Uint128{v[14], v[15]}
+					if got, w := u.Text(base), want.Text(base); got != w {
+						t.Fatalf("Uint128(%s).Text(%d) = %q, want %q", want, base, got, w)
+					}
+				}
+			}
+		}
+	}
+}

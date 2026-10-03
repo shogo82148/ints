@@ -586,3 +586,11 @@ func TestInt128_Format(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkInt128_Mul(b *testing.B) {
+	x := Int128(Uint128{}.Not().Rsh(128 / 2))
+	y := Int128{}.Sub(x)
+	for b.Loop() {
+		runtime.KeepAlive(x.Mul(y))
+	}
+}
