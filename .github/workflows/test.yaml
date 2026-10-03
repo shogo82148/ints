@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         go-version:
@@ -14,6 +14,18 @@ jobs:
           - "1.26"
           - "1.25"
           - "1.24"
+        os:
+          - "ubuntu-26.04"
+        arch:
+          - "amd64"
+        include:
+          - os: "ubuntu-26.04"
+            go-version: "1.27"
+            arch: "386" # int has 32-bit
+          - os: "ubuntu-26.04-arm"
+            go-version: "1.27"
+            arch: "arm64"
+
     permissions:
       contents: read
     timeout-minutes: 10
