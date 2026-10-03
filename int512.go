@@ -82,17 +82,26 @@ func (a Int512) Mod(b Int512) Int512 {
 // ACM press.)
 // See [Int512.QuoRem] for T-division and modulus (like Go).
 func (a Int512) DivMod(b Int512) (Int512, Int512) {
-	q, r := a.QuoRem(b)
-	if r.Sign() < 0 {
-		if b.Sign() > 0 {
-			r = r.Add(b)
-			q = q.Sub(Int512{0, 0, 0, 0, 0, 0, 0, 1})
-		} else {
-			r = r.Sub(b)
-			q = q.Add(Int512{0, 0, 0, 0, 0, 0, 0, 1})
-		}
+	negA := int64(a[0]) < 0
+	negB := int64(b[0]) < 0
+	ua, ub := Uint512(a), Uint512(b)
+	if negA {
+		ua = ua.Neg()
 	}
-	return q, r
+	if negB {
+		ub = ub.Neg()
+	}
+
+	q, r := ua.DivMod(ub)
+	if negA && !r.IsZero() {
+		// a = -(ub*q + r) = ub*(-(q+1)) + (ub - r)
+		q = q.Add(Uint512{7: 1})
+		r = ub.Sub(r)
+	}
+	if negA != negB {
+		q = q.Neg()
+	}
+	return Int512(q), Int512(r)
 }
 
 // Quo returns the quotient a/b for b != 0.
@@ -120,17 +129,17 @@ func (a Int512) Rem(b Int512) Int512 {
 // (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
 // See [Int512.DivMod] for Euclidean division and modulus (unlike Go).
 func (a Int512) QuoRem(b Int512) (Int512, Int512) {
-	var negA, negB bool
-	if a.Sign() < 0 {
-		negA = true
-		a = a.Neg()
+	negA := int64(a[0]) < 0
+	negB := int64(b[0]) < 0
+	ua, ub := Uint512(a), Uint512(b)
+	if negA {
+		ua = ua.Neg()
 	}
-	if b.Sign() < 0 {
-		negB = true
-		b = b.Neg()
+	if negB {
+		ub = ub.Neg()
 	}
 
-	q, r := Uint512(a).DivMod(Uint512(b))
+	q, r := ua.DivMod(ub)
 	if negA != negB {
 		q = q.Neg()
 	}

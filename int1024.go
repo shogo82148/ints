@@ -98,17 +98,26 @@ func (a Int1024) Mod(b Int1024) Int1024 {
 // ACM press.)
 // See [Int1024.QuoRem] for T-division and modulus (like Go).
 func (a Int1024) DivMod(b Int1024) (Int1024, Int1024) {
-	q, r := a.QuoRem(b)
-	if r.Sign() < 0 {
-		if b.Sign() > 0 {
-			r = r.Add(b)
-			q = q.Sub(Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1})
-		} else {
-			r = r.Sub(b)
-			q = q.Add(Int1024{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1})
-		}
+	negA := int64(a[0]) < 0
+	negB := int64(b[0]) < 0
+	ua, ub := Uint1024(a), Uint1024(b)
+	if negA {
+		ua = ua.Neg()
 	}
-	return q, r
+	if negB {
+		ub = ub.Neg()
+	}
+
+	q, r := ua.DivMod(ub)
+	if negA && !r.IsZero() {
+		// a = -(ub*q + r) = ub*(-(q+1)) + (ub - r)
+		q = q.Add(Uint1024{15: 1})
+		r = ub.Sub(r)
+	}
+	if negA != negB {
+		q = q.Neg()
+	}
+	return Int1024(q), Int1024(r)
 }
 
 // Quo returns the quotient a/b for b != 0.
@@ -136,17 +145,17 @@ func (a Int1024) Rem(b Int1024) Int1024 {
 // (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
 // See [Int1024.DivMod] for Euclidean division and modulus (unlike Go).
 func (a Int1024) QuoRem(b Int1024) (Int1024, Int1024) {
-	var negA, negB bool
-	if a.Sign() < 0 {
-		negA = true
-		a = a.Neg()
+	negA := int64(a[0]) < 0
+	negB := int64(b[0]) < 0
+	ua, ub := Uint1024(a), Uint1024(b)
+	if negA {
+		ua = ua.Neg()
 	}
-	if b.Sign() < 0 {
-		negB = true
-		b = b.Neg()
+	if negB {
+		ub = ub.Neg()
 	}
 
-	q, r := Uint1024(a).DivMod(Uint1024(b))
+	q, r := ua.DivMod(ub)
 	if negA != negB {
 		q = q.Neg()
 	}

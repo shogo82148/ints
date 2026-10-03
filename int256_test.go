@@ -617,3 +617,13 @@ func BenchmarkInt256_Mul(b *testing.B) {
 		runtime.KeepAlive(x.Mul(y))
 	}
 }
+
+func BenchmarkInt256_DivMod(b *testing.B) {
+	x := Int256(Uint256{}.Not().Rsh(1)).Neg()
+	y := Int256(Uint256{}.Not().Rsh(256 / 2))
+	for b.Loop() {
+		q, r := x.DivMod(y)
+		runtime.KeepAlive(q)
+		runtime.KeepAlive(r)
+	}
+}

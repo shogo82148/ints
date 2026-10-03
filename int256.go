@@ -74,17 +74,26 @@ func (a Int256) Mod(b Int256) Int256 {
 // ACM press.)
 // See [Int256.QuoRem] for T-division and modulus (like Go).
 func (a Int256) DivMod(b Int256) (Int256, Int256) {
-	q, r := a.QuoRem(b)
-	if r.Sign() < 0 {
-		if b.Sign() > 0 {
-			r = r.Add(b)
-			q = q.Sub(Int256{0, 0, 0, 1})
-		} else {
-			r = r.Sub(b)
-			q = q.Add(Int256{0, 0, 0, 1})
-		}
+	negA := int64(a[0]) < 0
+	negB := int64(b[0]) < 0
+	ua, ub := Uint256(a), Uint256(b)
+	if negA {
+		ua = ua.Neg()
 	}
-	return q, r
+	if negB {
+		ub = ub.Neg()
+	}
+
+	q, r := ua.DivMod(ub)
+	if negA && !r.IsZero() {
+		// a = -(ub*q + r) = ub*(-(q+1)) + (ub - r)
+		q = q.Add(Uint256{0, 0, 0, 1})
+		r = ub.Sub(r)
+	}
+	if negA != negB {
+		q = q.Neg()
+	}
+	return Int256(q), Int256(r)
 }
 
 // Quo returns the quotient a/b for b != 0.
@@ -112,17 +121,17 @@ func (a Int256) Rem(b Int256) Int256 {
 // (See Daan Leijen, “Division and Modulus for Computer Scientists”.)
 // See [Int256.DivMod] for Euclidean division and modulus (unlike Go).
 func (a Int256) QuoRem(b Int256) (Int256, Int256) {
-	var negA, negB bool
-	if a.Sign() < 0 {
-		negA = true
-		a = a.Neg()
+	negA := int64(a[0]) < 0
+	negB := int64(b[0]) < 0
+	ua, ub := Uint256(a), Uint256(b)
+	if negA {
+		ua = ua.Neg()
 	}
-	if b.Sign() < 0 {
-		negB = true
-		b = b.Neg()
+	if negB {
+		ub = ub.Neg()
 	}
 
-	q, r := Uint256(a).DivMod(Uint256(b))
+	q, r := ua.DivMod(ub)
 	if negA != negB {
 		q = q.Neg()
 	}
