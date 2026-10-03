@@ -112,6 +112,7 @@ func formatBits128(dst []byte, u0, u1 uint64, base int, neg, append_ bool) (d []
 
 	if isPowerOfTwo(base) {
 		// Use shifts and masks instead of / and %.
+		// With only two words, this is faster than formatBitsPow2.
 		shift := uint(bits.TrailingZeros(uint(base)))
 		b := uint64(base)
 		m := uint(base) - 1 // == 1<<shift - 1
@@ -130,7 +131,6 @@ func formatBits128(dst []byte, u0, u1 uint64, base int, neg, append_ bool) (d []
 		i--
 		a[i] = digits[uint(u1)]
 	} else {
-		// general case
 		u := [...]uint64{u0, u1}
 		i = formatBitsGeneral(a[:], i, u[:], base)
 	}
@@ -166,43 +166,10 @@ func formatBits256(dst []byte, u0, u1, u2, u3 uint64, base int, neg, append_ boo
 		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
+	u := [...]uint64{u0, u1, u2, u3}
 	if isPowerOfTwo(base) {
-		// Use shifts and masks instead of / and %.
-		shift := uint(bits.TrailingZeros(uint(base)))
-		b := uint64(base)
-		m := uint(base) - 1 // == 1<<shift - 1
-		for u0 != 0 {
-			i--
-			a[i] = digits[uint(u3)&m]
-			u3 = u2<<(64-shift) | u3>>shift
-			u2 = u1<<(64-shift) | u2>>shift
-			u1 = u0<<(64-shift) | u1>>shift
-			u0 >>= shift
-		}
-		for u1 != 0 {
-			i--
-			a[i] = digits[uint(u3)&m]
-			u3 = u2<<(64-shift) | u3>>shift
-			u2 = u1<<(64-shift) | u2>>shift
-			u1 >>= shift
-		}
-		for u2 != 0 {
-			i--
-			a[i] = digits[uint(u3)&m]
-			u3 = u2<<(64-shift) | u3>>shift
-			u2 >>= shift
-		}
-		for u3 >= b {
-			i--
-			a[i] = digits[uint(u3)&m]
-			u3 >>= shift
-		}
-		// u3 < base
-		i--
-		a[i] = digits[uint(u3)]
+		i = formatBitsPow2(a[:], i, u[:], base)
 	} else {
-		// general case
-		u := [...]uint64{u0, u1, u2, u3}
 		i = formatBitsGeneral(a[:], i, u[:], base)
 	}
 
@@ -241,85 +208,10 @@ func formatBits512(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7 uint64, base int, 
 		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
+	u := [...]uint64{u0, u1, u2, u3, u4, u5, u6, u7}
 	if isPowerOfTwo(base) {
-		// Use shifts and masks instead of / and %.
-		shift := uint(bits.TrailingZeros(uint(base)))
-		b := uint64(base)
-		m := uint(base) - 1 // == 1<<shift - 1
-		for u0 != 0 {
-			i--
-			a[i] = digits[uint(u7)&m]
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 = u3<<(64-shift) | u4>>shift
-			u3 = u2<<(64-shift) | u3>>shift
-			u2 = u1<<(64-shift) | u2>>shift
-			u1 = u0<<(64-shift) | u1>>shift
-			u0 >>= shift
-		}
-		for u1 != 0 {
-			i--
-			a[i] = digits[uint(u7)&m]
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 = u3<<(64-shift) | u4>>shift
-			u3 = u2<<(64-shift) | u3>>shift
-			u2 = u1<<(64-shift) | u2>>shift
-			u1 >>= shift
-		}
-		for u2 != 0 {
-			i--
-			a[i] = digits[uint(u7)&m]
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 = u3<<(64-shift) | u4>>shift
-			u3 = u2<<(64-shift) | u3>>shift
-			u2 >>= shift
-		}
-		for u3 != 0 {
-			i--
-			a[i] = digits[uint(u7)&m]
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 = u3<<(64-shift) | u4>>shift
-			u3 >>= shift
-		}
-		for u4 != 0 {
-			i--
-			a[i] = digits[uint(u7)&m]
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 >>= shift
-		}
-		for u5 != 0 {
-			i--
-			a[i] = digits[uint(u7)&m]
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 >>= shift
-		}
-		for u6 != 0 {
-			i--
-			a[i] = digits[uint(u7)&m]
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 >>= shift
-		}
-		for u7 >= b {
-			i--
-			a[i] = digits[uint(u7)&m]
-			u7 >>= shift
-		}
-		// u7 < base
-		i--
-		a[i] = digits[uint(u7)]
+		i = formatBitsPow2(a[:], i, u[:], base)
 	} else {
-		// general case
-		u := [...]uint64{u0, u1, u2, u3, u4, u5, u6, u7}
 		i = formatBitsGeneral(a[:], i, u[:], base)
 	}
 
@@ -366,217 +258,10 @@ func formatBits1024(dst []byte, u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11
 		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
+	u := [...]uint64{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
 	if isPowerOfTwo(base) {
-		// Use shifts and masks instead of / and %.
-		shift := uint(bits.TrailingZeros(uint(base)))
-		b := uint64(base)
-		m := uint(base) - 1 // == 1<<shift - 1
-		for u0 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 = u8<<(64-shift) | u9>>shift
-			u8 = u7<<(64-shift) | u8>>shift
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 = u3<<(64-shift) | u4>>shift
-			u3 = u2<<(64-shift) | u3>>shift
-			u2 = u1<<(64-shift) | u2>>shift
-			u1 = u0<<(64-shift) | u1>>shift
-			u0 >>= shift
-		}
-		for u1 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 = u8<<(64-shift) | u9>>shift
-			u8 = u7<<(64-shift) | u8>>shift
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 = u3<<(64-shift) | u4>>shift
-			u3 = u2<<(64-shift) | u3>>shift
-			u2 = u1<<(64-shift) | u2>>shift
-			u1 >>= shift
-		}
-		for u2 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 = u8<<(64-shift) | u9>>shift
-			u8 = u7<<(64-shift) | u8>>shift
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 = u3<<(64-shift) | u4>>shift
-			u3 = u2<<(64-shift) | u3>>shift
-			u2 >>= shift
-		}
-		for u3 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 = u8<<(64-shift) | u9>>shift
-			u8 = u7<<(64-shift) | u8>>shift
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 = u3<<(64-shift) | u4>>shift
-			u3 >>= shift
-		}
-		for u4 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 = u8<<(64-shift) | u9>>shift
-			u8 = u7<<(64-shift) | u8>>shift
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 = u4<<(64-shift) | u5>>shift
-			u4 >>= shift
-		}
-		for u5 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 = u8<<(64-shift) | u9>>shift
-			u8 = u7<<(64-shift) | u8>>shift
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 = u5<<(64-shift) | u6>>shift
-			u5 >>= shift
-		}
-		for u6 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 = u8<<(64-shift) | u9>>shift
-			u8 = u7<<(64-shift) | u8>>shift
-			u7 = u6<<(64-shift) | u7>>shift
-			u6 >>= shift
-		}
-		for u7 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 = u8<<(64-shift) | u9>>shift
-			u8 = u7<<(64-shift) | u8>>shift
-			u7 >>= shift
-		}
-		for u8 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 = u8<<(64-shift) | u9>>shift
-			u8 >>= shift
-		}
-		for u9 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 = u9<<(64-shift) | u10>>shift
-			u9 >>= shift
-		}
-		for u10 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 = u10<<(64-shift) | u11>>shift
-			u10 >>= shift
-		}
-		for u11 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 = u11<<(64-shift) | u12>>shift
-			u11 >>= shift
-		}
-		for u12 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 = u12<<(64-shift) | u13>>shift
-			u12 >>= shift
-		}
-		for u13 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 = u13<<(64-shift) | u14>>shift
-			u13 >>= shift
-		}
-		for u14 != 0 {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 = u14<<(64-shift) | u15>>shift
-			u14 >>= shift
-		}
-		for u15 >= b {
-			i--
-			a[i] = digits[uint(u15)&m]
-			u15 >>= shift
-		}
-		// u15 < base
-		i--
-		a[i] = digits[uint(u15)]
+		i = formatBitsPow2(a[:], i, u[:], base)
 	} else {
-		// general case
-		u := [...]uint64{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
 		i = formatBitsGeneral(a[:], i, u[:], base)
 	}
 
@@ -826,5 +511,61 @@ func formatLastChunk(a []byte, i int, u uint64, base int) int {
 	// u < base
 	i--
 	a[i] = digits[uint(u)]
+	return i
+}
+
+// formatBitsPow2 writes the digits of the multi-word unsigned integer u
+// (most significant word first) in the given base, which must be a power of two,
+// into a, ending at index i, and returns the index of the first digit written.
+//
+// It walks u one word at a time from the least significant word,
+// so u is not shifted as a whole once per digit.
+func formatBitsPow2(a []byte, i int, u []uint64, base int) int {
+	shift := uint(bits.TrailingZeros(uint(base)))
+	m := uint64(base) - 1 // == 1<<shift - 1
+
+	for len(u) > 1 && u[0] == 0 {
+		u = u[1:]
+	}
+
+	// acc holds accBits bits left over from the previous word,
+	// which are fewer than shift bits.
+	var acc uint64
+	var accBits uint
+	for k := len(u) - 1; k > 0; k-- {
+		w := u[k]
+		avail := uint(64)
+		if accBits > 0 {
+			// the digit straddles two words
+			i--
+			a[i] = digits[(acc|w<<accBits)&m]
+			used := shift - accBits
+			w >>= used
+			avail -= used
+		}
+		for ; avail >= shift; avail -= shift {
+			i--
+			a[i] = digits[w&m]
+			w >>= shift
+		}
+		acc, accBits = w, avail
+	}
+
+	// the most significant word: stop when no non-zero bits remain.
+	w := u[0]
+	if accBits > 0 {
+		i--
+		a[i] = digits[(acc|w<<accBits)&m]
+		w >>= shift - accBits
+	}
+	for w > m {
+		i--
+		a[i] = digits[w&m]
+		w >>= shift
+	}
+	if w != 0 || i == len(a) {
+		i--
+		a[i] = digits[w]
+	}
 	return i
 }

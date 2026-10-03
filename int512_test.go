@@ -673,3 +673,11 @@ func TestInt512_Format(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkInt512_Mul(b *testing.B) {
+	x := Int512(Uint512{}.Not().Rsh(512 / 2))
+	y := Int512{}.Sub(x)
+	for b.Loop() {
+		runtime.KeepAlive(x.Mul(y))
+	}
+}

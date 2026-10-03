@@ -609,3 +609,11 @@ func TestInt256_Format(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkInt256_Mul(b *testing.B) {
+	x := Int256(Uint256{}.Not().Rsh(256 / 2))
+	y := Int256{}.Sub(x)
+	for b.Loop() {
+		runtime.KeepAlive(x.Mul(y))
+	}
+}

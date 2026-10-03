@@ -34,23 +34,12 @@ func (a Int128) Sub(b Int128) Int128 {
 }
 
 // Mul returns the product a*b.
+//
+// This function's execution time does not depend on the inputs.
 func (a Int128) Mul(b Int128) Int128 {
-	neg := false
-	if a.Sign() < 0 {
-		neg = !neg
-		a = a.Neg()
-	}
-	if b.Sign() < 0 {
-		neg = !neg
-		b = b.Neg()
-	}
-
-	c := Int128(Uint128(a).Mul(Uint128(b)))
-
-	if neg {
-		c = c.Neg()
-	}
-	return c
+	// In two's complement, the low 128 bits of the product are
+	// the same for signed and unsigned operands.
+	return Int128(Uint128(a).Mul(Uint128(b)))
 }
 
 // Div returns the quotient a/b for b != 0.

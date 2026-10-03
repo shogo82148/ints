@@ -46,23 +46,12 @@ func (a Int512) Sub(b Int512) Int512 {
 }
 
 // Mul returns the product a*b.
+//
+// This function's execution time does not depend on the inputs.
 func (a Int512) Mul(b Int512) Int512 {
-	neg := false
-	if a.Sign() < 0 {
-		a = a.Neg()
-		neg = true
-	}
-	if b.Sign() < 0 {
-		b = b.Neg()
-		neg = !neg
-	}
-
-	c := Int512(Uint512(a).Mul(Uint512(b)))
-
-	if neg {
-		return c.Neg()
-	}
-	return c
+	// In two's complement, the low 512 bits of the product are
+	// the same for signed and unsigned operands.
+	return Int512(Uint512(a).Mul(Uint512(b)))
 }
 
 // Div returns the quotient a/b for b != 0.
