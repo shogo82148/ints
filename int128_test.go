@@ -594,3 +594,13 @@ func BenchmarkInt128_Mul(b *testing.B) {
 		runtime.KeepAlive(x.Mul(y))
 	}
 }
+
+func BenchmarkInt128_DivMod(b *testing.B) {
+	x := Int128(Uint128{}.Not().Rsh(1)).Neg()
+	y := Int128(Uint128{}.Not().Rsh(128 / 2))
+	for b.Loop() {
+		q, r := x.DivMod(y)
+		runtime.KeepAlive(q)
+		runtime.KeepAlive(r)
+	}
+}

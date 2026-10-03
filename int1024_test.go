@@ -1099,3 +1099,13 @@ func BenchmarkInt1024_Mul(b *testing.B) {
 		runtime.KeepAlive(x.Mul(y))
 	}
 }
+
+func BenchmarkInt1024_DivMod(b *testing.B) {
+	x := Int1024(Uint1024{}.Not().Rsh(1)).Neg()
+	y := Int1024(Uint1024{}.Not().Rsh(1024 / 2))
+	for b.Loop() {
+		q, r := x.DivMod(y)
+		runtime.KeepAlive(q)
+		runtime.KeepAlive(r)
+	}
+}

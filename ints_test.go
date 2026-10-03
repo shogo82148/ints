@@ -1,6 +1,7 @@
 package ints
 
 import (
+	"fmt"
 	"math/big"
 	"math/rand/v2"
 	"testing"
@@ -74,6 +75,41 @@ func TestText_PowersOfTwoAllBases(t *testing.T) {
 					if got, w := u.Text(base), want.Text(base); got != w {
 						t.Fatalf("Uint128(%s).Text(%d) = %q, want %q", want, base, got, w)
 					}
+				}
+			}
+		}
+	}
+}
+
+func TestFormat_CompareBigInt(t *testing.T) {
+	formats := []string{
+		"%v", "%d", "%b", "%o", "%O", "%x", "%X", "%s",
+		"%+d", "% d", "%#b", "%#o", "%#x", "%#X", "%+#x",
+		"%5d", "%-5d|", "%05d", "%+05d", "%#08x",
+		"%100d", "%-100d|", "%0100d", "%+0100x", "%200b", "%0200b",
+	}
+	values := []Int256{
+		{},
+		{0, 0, 0, 1},
+		{0, 0, 0, 0xabcdef},
+		Int256{0, 0, 0, 0xabcdef}.Neg(),
+		Int256(Uint256{}.Not().Rsh(1)),
+		Int256(Uint256{}.Not().Rsh(1)).Neg(),
+	}
+	for _, v := range values {
+		want := int256ToBigInt(v)
+		for _, f := range formats {
+			if f == "%#o" && v.IsZero() {
+				// math/big prints "00", but the built-in integers print "0" as we do.
+				continue
+			}
+			if got, w := fmt.Sprintf(f, v), fmt.Sprintf(f, want); got != w {
+				t.Errorf("Sprintf(%q, Int256(%s)) = %q, want %q", f, want, got, w)
+			}
+			if v.Sign() >= 0 {
+				u := Uint256(v)
+				if got, w := fmt.Sprintf(f, u), fmt.Sprintf(f, want); got != w {
+					t.Errorf("Sprintf(%q, Uint256(%s)) = %q, want %q", f, want, got, w)
 				}
 			}
 		}

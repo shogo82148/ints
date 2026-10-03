@@ -1,8 +1,8 @@
 package ints
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"math/bits"
 	"strconv"
 )
@@ -286,106 +286,117 @@ type appender interface {
 	Append(dst []byte, base int) []byte
 }
 
-func format(s fmt.State, verb rune, sign int, v appender) {
+const (
+	zeros  = "0000000000000000000000000000000000000000000000000000000000000000"
+	spaces = "                                                                "
+)
+
+// writePadding writes n copies of the single repeated character in pad to s.
+func writePadding(s fmt.State, pad string, n int) {
+	for n > 0 {
+		m := min(n, len(pad))
+		io.WriteString(s, pad[:m]) //nolint:errcheck
+		n -= m
+	}
+}
+
+// format implements [fmt.Formatter] for v, whose absolute value is v and whose sign is sign.
+// It is generic so that v is not boxed into an interface.
+func format[T appender](s fmt.State, verb rune, sign int, v T) {
 	var out []byte
-	var prefix []byte
 
 	if verb == 'v' {
+		if sign < 0 {
+			out = append(out, '-')
+		}
 		out = v.Append(out, 10)
 		s.Write(out) //nolint:errcheck
 		return
 	}
 
+	var signPrefix string
 	if s.Flag('+') {
 		if sign >= 0 {
-			prefix = []byte("+")
+			signPrefix = "+"
 		} else {
-			prefix = []byte("-")
+			signPrefix = "-"
 		}
 	} else if s.Flag(' ') {
 		if sign >= 0 {
-			prefix = []byte(" ")
+			signPrefix = " "
 		} else {
-			prefix = []byte("-")
+			signPrefix = "-"
 		}
 	} else {
 		if sign < 0 {
-			prefix = []byte("-")
+			signPrefix = "-"
 		}
 	}
 
+	var basePrefix string
 	switch verb {
 	case 'b':
 		out = v.Append(out, 2)
 		if s.Flag('#') {
-			prefix = append(prefix, "0b"...)
+			basePrefix = "0b"
 		}
 	case 'o':
 		out = v.Append(out, 8)
 		if s.Flag('#') && !(len(out) > 0 && out[0] == '0') {
-			prefix = append(prefix, '0')
+			basePrefix = "0"
 		}
 	case 'O':
 		out = v.Append(out, 8)
-		prefix = append(prefix, "0o"...)
+		basePrefix = "0o"
 	case 'd':
 		out = v.Append(out, 10)
 	case 'x':
 		out = v.Append(out, 16)
 		if s.Flag('#') {
-			prefix = append(prefix, "0x"...)
+			basePrefix = "0x"
 		}
 	case 'X':
 		out = v.Append(out, 16)
-		out = bytes.ToUpper(out)
+		for i, c := range out {
+			if 'a' <= c && c <= 'f' {
+				out[i] = c - ('a' - 'A')
+			}
+		}
 		if s.Flag('#') {
-			prefix = append(prefix, "0X"...)
+			basePrefix = "0X"
 		}
 	case 's':
 		out = v.Append(out, 10)
 	}
 
-	if w, ok := s.Width(); ok {
-		var buf [8]byte
-		if s.Flag('0') {
-			if len(prefix) > 0 {
-				s.Write(prefix) //nolint:errcheck
-			}
+	writePrefix := func() {
+		if signPrefix != "" {
+			io.WriteString(s, signPrefix) //nolint:errcheck
+		}
+		if basePrefix != "" {
+			io.WriteString(s, basePrefix) //nolint:errcheck
+		}
+	}
 
-			// pad with zeros
-			buf[0] = '0'
-			for i := len(prefix) + len(out); i < w; i++ {
-				s.Write(buf[:1]) //nolint:errcheck
-			}
+	if w, ok := s.Width(); ok {
+		pad := w - len(signPrefix) - len(basePrefix) - len(out)
+		if s.Flag('0') {
+			writePrefix()
+			writePadding(s, zeros, pad)
 			s.Write(out) //nolint:errcheck
 		} else if s.Flag('-') {
-			if len(prefix) > 0 {
-				s.Write(prefix) //nolint:errcheck
-			}
+			writePrefix()
 			s.Write(out) //nolint:errcheck
-
-			// pad with spaces
-			buf[0] = ' '
-			for i := len(prefix) + len(out); i < w; i++ {
-				s.Write(buf[:1]) //nolint:errcheck
-			}
+			writePadding(s, spaces, pad)
 		} else {
-			// pad with spaces
-			buf[0] = ' '
-			for i := len(prefix) + len(out); i < w; i++ {
-				s.Write(buf[:1]) //nolint:errcheck
-			}
-			if len(prefix) > 0 {
-				s.Write(prefix) //nolint:errcheck
-			}
+			writePadding(s, spaces, pad)
+			writePrefix()
 			s.Write(out) //nolint:errcheck
 		}
 		return
 	}
 
-	if len(prefix) > 0 {
-		s.Write(prefix) //nolint:errcheck
-	}
+	writePrefix()
 	s.Write(out) //nolint:errcheck
 }
 

@@ -2,6 +2,7 @@ package ints
 
 import (
 	"fmt"
+	"io"
 	"math"
 	"math/big"
 	"runtime"
@@ -771,5 +772,16 @@ func TestUint256_Format(t *testing.T) {
 		if got != tt.want {
 			t.Errorf("%#v: want %q, got %q", tt, tt.want, got)
 		}
+	}
+}
+
+func BenchmarkUint256_Format(b *testing.B) {
+	a := Uint256{math.MaxUint64, math.MaxUint64, math.MaxUint64, math.MaxUint64}
+	for _, f := range []string{"%v", "%x", "%#X", "%80d"} {
+		b.Run(f, func(b *testing.B) {
+			for b.Loop() {
+				fmt.Fprintf(io.Discard, f, a)
+			}
+		})
 	}
 }
