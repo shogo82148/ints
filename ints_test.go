@@ -172,3 +172,51 @@ func TestDivMod_SmallDivisors(t *testing.T) {
 		}
 	}
 }
+
+// TestDivMod_EdgeWords builds dividends and divisors from words near 0, 2**63 and 2**64.
+// Such inputs often make the quotient estimate of Algorithm D one too large,
+// which exercises the rarely taken "add back" step.
+func TestDivMod_EdgeWords(t *testing.T) {
+	vals := []uint64{0, 1, 2, 1<<63 - 1, 1 << 63, 1<<63 + 1, 1<<64 - 2, 1<<64 - 1}
+	r := rand.New(rand.NewPCG(7, 8))
+	fill := func(u []uint64, words int) {
+		for i := range u {
+			u[i] = 0
+		}
+		for i := len(u) - words; i < len(u); i++ {
+			u[i] = vals[r.IntN(len(vals))]
+		}
+	}
+	check := func(t *testing.T, name string, a, b, q, rem *big.Int) {
+		t.Helper()
+		wantQ, wantR := new(big.Int).QuoRem(a, b, new(big.Int))
+		if q.Cmp(wantQ) != 0 || rem.Cmp(wantR) != 0 {
+			t.Fatalf("%s(%x).DivMod(%x) = %x, %x, want %x, %x", name, a, b, q, rem, wantQ, wantR)
+		}
+	}
+	for range 20000 {
+		var a256, b256 Uint256
+		fill(a256[:], 1+r.IntN(4))
+		fill(b256[:], 2+r.IntN(3))
+		if !b256.IsZero() {
+			q, rem := a256.DivMod(b256)
+			check(t, "Uint256", uint256ToBigInt(a256), uint256ToBigInt(b256), uint256ToBigInt(q), uint256ToBigInt(rem))
+		}
+
+		var a512, b512 Uint512
+		fill(a512[:], 1+r.IntN(8))
+		fill(b512[:], 2+r.IntN(7))
+		if !b512.IsZero() {
+			q, rem := a512.DivMod(b512)
+			check(t, "Uint512", uint512ToBigInt(a512), uint512ToBigInt(b512), uint512ToBigInt(q), uint512ToBigInt(rem))
+		}
+
+		var a1024, b1024 Uint1024
+		fill(a1024[:], 1+r.IntN(16))
+		fill(b1024[:], 2+r.IntN(15))
+		if !b1024.IsZero() {
+			q, rem := a1024.DivMod(b1024)
+			check(t, "Uint1024", uint1024ToBigInt(a1024), uint1024ToBigInt(b1024), uint1024ToBigInt(q), uint1024ToBigInt(rem))
+		}
+	}
+}

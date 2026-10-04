@@ -911,9 +911,6 @@ func divmnu1024(q, r, u, v *[16]uint64, m, n int) {
 	// ujn holds un[j+n]; it starts as the invented leading zero word.
 	ujn := un[m]
 
-	// A scratch buffer for qhat*v.
-	var qhatv [17]uint64
-
 	for j := m - n; j >= 0; j-- {
 		// Compute the 2-by-1 quotient estimate qhat.
 		qhat := ^uint64(0) // _M
@@ -943,19 +940,13 @@ func divmnu1024(q, r, u, v *[16]uint64, m, n int) {
 			}
 		}
 
-		// Compute qhat*v and subtract it from the current window of un.
-		qhatv[n] = mulAddVWW(qhatv[:n], vn[:n], qhat, 0)
-		qhl := n + 1
-		if j+qhl > m+1 && qhatv[n] == 0 {
-			qhl--
-		}
-		c := subVV(un[j:j+qhl], un[j:j+qhl], qhatv[:qhl])
-		if c != 0 {
+		// Subtract qhat*v from the current window un[j:j+n+1] in a single pass.
+		// un[j+n] is not read after this iteration, so only the borrow out of it is needed.
+		c := mulSubVWW(un[j:j+n], vn[:n], qhat)
+		if _, borrow := bits.Sub64(un[j+n], c, 0); borrow != 0 {
 			// qhat was one too large; add v back and correct qhat.
-			c := addVV(un[j:j+n], un[j:j+n], vn[:n])
-			if n < qhl {
-				un[j+n] += c
-			}
+			// The carry out of un[j+n-1] would cancel the borrow in un[j+n], so it is dropped.
+			addVV(un[j:j+n], un[j:j+n], vn[:n])
 			qhat--
 		}
 
@@ -982,23 +973,18 @@ func greaterThanVW(x1, x2, y1, y2 uint64) bool {
 	return x1 > y1 || x1 == y1 && x2 > y2
 }
 
-// mulAddVWW computes z = x*m + a, returning the final carry.
-func mulAddVWW(z, x []uint64, m, a uint64) uint64 {
-	c := a
-	for i := range x {
-		hi, lo := bits.Mul64(x[i], m)
-		var cc uint64
-		z[i], cc = bits.Add64(lo, c, 0)
-		c = hi + cc
-	}
-	return c
-}
-
-// subVV computes z = x - y, returning the final borrow.
-func subVV(z, x, y []uint64) uint64 {
+// mulSubVWW computes z = z - x*m and returns the word to subtract from the word above z.
+func mulSubVWW(z, x []uint64, m uint64) uint64 {
 	var c uint64
 	for i := range z {
-		z[i], c = bits.Sub64(x[i], y[i], c)
+		// x[i]*m + c <= (2**64-1)**2 + (2**64-1) = (2**64-1) * 2**64, so hi+cc <= 2**64-1.
+		// hi+cc reaches 2**64-1 only when lo is 0, and then there is no borrow b,
+		// so c never overflows.
+		hi, lo := bits.Mul64(x[i], m)
+		var cc, b uint64
+		lo, cc = bits.Add64(lo, c, 0)
+		z[i], b = bits.Sub64(z[i], lo, 0)
+		c = hi + cc + b
 	}
 	return c
 }

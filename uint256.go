@@ -308,7 +308,6 @@ func divmnu256(q, r, u, v *[4]uint64, m, n int) {
 		recip = reciprocal(vn1)
 	}
 	ujn := un[m]
-	var qhatv [5]uint64
 
 	for j := m - n; j >= 0; j-- {
 		qhat := ^uint64(0)
@@ -336,17 +335,13 @@ func divmnu256(q, r, u, v *[4]uint64, m, n int) {
 			}
 		}
 
-		qhatv[n] = mulAddVWW(qhatv[:n], vn[:n], qhat, 0)
-		qhl := n + 1
-		if j+qhl > m+1 && qhatv[n] == 0 {
-			qhl--
-		}
-		c := subVV(un[j:j+qhl], un[j:j+qhl], qhatv[:qhl])
-		if c != 0 {
-			c := addVV(un[j:j+n], un[j:j+n], vn[:n])
-			if n < qhl {
-				un[j+n] += c
-			}
+		// Subtract qhat*v from the current window un[j:j+n+1] in a single pass.
+		// un[j+n] is not read after this iteration, so only the borrow out of it is needed.
+		c := mulSubVWW(un[j:j+n], vn[:n], qhat)
+		if _, borrow := bits.Sub64(un[j+n], c, 0); borrow != 0 {
+			// qhat was one too large; add v back and correct qhat.
+			// The carry out of un[j+n-1] would cancel the borrow in un[j+n], so it is dropped.
+			addVV(un[j:j+n], un[j:j+n], vn[:n])
 			qhat--
 		}
 
