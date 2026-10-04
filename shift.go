@@ -7,6 +7,74 @@ func zeroMask(x uint) uint64 {
 	return uint64((x|-x)>>(bits.UintSize-1)) - 1
 }
 
+// lsh256 shifts a left by i bits in constant time.
+// It is a barrel shifter: it moves whole words by 1, 2, 4, ... positions
+// under masks derived from the bits of i, and then shifts the remaining bits.
+func lsh256(a [4]uint64, i uint) [4]uint64 {
+	u0, u1, u2, u3 := a[0], a[1], a[2], a[3]
+	var m uint64
+
+	// move words by 1 if bit 6 of i is set
+	m = -(uint64(i>>6) & 1)
+	u0 = u1&m | u0&^m
+	u1 = u2&m | u1&^m
+	u2 = u3&m | u2&^m
+	u3 &^= m
+
+	// move words by 2 if bit 7 of i is set
+	m = -(uint64(i>>7) & 1)
+	u0 = u2&m | u0&^m
+	u1 = u3&m | u1&^m
+	u2 &^= m
+	u3 &^= m
+
+	// shift the remaining bits
+	b := i & 63
+	c := (63 - b) & 63 // == 64 - b, minus one to keep it below 64
+	u0 = u0<<b | u1>>1>>c
+	u1 = u1<<b | u2>>1>>c
+	u2 = u2<<b | u3>>1>>c
+	u3 <<= b
+
+	// shifts of 256 bits or more result in zero
+	z := zeroMask(i >> 8)
+	return [4]uint64{u0 & z, u1 & z, u2 & z, u3 & z}
+}
+
+// rsh256 shifts a right by i bits in constant time, filling the vacated bits with fill,
+// which must be zero (logical shift) or all ones (arithmetic shift of a negative value).
+// See [lsh256] for the algorithm.
+func rsh256(a [4]uint64, i uint, fill uint64) [4]uint64 {
+	u0, u1, u2, u3 := a[0], a[1], a[2], a[3]
+	var m uint64
+
+	// move words by 1 if bit 6 of i is set
+	m = -(uint64(i>>6) & 1)
+	u3 = u2&m | u3&^m
+	u2 = u1&m | u2&^m
+	u1 = u0&m | u1&^m
+	u0 = fill&m | u0&^m
+
+	// move words by 2 if bit 7 of i is set
+	m = -(uint64(i>>7) & 1)
+	u3 = u1&m | u3&^m
+	u2 = u0&m | u2&^m
+	u1 = fill&m | u1&^m
+	u0 = fill&m | u0&^m
+
+	// shift the remaining bits
+	b := i & 63
+	c := (63 - b) & 63 // == 64 - b, minus one to keep it below 64
+	u3 = u3>>b | u2<<1<<c
+	u2 = u2>>b | u1<<1<<c
+	u1 = u1>>b | u0<<1<<c
+	u0 = u0>>b | fill<<1<<c
+
+	// shifts of 256 bits or more result in fill
+	z := zeroMask(i >> 8)
+	return [4]uint64{u0&z | fill&^z, u1&z | fill&^z, u2&z | fill&^z, u3&z | fill&^z}
+}
+
 // lsh512 shifts a left by i bits in constant time.
 // It is a barrel shifter: it moves whole words by 1, 2, 4, ... positions
 // under masks derived from the bits of i, and then shifts the remaining bits.
