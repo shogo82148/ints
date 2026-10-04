@@ -29,8 +29,12 @@ func wrapBig(x *big.Int, bits uint, signed bool) *big.Int {
 func TestShift_CompareBigInt(t *testing.T) {
 	r := rand.New(rand.NewPCG(3, 4))
 	for range 4 {
+		var u256 Uint256
 		var u512 Uint512
 		var u1024 Uint1024
+		for j := range u256 {
+			u256[j] = r.Uint64()
+		}
 		for j := range u512 {
 			u512[j] = r.Uint64()
 		}
@@ -40,11 +44,31 @@ func TestShift_CompareBigInt(t *testing.T) {
 		// cover both signs
 		for _, neg := range []bool{false, true} {
 			if neg {
+				u256[0] |= 1 << 63
 				u512[0] |= 1 << 63
 				u1024[0] |= 1 << 63
 			} else {
+				u256[0] &^= 1 << 63
 				u512[0] &^= 1 << 63
 				u1024[0] &^= 1 << 63
+			}
+
+			bu256, bi256 := uint256ToBigInt(u256), int256ToBigInt(Int256(u256))
+			for _, i := range shiftAmounts(256) {
+				// big.Int.Lsh with a huge shift amount would exhaust memory; the result is zero anyway.
+				k := min(i, 512)
+				if got, want := uint256ToBigInt(u256.Lsh(i)), wrapBig(new(big.Int).Lsh(bu256, k), 256, false); got.Cmp(want) != 0 {
+					t.Fatalf("Uint256(%x).Lsh(%d) = %x, want %x", bu256, i, got, want)
+				}
+				if got, want := int256ToBigInt(Int256(u256).Lsh(i)), wrapBig(new(big.Int).Lsh(bi256, k), 256, true); got.Cmp(want) != 0 {
+					t.Fatalf("Int256(%x).Lsh(%d) = %x, want %x", bi256, i, got, want)
+				}
+				if got, want := uint256ToBigInt(u256.Rsh(i)), new(big.Int).Rsh(bu256, k); got.Cmp(want) != 0 {
+					t.Fatalf("Uint256(%x).Rsh(%d) = %x, want %x", bu256, i, got, want)
+				}
+				if got, want := int256ToBigInt(Int256(u256).Rsh(i)), new(big.Int).Rsh(bi256, k); got.Cmp(want) != 0 {
+					t.Fatalf("Int256(%x).Rsh(%d) = %x, want %x", bi256, i, got, want)
+				}
 			}
 
 			bu512, bi512 := uint512ToBigInt(u512), int512ToBigInt(Int512(u512))
@@ -86,6 +110,27 @@ func TestShift_CompareBigInt(t *testing.T) {
 }
 
 var shiftSink uint
+
+func BenchmarkUint256_Lsh(b *testing.B) {
+	x := Uint256{}.Not().Rsh(3)
+	for b.Loop() {
+		runtime.KeepAlive(x.Lsh(shiftSink&127 + 3))
+	}
+}
+
+func BenchmarkUint256_Rsh(b *testing.B) {
+	x := Uint256{}.Not().Rsh(3)
+	for b.Loop() {
+		runtime.KeepAlive(x.Rsh(shiftSink&127 + 3))
+	}
+}
+
+func BenchmarkInt256_Rsh(b *testing.B) {
+	x := Int256(Uint256{}.Not().Rsh(3)).Neg()
+	for b.Loop() {
+		runtime.KeepAlive(x.Rsh(shiftSink&127 + 3))
+	}
+}
 
 func BenchmarkUint512_Lsh(b *testing.B) {
 	x := Uint512{}.Not().Rsh(3)
