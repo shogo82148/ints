@@ -1,6 +1,7 @@
 package ints
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io"
 	"math/bits"
@@ -110,9 +111,12 @@ func formatBits128(dst []byte, u0, u1 uint64, base int, neg, append_ bool) (d []
 		u0, _ = bits.Sub64(0, u0, borrow)
 	}
 
-	if isPowerOfTwo(base) {
+	if base == 2 || base == 16 {
+		u := [...]uint64{u0, u1}
+		i = formatBitsPow2(a[:], i, u[:], base)
+	} else if isPowerOfTwo(base) {
 		// Use shifts and masks instead of / and %.
-		// With only two words, this is faster than formatBitsPow2.
+		// With only two words, this is faster than formatBitsPow2 for bases 4, 8 and 32.
 		shift := uint(bits.TrailingZeros(uint(base)))
 		b := uint64(base)
 		m := uint(base) - 1 // == 1<<shift - 1
@@ -591,6 +595,29 @@ func formatLastChunk(a []byte, i int, u uint64, base int) int {
 	return i
 }
 
+// binaryDigits and hexDigits hold the digits of each byte value in base 2 and 16,
+// packed in little-endian order so that they can be stored with a single write.
+var binaryDigits, hexDigits = func() (bin [256]uint64, hex [256]uint16) {
+	for b := range 256 {
+		for k := range 8 {
+			bin[b] |= uint64('0'+(b>>(7-k))&1) << (8 * k)
+		}
+		hex[b] = uint16(digits[b>>4]) | uint16(digits[b&15])<<8
+	}
+	return
+}()
+
+// formatByte writes the digits of b in base 2 or 16, including leading zeros,
+// into a, ending at index i, and returns the index of the first digit written.
+func formatByte(a []byte, i int, b byte, base int) int {
+	if base == 2 {
+		binary.LittleEndian.PutUint64(a[i-8:i], binaryDigits[b])
+		return i - 8
+	}
+	binary.LittleEndian.PutUint16(a[i-2:i], hexDigits[b])
+	return i - 2
+}
+
 // formatBitsPow2 writes the digits of the multi-word unsigned integer u
 // (most significant word first) in the given base, which must be a power of two,
 // into a, ending at index i, and returns the index of the first digit written.
@@ -603,6 +630,32 @@ func formatBitsPow2(a []byte, i int, u []uint64, base int) int {
 
 	for len(u) > 1 && u[0] == 0 {
 		u = u[1:]
+	}
+
+	if base == 2 || base == 16 {
+		// The digits never straddle bytes, so convert a whole byte at a time.
+		for k := len(u) - 1; k > 0; k-- {
+			w := u[k]
+			for range 8 {
+				i = formatByte(a, i, byte(w), base)
+				w >>= 8
+			}
+		}
+
+		// the most significant word: stop when no non-zero bits remain.
+		w := u[0]
+		for w > 0xff {
+			i = formatByte(a, i, byte(w), base)
+			w >>= 8
+		}
+		for w > m {
+			i--
+			a[i] = digits[w&m]
+			w >>= shift
+		}
+		i--
+		a[i] = digits[w]
+		return i
 	}
 
 	// acc holds accBits bits left over from the previous word,

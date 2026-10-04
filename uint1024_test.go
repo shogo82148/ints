@@ -1513,3 +1513,10 @@ func BenchmarkUint1024_DivMod64(b *testing.B) {
 		runtime.KeepAlive(r)
 	}
 }
+
+func BenchmarkUint1024_Text16(b *testing.B) {
+	a := Uint1024{}.Not()
+	for b.Loop() {
+		runtime.KeepAlive(a.Text(16))
+	}
+}
