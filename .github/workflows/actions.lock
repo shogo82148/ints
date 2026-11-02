@@ -6,7 +6,7 @@ workflows:
     '.github/workflows/fuzz.yaml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-go@v7.0.0'
-        - 'shogo82148/actions-go-fuzz@v1.2.6'
+        - 'shogo82148/actions-go-fuzz@v1.2.7'
     '.github/workflows/test.yaml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-go@v7.0.0'
@@ -34,8 +34,8 @@ dependencies:
         repo_id: 200299178
         uses:
             - 'actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd'
-    'shogo82148/actions-go-fuzz@v1.2.6':
-        ref: 'v1.2.6'
-        commit: 'sha1-0d0b84304d01c5a83a1b4453eb138fec74c1f662'
+    'shogo82148/actions-go-fuzz@v1.2.7':
+        ref: 'v1.2.7'
+        commit: 'sha1-f5addfafb428396a1321238d916c421eb25a1136'
         owner_id: 1157344
         repo_id: 658286023
